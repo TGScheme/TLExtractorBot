@@ -139,6 +139,10 @@ func main() {
 			); err != nil {
 				return err
 			}
+		} else {
+			if err = client.UpdateStatus("", false, false); err != nil {
+				return err
+			}
 		}
 		if !slices.Contains(utils.ShellFlags, "debug") {
 			if len(utils.LocalStorage.RecentLayers) == 0 {
