@@ -1,0 +1,16 @@
+import "scheme_changes"
+import "objects_difference"
+import "fields_difference"
+import "object_linked"
+
+<figure><img src="{{banner_url}}"></figure>
+{%- if stats.MainApi.Total > 0 -%}
+{{ getSchemeChanges(differences.MainApi, stats.MainApi, true) }}
+<h4>Schema</h4>
+<pre>{{ main_scheme }}</pre>
+{%- endif %}
+{% if stats.E2EApi.Total > 0 -%}
+{{ getSchemeChanges(differences.E2EApi, stats.E2EApi, false) }}
+<h4>End-to-end schema</h4>
+<pre>{{ e2e_scheme }}</pre>
+{%- endif -%}

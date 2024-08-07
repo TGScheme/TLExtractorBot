@@ -1,0 +1,3 @@
+{% macro objectLinked(obj, githubLines) -%}
+<a href="{{ commit_urls[obj.Object.Constructor] }}">{{ obj.Object.Package }}</a>
+{%- endmacro %}

@@ -1,0 +1,9 @@
+{% macro getStats(scheme) -%}
+{%- if scheme.Additions > 0 -%}
+{{scheme.Additions}} additions
+{%- endif -%}
+{%- if scheme.Additions > 0 && scheme.Changes > 0 -%}, {% endif %}
+{%- if scheme.Changes > 0 -%}
+{{scheme.Changes}} changes
+{%- endif -%}
+{%- endmacro %}

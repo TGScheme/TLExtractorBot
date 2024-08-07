@@ -1,0 +1,15 @@
+{%- macro getFieldsDifference(diffObj) -%}
+{%- if diffObj.NewFields | length > 0 -%}
+added <b>{{ diffObj.NewFields | join:"</b>, <b>" | safe}}</b> parameter{{ diffObj.NewFields | length | pluralize }}
+{%- endif -%}
+{%- if diffObj.NewFields | length > 0 and diffObj.RemovedFields | length > 0 %}, {% endif -%}
+{%- if diffObj.RemovedFields | length > 0 -%}
+removed <b>{{ diffObj.RemovedFields | join:"</b>, <b>" | safe}}</b> parameter{{ diffObj.RemovedFields | length | pluralize }}
+{%- endif -%}
+{%- if (diffObj.NewFields | length > 0 or diffObj.RemovedFields | length > 0) and diffObj.ChangedFields | length > 0 %}, {% endif -%}
+{%- if diffObj.ChangedFields | length > 0 -%}
+{%- for obj in diffObj.ChangedFields -%}
+changed type of <b>{{obj.Name}}</b> from <b>{{obj.OldType}}</b> to <b>{{obj.NewType}}</b>{% if forloop.Counter < (diffObj.ChangedFields | length) %}, {% endif %}
+{%- endfor -%}
+{%- endif -%}
+{%- endmacro -%}

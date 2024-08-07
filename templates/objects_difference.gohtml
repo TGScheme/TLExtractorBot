@@ -1,0 +1,22 @@
+{% macro getObjectsDifference(name, schemeStats, objsDiff) %}
+{% if schemeStats.Additions > 0 -%}
+<h4>New {{ name }}</h4>
+<ul>
+{% for obj in objsDiff -%}
+{%- if obj.IsNew %}
+    <li>Added {{ objectLinked(obj) }}</li>
+{% endif -%}
+{%- endfor %}
+</ul>
+{% endif %}
+{% if schemeStats.Changes > 0 -%}
+<h4>Changed {{ name }}</h4>
+<ul>
+{% for obj in objsDiff -%}
+{%- if !obj.IsNew %}
+    <li>{{getFieldsDifference(obj) | capfirst | safe}} in {{ objectLinked(obj) }}</li>
+{% endif -%}
+{%- endfor %}
+</ul>
+{%- endif -%}
+{% endmacro %}

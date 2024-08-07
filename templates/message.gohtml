@@ -1,0 +1,20 @@
+import "stats"
+
+<b>💡 Telegram for Android</b> has been updated to version <b>{{update.VersionName}} ({{update.BuildNumber}})</b>!
+
+{% if !stats -%}
+<i>Decompiling... ({{progress}}%)</i>
+{%- else -%}
+<b>Update Information:</b>
+• <b>Layer Version:</b> {{layer}}
+{%- if stats.MainApi.Total > 0 %}
+• <b>TL-schema changes:</b> {{ getStats(stats.MainApi) }}
+{%- endif %}
+{%- if stats.E2EApi.Total > 0 %}
+• <b>E2E-schema changes:</b> {{ getStats(stats.E2EApi) }}
+{%- endif %}
+
+See the detailed changelog here: {{link}}
+
+<i>Decompiled in {{time}}</i>
+{%- endif %}
