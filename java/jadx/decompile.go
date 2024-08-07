@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -17,7 +18,7 @@ func Decompile(callable func(percentage int64)) error {
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(consts.TempDecompiled, os.ModePerm); err != nil && !os.IsExist(err) {
+	if err = os.MkdirAll(path.Join(consts.BasePath, consts.TempDecompiled), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
 	java, err := javaExec()
@@ -37,8 +38,8 @@ func Decompile(callable func(percentage int64)) error {
 		"-j",
 		strconv.Itoa(runtime.GOMAXPROCS(0)),
 		"--output-dir",
-		consts.TempDecompiled,
-		consts.TempApk,
+		path.Join(consts.BasePath, consts.TempDecompiled),
+		path.Join(consts.BasePath, consts.TempApk),
 	)
 	pb := proxy_reader.NewProxyReader(
 		consts.UpdateMessageRate,
@@ -62,7 +63,7 @@ func Decompile(callable func(percentage int64)) error {
 	var stdErr bytes.Buffer
 	cmd.Stderr = &stdErr
 	cmd.Stdout = pb
-	if err := cmd.Run(); err != nil {
+	if err = cmd.Run(); err != nil {
 		return errors.New(stdErr.String())
 	}
 	return nil

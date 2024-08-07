@@ -5,6 +5,7 @@ import (
 	"TLExtractor/consts"
 	"TLExtractor/http"
 	"os"
+	"path"
 )
 
 func downloadApk(info *types.AppInfo) error {
@@ -14,8 +15,8 @@ func downloadApk(info *types.AppInfo) error {
 	if res.Error != nil {
 		return res.Error
 	}
-	if err := os.MkdirAll(consts.TempBins, os.ModePerm); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(path.Join(consts.BasePath, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	return os.WriteFile(consts.TempApk, res.Read(), os.ModePerm)
+	return os.WriteFile(path.Join(consts.BasePath, consts.TempApk), res.Read(), os.ModePerm)
 }

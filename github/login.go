@@ -10,6 +10,7 @@ import (
 	"github.com/google/go-github/v62/github"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -20,7 +21,7 @@ func Login() (*Context, error) {
 	for {
 		var githubPemPath string
 		var file []byte
-		if _, err := os.Stat(consts.GithubPem); err != nil {
+		if _, err := os.Stat(path.Join(consts.BasePath, consts.GithubPem)); err != nil {
 			fmt.Print("Enter the path to your GitHub App PEM file: ")
 			_ = io.Scanln(&githubPemPath)
 			file, err = os.ReadFile(strings.TrimSpace(githubPemPath))
@@ -29,7 +30,7 @@ func Login() (*Context, error) {
 				continue
 			}
 		} else {
-			file, err = os.ReadFile(consts.GithubPem)
+			file, err = os.ReadFile(path.Join(consts.BasePath, consts.GithubPem))
 			if err != nil {
 				return nil, err
 			}
@@ -51,16 +52,16 @@ func Login() (*Context, error) {
 		)
 		if err != nil {
 			utils.CrashLog(err, false)
-			_ = os.Remove(consts.GithubPem)
+			_ = os.Remove(path.Join(consts.BasePath, consts.GithubPem))
 			continue
 		}
-		if err = os.WriteFile(consts.GithubPem, file, 0644); err != nil {
+		if err = os.WriteFile(path.Join(consts.BasePath, consts.GithubPem), file, 0644); err != nil {
 			return nil, err
 		}
 		ctx.client = github.NewClient(&http.Client{Transport: transport})
 		if _, _, err = ctx.client.Users.Get(ctx.ctx, "octocat"); err != nil {
 			utils.CrashLog(err, false)
-			_ = os.Remove(consts.GithubPem)
+			_ = os.Remove(path.Join(consts.BasePath, consts.GithubPem))
 			utils.CredentialsStorage.ApplicationID = 0
 			utils.CredentialsStorage.InstallationID = 0
 			continue

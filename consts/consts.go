@@ -32,6 +32,7 @@ const (
 
 // Paths
 var (
+	BasePath          = "./"
 	CredentialsFolder = path.Join(EnvFolder, "credentials.json")
 	StorageFolder     = path.Join(EnvFolder, "storage.json")
 	PackagesFolder    = path.Join(EnvFolder, "packages")

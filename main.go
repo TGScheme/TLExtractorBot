@@ -22,7 +22,7 @@ import (
 var templatesFolder embed.FS
 
 func main() {
-	utils.CheckDebugMode()
+	utils.LoadShellFlags()
 	if err := resources.Load(templatesFolder); err != nil {
 		utils.CrashLog(err, true)
 	}
@@ -33,7 +33,6 @@ func main() {
 	if err != nil {
 		utils.CrashLog(err, true)
 	}
-
 	githubClient, err := github.Login()
 	if err != nil {
 		utils.CrashLog(err, true)
@@ -133,7 +132,7 @@ func main() {
 				return err
 			}
 		}
-		if !utils.IsDebugMode {
+		if !slices.Contains(utils.ShellFlags, "debug") {
 			if len(utils.LocalStorage.RecentLayers) == 0 {
 				utils.LocalStorage.StableLayer = utils.LocalStorage.PreviewLayer
 			}

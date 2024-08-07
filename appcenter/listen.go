@@ -4,6 +4,7 @@ import (
 	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
 	"TLExtractor/utils"
+	"slices"
 	"time"
 )
 
@@ -29,7 +30,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 			if err != nil {
 				utils.CrashLog(err, true)
 			}
-			if utils.IsDebugMode {
+			if slices.Contains(utils.ShellFlags, "debug") {
 				break
 			}
 			utils.LocalStorage.LastID = info.ID

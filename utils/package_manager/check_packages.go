@@ -2,15 +2,17 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/github"
 	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
 	"os"
+	"path"
 	"strings"
 )
 
 func CheckPackages(githubClient *github.Context) error {
-	if err := os.MkdirAll(consts.PackagesFolder, os.ModePerm); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(path.Join(consts.BasePath, consts.PackagesFolder), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
 	var requirements []types.PackageInfo
