@@ -7,7 +7,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"time"
 )
 
 func ExecuteRequest(url string, options ...RequestOption) *types.HTTPResult {
@@ -23,17 +22,12 @@ func ExecuteRequest(url string, options ...RequestOption) *types.HTTPResult {
 	if opt.Method == "" {
 		opt.Method = "GET"
 	}
-	client := http.Client{
-		Timeout: opt.Timeout,
-	}
+	client := http.Client{}
 	var body io.Reader
 	var multiPartWriter *multipart.Writer
 	if opt.MultiPart != nil {
 		reader := &bytes.Buffer{}
 		multiPartWriter = multipart.NewWriter(reader)
-		for k, v := range opt.MultiPart.Data {
-			_ = multiPartWriter.WriteField(k, v)
-		}
 		for k, v := range opt.MultiPart.Files {
 			file, err := multiPartWriter.CreateFormFile(k, v.FileName)
 			if err != nil {
@@ -55,14 +49,6 @@ func ExecuteRequest(url string, options ...RequestOption) *types.HTTPResult {
 	if err != nil {
 		bodyRes.Error = err
 		return bodyRes
-	}
-	for k, v := range opt.Cookies {
-		req.AddCookie(
-			&http.Cookie{
-				Name:  k,
-				Value: v,
-			},
-		)
 	}
 	if opt.Headers != nil {
 		for k, v := range opt.Headers {
@@ -88,11 +74,6 @@ func ExecuteRequest(url string, options ...RequestOption) *types.HTTPResult {
 		return bodyRes
 	}
 	if do.StatusCode != http.StatusOK && do.StatusCode != http.StatusCreated && do.StatusCode != http.StatusNoContent {
-		opt.Retries--
-		if opt.Retries > 0 {
-			time.Sleep(time.Millisecond * 250)
-			return ExecuteRequest(url, options...)
-		}
 		bodyRes.Error = fmt.Errorf("http status code %d", do.StatusCode)
 		return bodyRes
 	}
