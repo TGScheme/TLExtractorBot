@@ -5,7 +5,6 @@ import (
 	"embed"
 	"fmt"
 	"github.com/flosch/pongo2/v6"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -17,7 +16,7 @@ func Load(langFolder embed.FS) error {
 	consts.Resources = make(map[string][]byte)
 	for _, file := range files {
 		ext := filepath.Ext(file.Name())
-		readFile, err := os.ReadFile(path.Join("templates", file.Name()))
+		readFile, err := langFolder.ReadFile(path.Join("templates", file.Name()))
 		if err != nil {
 			return err
 		}
