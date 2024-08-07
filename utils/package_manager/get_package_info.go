@@ -1,33 +1,37 @@
 package package_manager
 
 import (
-	"TLExtractor/http"
+	"TLExtractor/github"
 	types2 "TLExtractor/utils/package_manager/types"
-	"encoding/json"
-	"fmt"
+	"errors"
+	"regexp"
 )
 
-func getPackageInfo(info types2.RequireInfo) (*types2.PackageInfo, error) {
-	var releaseInfo types2.ReleaseInfo
-	err := json.Unmarshal(
-		http.ExecuteRequest(
-			fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", info.RepoOwner(), info.RepoName()),
-		).Read(),
-		&releaseInfo,
-	)
+func getPackageInfo(githubClient *github.Context, info types2.RequireInfo) (*types2.PackageInfo, error) {
+	release, err := githubClient.GetLastRelease(info.RepoOwner(), info.RepoName())
 	if err != nil {
 		return nil, err
 	}
-	asset, err := releaseInfo.GetCompatibleAsset(info.File)
-	if err != nil {
-		return nil, err
+	var compatibleAsset *types2.AssetInfo
+	for _, asset := range release.Assets {
+		if regexp.MustCompile(info.File).MatchString(*asset.Name) {
+			compatibleAsset = &types2.AssetInfo{
+				Name: *asset.Name,
+				URL:  *asset.BrowserDownloadURL,
+				Size: *asset.Size,
+			}
+			break
+		}
+	}
+	if compatibleAsset == nil {
+		return nil, errors.New("no compatible asset found")
 	}
 	return &types2.PackageInfo{
 		Name:        info.PackageName(),
 		Owner:       info.RepoOwner(),
-		Version:     releaseInfo.Version,
-		DownloadURL: asset.URL,
-		Size:        asset.Size,
-		FileName:    asset.Name,
+		Version:     *release.Name,
+		DownloadURL: compatibleAsset.URL,
+		Size:        compatibleAsset.Size,
+		FileName:    compatibleAsset.Name,
 	}, nil
 }

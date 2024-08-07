@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func CheckPackages() error {
+func CheckPackages(githubClient *github.Context) error {
 	if err := os.MkdirAll(consts.PackagesFolder, os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
@@ -18,7 +18,7 @@ func CheckPackages() error {
 		if p.OnlyWindows && !utils.IsWindows() {
 			continue
 		}
-		packageInfo, err := getPackageInfo(p)
+		packageInfo, err := getPackageInfo(githubClient, p)
 		if err != nil {
 			return err
 		}

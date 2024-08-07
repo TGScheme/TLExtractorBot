@@ -42,7 +42,7 @@ func main() {
 	if err != nil {
 		utils.CrashLog(err, true)
 	}
-	if err = package_manager.CheckPackages(); err != nil {
+	if err = package_manager.CheckPackages(githubClient); err != nil {
 		utils.CrashLog(err, true)
 	}
 	appcenter.Listen(func(update types.UpdateInfo) error {
