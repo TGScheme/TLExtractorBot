@@ -7,6 +7,7 @@ import (
 	"TLExtractor/github"
 	"TLExtractor/java/jadx"
 	"TLExtractor/resources"
+	"TLExtractor/screen"
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
 	"TLExtractor/telegram/telegraph"
@@ -43,6 +44,13 @@ func main() {
 	}
 	if err = package_manager.CheckPackages(githubClient); err != nil {
 		utils.CrashLog(err, true)
+	}
+	startingScreen, err := screen.CheckScreen()
+	if err != nil {
+		utils.CrashLog(err, true)
+	}
+	if startingScreen {
+		return
 	}
 	appcenter.Listen(func(update types.UpdateInfo) error {
 		if err = client.UpdateStatus(

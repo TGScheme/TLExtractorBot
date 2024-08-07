@@ -28,6 +28,7 @@ const (
 	CheckInterval     = time.Second * 1
 	SchemeRepoOwner   = "TGScheme"
 	SchemeRepoName    = "Schema"
+	ServiceName       = "tl-extractor-service"
 )
 
 // Paths
