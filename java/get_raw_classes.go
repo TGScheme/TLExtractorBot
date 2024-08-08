@@ -10,11 +10,11 @@ import (
 )
 
 func GetRawClasses() ([]*types.RawClass, error) {
-	dir, err := io.GetFiles(path.Join(consts.BasePath, consts.TempSources))
+	dir, err := io.GetFiles(path.Join(consts.EnvFolder, consts.TempSources))
 	if err != nil {
 		return nil, err
 	}
-	newDir, err := io.GetFiles(path.Join(consts.BasePath, consts.TempSources, "tl"))
+	newDir, err := io.GetFiles(path.Join(consts.EnvFolder, consts.TempSources, "tl"))
 	if err != nil {
 		return nil, err
 	}

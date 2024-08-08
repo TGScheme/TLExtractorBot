@@ -9,7 +9,7 @@ import (
 )
 
 func ExtractLayer() (int, error) {
-	readFile, err := os.ReadFile(path.Join(consts.BasePath, consts.TempSources, "ConnectionsManager.java"))
+	readFile, err := os.ReadFile(path.Join(consts.EnvFolder, consts.TempSources, "ConnectionsManager.java"))
 	if err != nil {
 		return -1, err
 	}

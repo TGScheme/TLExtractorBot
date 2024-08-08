@@ -12,7 +12,7 @@ import (
 )
 
 func CheckPackages(githubClient *github.Context) error {
-	if err := os.MkdirAll(path.Join(consts.BasePath, consts.PackagesFolder), os.ModePerm); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(path.Join(consts.EnvFolder, consts.PackagesFolder), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
 	var requirements []types.PackageInfo
@@ -38,7 +38,7 @@ func CheckPackages(githubClient *github.Context) error {
 		}
 		for _, p := range downloadPackages {
 			fmt.Println(fmt.Sprintf("Collecting %s==%s", p.Name, p.Version))
-			if err := download(p); err != nil {
+			if err = download(p); err != nil {
 				return err
 			}
 		}

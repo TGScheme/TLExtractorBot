@@ -9,7 +9,7 @@ import (
 )
 
 func installedPackages() ([]types.PackageInfo, error) {
-	dir, err := os.ReadDir(path.Join(consts.BasePath, consts.PackagesFolder))
+	dir, err := os.ReadDir(path.Join(consts.EnvFolder, consts.PackagesFolder))
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func installedPackages() ([]types.PackageInfo, error) {
 				packages = append(packages, types.PackageInfo{
 					Name:    dataInfo[0],
 					Version: dataInfo[1],
-					Path:    path.Join(consts.BasePath, consts.PackagesFolder, d.Name()),
+					Path:    path.Join(consts.EnvFolder, consts.PackagesFolder, d.Name()),
 				})
 			}
 		}

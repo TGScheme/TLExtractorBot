@@ -23,7 +23,7 @@ type storage struct {
 }
 
 func (c storage) Commit() error {
-	return commit(path.Join(consts.BasePath, consts.StorageFolder), c)
+	return commit(path.Join(consts.EnvFolder, consts.StorageFolder), c)
 }
 
 type credentials struct {
@@ -34,7 +34,7 @@ type credentials struct {
 }
 
 func (c credentials) Commit() error {
-	return commit(path.Join(consts.BasePath, consts.CredentialsFolder), c)
+	return commit(path.Join(consts.EnvFolder, consts.CredentialsFolder), c)
 }
 
 func commit(path string, data any) error {
@@ -49,12 +49,12 @@ func commit(path string, data any) error {
 }
 
 func LoadConfigs() error {
-	if err := os.MkdirAll(path.Join(consts.BasePath, consts.EnvFolder), os.ModePerm); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(consts.EnvFolder, os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	file, _ := os.ReadFile(path.Join(consts.BasePath, consts.StorageFolder))
+	file, _ := os.ReadFile(path.Join(consts.EnvFolder, consts.StorageFolder))
 	_ = json.Unmarshal(file, &LocalStorage)
-	file, _ = os.ReadFile(path.Join(consts.BasePath, consts.CredentialsFolder))
+	file, _ = os.ReadFile(path.Join(consts.EnvFolder, consts.CredentialsFolder))
 	_ = json.Unmarshal(file, &CredentialsStorage)
 	return nil
 }

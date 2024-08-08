@@ -18,7 +18,7 @@ func LoadShellFlags() {
 		if strings.Contains(arg, "--") {
 			name := arg[2:]
 			if name == "config" && i+1 < len(os.Args) && !strings.Contains(os.Args[i+1], "--") {
-				consts.BasePath = os.Args[i+1]
+				consts.EnvFolder = os.Args[i+1]
 			} else {
 				ShellFlags = append(ShellFlags, name)
 			}

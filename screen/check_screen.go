@@ -15,7 +15,7 @@ import (
 
 func CheckScreen() (bool, error) {
 	currPath, _ := filepath.Abs(os.Args[0])
-	fullTempBin, _ := filepath.Abs(path.Join(consts.BasePath, consts.TempBins))
+	fullTempBin, _ := filepath.Abs(path.Join(consts.EnvFolder, consts.TempBins))
 	isScreen := path.Dir(currPath) == fullTempBin
 	action := "started"
 	if !isScreen && !slices.Contains(utils.ShellFlags, "debug") && !utils.IsWindows() {
@@ -51,10 +51,10 @@ func CheckScreen() (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		if err = os.MkdirAll(path.Join(consts.BasePath, consts.TempBins), os.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
+		if err = os.MkdirAll(path.Join(consts.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
 			return false, err
 		}
-		filePath := path.Join(consts.BasePath, consts.TempBins, fmt.Sprintf("exc%s", path.Ext(path.Base(os.Args[0]))))
+		filePath := path.Join(consts.EnvFolder, consts.TempBins, fmt.Sprintf("exc%s", path.Ext(path.Base(os.Args[0]))))
 		if err = os.WriteFile(filePath, file, os.ModePerm); err != nil {
 			return false, err
 		}

@@ -20,7 +20,6 @@ const (
 
 // Constants
 const (
-	EnvFolder         = ".env"
 	Developer         = "drklo-2kb-ghpo"
 	AppName           = "telegram-beta-2"
 	Distribution      = "all-users-of-telegram-beta-2"
@@ -33,12 +32,12 @@ const (
 
 // Paths
 var (
-	BasePath          = "./"
-	CredentialsFolder = path.Join(EnvFolder, "credentials.json")
-	StorageFolder     = path.Join(EnvFolder, "storage.json")
-	PackagesFolder    = path.Join(EnvFolder, "packages")
-	TempFolder        = path.Join(EnvFolder, "temp")
-	GithubPem         = path.Join(EnvFolder, "github.pem")
+	EnvFolder         = ".env"
+	CredentialsFolder = "credentials.json"
+	StorageFolder     = "storage.json"
+	PackagesFolder    = "packages"
+	TempFolder        = "temp"
+	GithubPem         = "github.pem"
 	TempBins          = path.Join(TempFolder, "bins")
 	TempPackages      = path.Join(TempFolder, "packages")
 	TempApk           = path.Join(TempBins, "telegram.apk")
