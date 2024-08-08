@@ -25,9 +25,13 @@ const (
 	Distribution      = "all-users-of-telegram-beta-2"
 	UpdateMessageRate = time.Second * 3
 	CheckInterval     = time.Second * 1
-	SchemeRepoOwner   = "TGScheme"
-	SchemeRepoName    = "Schema"
 	ServiceName       = "tl-extractor-service"
+)
+
+// Github
+var (
+	SchemeRepoOwner = "TGScheme"
+	SchemeRepoName  = "Schema"
 )
 
 // Paths
