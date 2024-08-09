@@ -20,7 +20,6 @@ type storage struct {
 	PreviewLayer *types.TLFullScheme `json:"preview_layer,omitempty"`
 	BannerURL    string              `json:"banner_url"`
 	RecentLayers []int               `json:"recent_layers"`
-	ScreenPid    string              `json:"screen_name"`
 	BotName      string              `json:"bot_name"`
 }
 

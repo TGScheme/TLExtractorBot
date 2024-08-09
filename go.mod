@@ -15,6 +15,7 @@ require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/kardianos/service v1.2.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect

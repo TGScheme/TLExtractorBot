@@ -10,6 +10,7 @@ import (
 	"TLExtractor/telegram/telegraph/types"
 	"encoding/json"
 	"fmt"
+	"github.com/kardianos/service"
 	"net/url"
 	"slices"
 	"strings"
@@ -27,6 +28,9 @@ func init() {
 		environment.LocalStorage.Commit()
 	}
 	if len(environment.CredentialsStorage.TelegraphToken) == 0 {
+		if !service.Interactive() {
+			logging.Fatal("Telegraph token is required")
+		}
 		fmt.Print("Do you have a telegraph token? (y/n): ")
 		var answer string
 		_ = io.Scanln(&answer)
@@ -34,6 +38,9 @@ func init() {
 	}
 	for {
 		if len(environment.CredentialsStorage.TelegraphToken) == 0 {
+			if !service.Interactive() {
+				logging.Fatal("Telegraph token is invalid")
+			}
 			if haveToken {
 				fmt.Print("Enter telegraph token: ")
 				_ = io.Scanln(&environment.CredentialsStorage.TelegraphToken)

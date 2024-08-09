@@ -11,6 +11,7 @@ import (
 	"github.com/GoBotApiOfficial/gobotapi/logger"
 	"github.com/GoBotApiOfficial/gobotapi/methods"
 	"github.com/GoBotApiOfficial/gobotapi/types"
+	"github.com/kardianos/service"
 	"strconv"
 	"strings"
 )
@@ -20,6 +21,9 @@ func init() {
 	var bot *gobotapi.PollingClient
 	for {
 		if len(environment.CredentialsStorage.BotToken) == 0 {
+			if !service.Interactive() {
+				logging.Fatal("Bot token is required")
+			}
 			fmt.Print("Enter bot token: ")
 			_ = io.Scanln(&environment.CredentialsStorage.BotToken)
 		}
@@ -38,6 +42,9 @@ func init() {
 	channelID := strconv.Itoa(int(environment.LocalStorage.ChannelID))
 	for {
 		if environment.LocalStorage.ChannelID == 0 {
+			if !service.Interactive() {
+				logging.Fatal("Channel ID is required")
+			}
 			fmt.Print("Enter channel ID or username: ")
 			_ = io.Scanln(&channelID)
 			if !strings.HasPrefix(channelID, "@") {
