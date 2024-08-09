@@ -133,7 +133,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 				}
 				parameter.Name = fixParamName(parameter.Name)
 				params = append(params, parameter)
-			} else if fastCheck.MatchString(line.Line) && slices.Contains(environment.ShellFlags, "debug") {
+			} else if fastCheck.MatchString(line.Line) && environment.Debug {
 				logging.Debug("Fast check:", line.Line, class.FullName())
 			}
 		}

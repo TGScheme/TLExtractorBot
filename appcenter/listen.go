@@ -31,7 +31,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 			if err != nil {
 				logging.Fatal(err)
 			}
-			if slices.Contains(environment.ShellFlags, "debug") {
+			if environment.Debug {
 				break
 			}
 			environment.LocalStorage.LastID = info.ID

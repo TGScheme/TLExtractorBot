@@ -129,7 +129,7 @@ func main() {
 				return err
 			}
 		}
-		if !slices.Contains(environment.ShellFlags, "debug") {
+		if !environment.Debug {
 			if len(environment.LocalStorage.RecentLayers) == 0 {
 				environment.LocalStorage.StableLayer = environment.LocalStorage.PreviewLayer
 			}
