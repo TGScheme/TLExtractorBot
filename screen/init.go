@@ -2,37 +2,40 @@ package screen
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/io"
-	"TLExtractor/utils"
+	"TLExtractor/logging"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 )
 
-func CheckScreen() (bool, error) {
+func init() {
 	currPath, _ := filepath.Abs(os.Args[0])
 	fullTempBin, _ := filepath.Abs(path.Join(consts.EnvFolder, consts.TempBins))
 	isScreen := path.Dir(currPath) == fullTempBin
 	action := "started"
-	if !isScreen && !slices.Contains(utils.ShellFlags, "debug") && !utils.IsWindows() {
-		if slices.Contains(utils.ShellFlags, "kill") {
+	if !isScreen && !slices.Contains(environment.ShellFlags, "debug") && runtime.GOOS != "windows" {
+		if slices.Contains(environment.ShellFlags, "kill") {
 			if isRunning() {
 				if err := killScreen(); err != nil {
-					return false, err
+					log.Fatal(err)
 				}
-				fmt.Println("Service killed")
+				logging.Info("Service killed")
 			} else {
-				fmt.Println("Service is not running")
+				logging.Error("Service is not running")
 			}
-			return true, nil
+			os.Exit(0)
 		}
 		if isRunning() {
 			var answer string
-			if slices.Contains(utils.ShellFlags, "skip") {
+			if slices.Contains(environment.ShellFlags, "skip") {
 				answer = "n"
 			} else {
 				fmt.Print("Service is already running, do you want to restart it? (y/n): ")
@@ -41,29 +44,28 @@ func CheckScreen() (bool, error) {
 			if slices.Contains([]string{"y", "yes"}, strings.ToLower(answer)) {
 				action = "restarted"
 				if err := killScreen(); err != nil {
-					return false, err
+					log.Fatal(err)
 				}
 			} else {
-				return true, nil
+				os.Exit(0)
 			}
 		}
 		file, err := os.ReadFile(currPath)
 		if err != nil {
-			return false, err
+			log.Fatal(err)
 		}
 		if err = os.MkdirAll(path.Join(consts.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
-			return false, err
+			log.Fatal(err)
 		}
 		filePath := path.Join(consts.EnvFolder, consts.TempBins, fmt.Sprintf("exc%s", path.Ext(path.Base(os.Args[0]))))
 		if err = os.WriteFile(filePath, file, os.ModePerm); err != nil {
-			return false, err
+			log.Fatal(err)
 		}
 		pid, err := newScreen(filePath)
 		if err != nil {
-			return false, err
+			log.Fatal(err)
 		}
-		fmt.Println(fmt.Sprintf("Service %s successfully with PID:", action), pid)
-		return true, nil
+		logging.Info("screen:", fmt.Sprintf("Service %s successfully with PID:", action), pid)
+		os.Exit(0)
 	}
-	return false, nil
 }

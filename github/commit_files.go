@@ -5,7 +5,7 @@ import (
 	"github.com/google/go-github/v62/github"
 )
 
-func (ctx *Context) commitsFiles(files map[string]string, commitMessage string) (map[string]string, error) {
+func (ctx *clientContext) commitsFiles(files map[string]string, commitMessage string) (map[string]string, error) {
 	_, contents, resp, err := ctx.client.Repositories.GetContents(ctx.ctx, consts.SchemeRepoOwner, consts.SchemeRepoName, ".", nil)
 	if err != nil && (resp == nil || resp.StatusCode != 404) {
 		return nil, err

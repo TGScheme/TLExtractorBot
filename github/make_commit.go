@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func (ctx *Context) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs schemeTypes.DifferenceStats, commitMessage string) (map[string]string, error) {
+func (ctx *clientContext) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs schemeTypes.DifferenceStats, commitMessage string) (map[string]string, error) {
 	commitFiles := make(map[string]string)
 	if diffs.MainApi.Total > 0 {
 		commitFiles["main_api.tl"] = scheme.ToString(fullScheme.MainApi, fullScheme.Layer, true)

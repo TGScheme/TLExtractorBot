@@ -5,7 +5,9 @@ import (
 	"github.com/google/go-github/v62/github"
 )
 
-type Context struct {
+var Client *clientContext
+
+type clientContext struct {
 	ctx    context.Context
 	client *github.Client
 }

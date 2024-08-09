@@ -2,14 +2,14 @@ package telegraph
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/http"
 	"TLExtractor/telegram/telegraph/types"
-	"TLExtractor/utils"
 	"encoding/json"
 	"fmt"
 )
 
-func (ctx *Context) CreatePage(title string, html string) (string, error) {
+func (ctx *context) CreatePage(title string, html string) (string, error) {
 	dom, err := parseHtml(html)
 	if err != nil {
 		return "", err
@@ -18,7 +18,7 @@ func (ctx *Context) CreatePage(title string, html string) (string, error) {
 		types.CreatePageRequest{
 			AuthorName:  ctx.accountInfo.Result.AuthorName,
 			AuthorURL:   ctx.accountInfo.Result.AuthorURL,
-			AccessToken: utils.CredentialsStorage.TelegraphToken,
+			AccessToken: environment.CredentialsStorage.TelegraphToken,
 			Title:       title,
 			Content:     dom,
 		},

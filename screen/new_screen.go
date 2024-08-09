@@ -2,7 +2,7 @@ package screen
 
 import (
 	"TLExtractor/consts"
-	"TLExtractor/utils"
+	"TLExtractor/environment"
 	"fmt"
 	"os/exec"
 )
@@ -23,8 +23,9 @@ func newScreen(execPath string) (string, error) {
 	}
 	for _, screenInfo := range activeScreens {
 		if screenInfo.Name == consts.ServiceName {
-			utils.LocalStorage.ScreenPid = screenInfo.PID
-			return screenInfo.PID, utils.LocalStorage.Commit()
+			environment.LocalStorage.ScreenPid = screenInfo.PID
+			environment.LocalStorage.Commit()
+			return screenInfo.PID, nil
 		}
 	}
 	return "", fmt.Errorf("unable to find screen pid")

@@ -4,57 +4,25 @@ import (
 	"TLExtractor/android"
 	"TLExtractor/appcenter"
 	"TLExtractor/appcenter/types"
+	"TLExtractor/environment"
 	"TLExtractor/github"
 	"TLExtractor/java/jadx"
-	"TLExtractor/resources"
-	"TLExtractor/screen"
+	"TLExtractor/logging"
+	_ "TLExtractor/screen"
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
 	"TLExtractor/telegram/telegraph"
 	"TLExtractor/utils"
-	"TLExtractor/utils/package_manager"
-	"embed"
+	_ "TLExtractor/utils/package_manager"
 	"fmt"
 	"slices"
 	"time"
 )
 
-//go:embed templates
-var templatesFolder embed.FS
-
 func main() {
-	utils.LoadShellFlags()
-	if err := resources.Load(templatesFolder); err != nil {
-		utils.CrashLog(err, true)
-	}
-	if err := utils.LoadConfigs(); err != nil {
-		utils.CrashLog(err, true)
-	}
-	telegraphClient, err := telegraph.Login()
-	if err != nil {
-		utils.CrashLog(err, true)
-	}
-	githubClient, err := github.Login()
-	if err != nil {
-		utils.CrashLog(err, true)
-	}
-	client, err := bot.NewClient()
-	if err != nil {
-		utils.CrashLog(err, true)
-	}
-	if err = package_manager.CheckPackages(githubClient); err != nil {
-		utils.CrashLog(err, true)
-	}
-	startingScreen, err := screen.CheckScreen()
-	if err != nil {
-		utils.CrashLog(err, true)
-	}
-	if startingScreen {
-		return
-	}
 	appcenter.Listen(func(update types.UpdateInfo) error {
-		if err = client.UpdateStatus(
-			resources.Format(
+		if err := bot.Client.UpdateStatus(
+			environment.FormatVar(
 				"message",
 				map[string]any{
 					"update":   update,
@@ -67,12 +35,12 @@ func main() {
 			return err
 		}
 		startTime := time.Now()
-		if err = jadx.Decompile(func(percentage int64) {
+		if err := jadx.Decompile(func(percentage int64) {
 			if percentage == 100 {
 				return
 			}
-			if err = client.UpdateStatus(
-				resources.Format(
+			if err := bot.Client.UpdateStatus(
+				environment.FormatVar(
 					"message",
 					map[string]any{
 						"update":   update,
@@ -82,7 +50,7 @@ func main() {
 				false,
 				false,
 			); err != nil {
-				utils.CrashLog(err, true)
+				logging.Fatal(err)
 			}
 		}); err != nil {
 			return err
@@ -92,9 +60,9 @@ func main() {
 		if err != nil {
 			return err
 		}
-		if differences := scheme.GetDiffs(utils.LocalStorage.PreviewLayer, fullScheme); differences != nil {
+		if differences := scheme.GetDiffs(environment.LocalStorage.PreviewLayer, fullScheme); differences != nil {
 			stats := scheme.GetStats(differences)
-			commitUrls, err := githubClient.MakeCommit(
+			commitUrls, err := github.Client.MakeCommit(
 				fullScheme,
 				stats,
 				fmt.Sprintf("Updated to Layer %d", fullScheme.Layer),
@@ -103,18 +71,18 @@ func main() {
 				return err
 			}
 			stableDiffs := scheme.GetDiffs(
-				utils.LocalStorage.StableLayer,
+				environment.LocalStorage.StableLayer,
 				fullScheme,
 			)
-			url, err := telegraphClient.CreatePage(
+			url, err := telegraph.Client.CreatePage(
 				fmt.Sprintf("Layer %d Preview", fullScheme.Layer),
-				resources.Format(
+				environment.FormatVar(
 					"changelogs",
 					map[string]any{
 						"differences": differences,
 						"stats":       stats,
 						"commit_urls": commitUrls,
-						"banner_url":  utils.LocalStorage.BannerURL,
+						"banner_url":  environment.LocalStorage.BannerURL,
 						"main_scheme": scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
 						"e2e_scheme":  scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
 					},
@@ -123,8 +91,8 @@ func main() {
 			if err != nil {
 				return err
 			}
-			if err = client.UpdateStatus(
-				resources.Format(
+			if err = bot.Client.UpdateStatus(
+				environment.FormatVar(
 					"message",
 					map[string]any{
 						"update": update,
@@ -140,25 +108,23 @@ func main() {
 				return err
 			}
 		} else {
-			if err = client.UpdateStatus("", false, false); err != nil {
+			if err = bot.Client.UpdateStatus("", false, false); err != nil {
 				return err
 			}
 		}
-		if !slices.Contains(utils.ShellFlags, "debug") {
-			if len(utils.LocalStorage.RecentLayers) == 0 {
-				utils.LocalStorage.StableLayer = utils.LocalStorage.PreviewLayer
+		if !slices.Contains(environment.ShellFlags, "debug") {
+			if len(environment.LocalStorage.RecentLayers) == 0 {
+				environment.LocalStorage.StableLayer = environment.LocalStorage.PreviewLayer
 			}
-			if !slices.Contains(utils.LocalStorage.RecentLayers, fullScheme.Layer) {
-				utils.LocalStorage.RecentLayers = append(utils.LocalStorage.RecentLayers, fullScheme.Layer)
+			if !slices.Contains(environment.LocalStorage.RecentLayers, fullScheme.Layer) {
+				environment.LocalStorage.RecentLayers = append(environment.LocalStorage.RecentLayers, fullScheme.Layer)
 			}
-			if len(utils.LocalStorage.RecentLayers) > 1 {
-				utils.LocalStorage.RecentLayers = utils.LocalStorage.RecentLayers[1:]
-				utils.LocalStorage.StableLayer = utils.LocalStorage.PreviewLayer
+			if len(environment.LocalStorage.RecentLayers) > 1 {
+				environment.LocalStorage.RecentLayers = environment.LocalStorage.RecentLayers[1:]
+				environment.LocalStorage.StableLayer = environment.LocalStorage.PreviewLayer
 			}
-			utils.LocalStorage.PreviewLayer = fullScheme
-			if err = utils.LocalStorage.Commit(); err != nil {
-				return err
-			}
+			environment.LocalStorage.PreviewLayer = fullScheme
+			environment.LocalStorage.Commit()
 		}
 		return nil
 	})

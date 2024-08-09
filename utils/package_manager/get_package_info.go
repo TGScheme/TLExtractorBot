@@ -7,8 +7,8 @@ import (
 	"regexp"
 )
 
-func getPackageInfo(githubClient *github.Context, info types2.RequireInfo) (*types2.PackageInfo, error) {
-	release, err := githubClient.GetLastRelease(info.RepoOwner(), info.RepoName())
+func getPackageInfo(info types2.RequireInfo) (*types2.PackageInfo, error) {
+	release, err := github.Client.GetLastRelease(info.RepoOwner(), info.RepoName())
 	if err != nil {
 		return nil, err
 	}

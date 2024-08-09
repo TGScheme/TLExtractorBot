@@ -2,33 +2,33 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
-	"TLExtractor/github"
-	"TLExtractor/utils"
+	"TLExtractor/logging"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 )
 
-func CheckPackages(githubClient *github.Context) error {
+func init() {
 	if err := os.MkdirAll(path.Join(consts.EnvFolder, consts.PackagesFolder), os.ModePerm); err != nil && !os.IsExist(err) {
-		return err
+		logging.Fatal(err)
 	}
 	var requirements []types.PackageInfo
 	for _, p := range consts.Requirements {
-		if p.OnlyWindows && !utils.IsWindows() {
+		if p.OnlyWindows && runtime.GOOS != "windows" {
 			continue
 		}
-		packageInfo, err := getPackageInfo(githubClient, p)
+		packageInfo, err := getPackageInfo(p)
 		if err != nil {
-			return err
+			logging.Fatal(err)
 		}
 		requirements = append(requirements, *packageInfo)
 	}
 	localPackages, err := installedPackages()
 	if err != nil {
-		return err
+		logging.Fatal(err)
 	}
 	downloadPackages := comparePackages(localPackages, requirements)
 	if len(downloadPackages) > 0 {
@@ -39,15 +39,14 @@ func CheckPackages(githubClient *github.Context) error {
 		for _, p := range downloadPackages {
 			fmt.Println(fmt.Sprintf("Collecting %s==%s", p.Name, p.Version))
 			if err = download(p); err != nil {
-				return err
+				logging.Fatal(err)
 			}
 		}
 		fmt.Println("Installing collected packages: " + strings.Join(missingPackages, " "))
 		for _, p := range downloadPackages {
-			if err := install(p); err != nil {
-				return err
+			if err = install(p); err != nil {
+				logging.Fatal(err)
 			}
 		}
 	}
-	return nil
 }

@@ -2,8 +2,9 @@ package bot
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/io"
-	"TLExtractor/utils"
+	"TLExtractor/logging"
 	"errors"
 	"fmt"
 	"github.com/GoBotApiOfficial/gobotapi"
@@ -14,31 +15,29 @@ import (
 	"strings"
 )
 
-func NewClient() (*Context, error) {
-	var ctx Context
+func init() {
+	Client = &context{}
 	var bot *gobotapi.PollingClient
 	for {
-		if len(utils.CredentialsStorage.BotToken) == 0 {
+		if len(environment.CredentialsStorage.BotToken) == 0 {
 			fmt.Print("Enter bot token: ")
-			_ = io.Scanln(&utils.CredentialsStorage.BotToken)
+			_ = io.Scanln(&environment.CredentialsStorage.BotToken)
 		}
-		bot = gobotapi.NewClient(utils.CredentialsStorage.BotToken)
+		bot = gobotapi.NewClient(environment.CredentialsStorage.BotToken)
 		bot.NoUpdates = true
 		bot.LoggingLevel = logger.Silent
 		_ = bot.Start()
 		if _, err := bot.Invoke(&methods.GetMe{}); err != nil {
-			utils.CredentialsStorage.BotToken = ""
-			utils.CrashLog(consts.InvalidToken, false)
+			environment.CredentialsStorage.BotToken = ""
+			logging.Error(consts.InvalidToken)
 			continue
 		}
 		break
 	}
-	if err := utils.CredentialsStorage.Commit(); err != nil {
-		return nil, err
-	}
-	channelID := strconv.Itoa(int(utils.LocalStorage.ChannelID))
+	environment.CredentialsStorage.Commit()
+	channelID := strconv.Itoa(int(environment.LocalStorage.ChannelID))
 	for {
-		if utils.LocalStorage.ChannelID == 0 {
+		if environment.LocalStorage.ChannelID == 0 {
 			fmt.Print("Enter channel ID or username: ")
 			_ = io.Scanln(&channelID)
 			if !strings.HasPrefix(channelID, "@") {
@@ -53,16 +52,13 @@ func NewClient() (*Context, error) {
 			},
 		)
 		if err != nil {
-			utils.LocalStorage.ChannelID = 0
-			utils.CrashLog(errors.New("channel not found"), false)
+			environment.LocalStorage.ChannelID = 0
+			logging.Error(errors.New("channel not found"))
 			continue
 		}
-		utils.LocalStorage.ChannelID = result.Result.(types.ChatFullInfo).ID
+		environment.LocalStorage.ChannelID = result.Result.(types.ChatFullInfo).ID
 		break
 	}
-	if err := utils.LocalStorage.Commit(); err != nil {
-		return nil, err
-	}
-	ctx.client = bot
-	return &ctx, nil
+	environment.LocalStorage.Commit()
+	Client.client = bot
 }

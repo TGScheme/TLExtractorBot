@@ -2,8 +2,9 @@ package github
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/io"
-	"TLExtractor/utils"
+	"TLExtractor/logging"
 	"context"
 	"fmt"
 	"github.com/bradleyfalzon/ghinstallation/v2"
@@ -14,8 +15,8 @@ import (
 	"strings"
 )
 
-func Login() (*Context, error) {
-	ctx := &Context{
+func init() {
+	Client = &clientContext{
 		ctx: context.Background(),
 	}
 	for {
@@ -26,50 +27,47 @@ func Login() (*Context, error) {
 			_ = io.Scanln(&githubPemPath)
 			file, err = os.ReadFile(strings.TrimSpace(githubPemPath))
 			if err != nil {
-				utils.CrashLog(fmt.Errorf("could not read file: %s", err), false)
+				logging.Error(fmt.Errorf("could not read file: %s", err))
 				continue
 			}
 		} else {
 			file, err = os.ReadFile(path.Join(consts.EnvFolder, consts.GithubPem))
 			if err != nil {
-				return nil, err
+				logging.Fatal(err)
 			}
 		}
-		if utils.CredentialsStorage.ApplicationID == 0 {
+		if environment.CredentialsStorage.ApplicationID == 0 {
 			fmt.Print("Enter your Github App ID: ")
-			_ = io.Scanln(&utils.CredentialsStorage.ApplicationID)
+			_ = io.Scanln(&environment.CredentialsStorage.ApplicationID)
 		}
-		if utils.CredentialsStorage.InstallationID == 0 {
+		if environment.CredentialsStorage.InstallationID == 0 {
 			fmt.Print("Enter your Github Installation ID: ")
-			_ = io.Scanln(&utils.CredentialsStorage.InstallationID)
+			_ = io.Scanln(&environment.CredentialsStorage.InstallationID)
 		}
 
 		transport, err := ghinstallation.New(
 			http.DefaultTransport,
-			utils.CredentialsStorage.ApplicationID,
-			utils.CredentialsStorage.InstallationID,
+			environment.CredentialsStorage.ApplicationID,
+			environment.CredentialsStorage.InstallationID,
 			file,
 		)
 		if err != nil {
-			utils.CrashLog(err, false)
+			logging.Error(err)
 			_ = os.Remove(path.Join(consts.EnvFolder, consts.GithubPem))
 			continue
 		}
 		if err = os.WriteFile(path.Join(consts.EnvFolder, consts.GithubPem), file, 0644); err != nil {
-			return nil, err
+			logging.Fatal(err)
 		}
-		ctx.client = github.NewClient(&http.Client{Transport: transport})
-		if _, _, err = ctx.client.Users.Get(ctx.ctx, "octocat"); err != nil {
-			utils.CrashLog(err, false)
+		Client.client = github.NewClient(&http.Client{Transport: transport})
+		if _, _, err = Client.client.Users.Get(Client.ctx, "octocat"); err != nil {
+			logging.Error(err)
 			_ = os.Remove(path.Join(consts.EnvFolder, consts.GithubPem))
-			utils.CredentialsStorage.ApplicationID = 0
-			utils.CredentialsStorage.InstallationID = 0
+			environment.CredentialsStorage.ApplicationID = 0
+			environment.CredentialsStorage.InstallationID = 0
 			continue
 		}
-		if err = utils.CredentialsStorage.Commit(); err != nil {
-			return nil, err
-		}
+		environment.CredentialsStorage.Commit()
 		break
 	}
-	return ctx, nil
 }

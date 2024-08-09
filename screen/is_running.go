@@ -1,7 +1,7 @@
 package screen
 
 import (
-	"TLExtractor/utils"
+	"TLExtractor/environment"
 )
 
 func isRunning() bool {
@@ -10,7 +10,7 @@ func isRunning() bool {
 		return false
 	}
 	for _, screen := range screens {
-		if screen.PID == utils.LocalStorage.ScreenPid {
+		if screen.PID == environment.LocalStorage.ScreenPid {
 			return true
 		}
 	}

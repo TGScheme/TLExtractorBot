@@ -1,13 +1,13 @@
 package jadx
 
 import (
-	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager"
 	"path"
+	"runtime"
 )
 
 func javaExec() (string, error) {
-	if utils.IsWindows() {
+	if runtime.GOOS == "windows" {
 		pkgInfo, err := package_manager.FindPackage("jadx-gui")
 		if err != nil {
 			return "", err

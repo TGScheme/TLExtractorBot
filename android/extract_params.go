@@ -2,12 +2,12 @@ package android
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/java"
 	javaTypes "TLExtractor/java/types"
+	"TLExtractor/logging"
 	"TLExtractor/telegram/scheme/types"
-	"TLExtractor/utils"
 	"fmt"
-	"log"
 	"math"
 	"regexp"
 	"slices"
@@ -133,8 +133,8 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 				}
 				parameter.Name = fixParamName(parameter.Name)
 				params = append(params, parameter)
-			} else if fastCheck.MatchString(line.Line) && slices.Contains(utils.ShellFlags, "debug") {
-				log.Println("FAST CHECK: ", line.Line, class.FullName())
+			} else if fastCheck.MatchString(line.Line) && slices.Contains(environment.ShellFlags, "debug") {
+				logging.Debug("Fast check:", line.Line, class.FullName())
 			}
 		}
 		if pos > declarationPos && line.Nesting == 1 {

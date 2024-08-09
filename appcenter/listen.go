@@ -3,7 +3,8 @@ package appcenter
 import (
 	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
-	"TLExtractor/utils"
+	"TLExtractor/environment"
+	"TLExtractor/logging"
 	"slices"
 	"time"
 )
@@ -13,12 +14,12 @@ func Listen(listener func(update types.UpdateInfo) error) {
 		time.Sleep(consts.CheckInterval)
 		info, err := getAppInfo()
 		if err != nil {
-			utils.CrashLog(err, false)
+			logging.Error(err)
 			continue
 		}
-		if info.ID > utils.LocalStorage.LastID {
+		if info.ID > environment.LocalStorage.LastID {
 			if err = downloadApk(info); err != nil {
-				utils.CrashLog(err, false)
+				logging.Error(err)
 				continue
 			}
 			err := listener(
@@ -28,15 +29,13 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				},
 			)
 			if err != nil {
-				utils.CrashLog(err, true)
+				logging.Fatal(err)
 			}
-			if slices.Contains(utils.ShellFlags, "debug") {
+			if slices.Contains(environment.ShellFlags, "debug") {
 				break
 			}
-			utils.LocalStorage.LastID = info.ID
-			if err = utils.LocalStorage.Commit(); err != nil {
-				utils.CrashLog(err, true)
-			}
+			environment.LocalStorage.LastID = info.ID
+			environment.LocalStorage.Commit()
 		}
 	}
 }

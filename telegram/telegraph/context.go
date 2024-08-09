@@ -2,6 +2,8 @@ package telegraph
 
 import "TLExtractor/telegram/telegraph/types"
 
-type Context struct {
+var Client *context
+
+type context struct {
 	accountInfo types.AccountInfo
 }

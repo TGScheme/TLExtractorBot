@@ -4,6 +4,8 @@ import (
 	"github.com/GoBotApiOfficial/gobotapi"
 )
 
-type Context struct {
+var Client *context
+
+type context struct {
 	client *gobotapi.PollingClient
 }
