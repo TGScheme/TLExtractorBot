@@ -26,6 +26,7 @@ const (
 	UpdateMessageRate = time.Second * 3
 	CheckInterval     = time.Second * 1
 	ServiceName       = "tl-extractor-service"
+	DebugModeMessage  = "DEBUG MODE ENABLED"
 )
 
 // Github
@@ -61,16 +62,12 @@ var Requirements = []types.RequireInfo{
 	},
 }
 
-// Resources
-var (
-	Templates map[string]string
-	Resources map[string][]byte
-)
-
 // Regular Expressions
 var (
-	TLSchemeLineRgx = regexp.MustCompile("(\\S+)#(\\w+) *({\\S+})? *#* *\\[* *([^}=\\]]*) *]* = ([^;]+)")
-	OldLayers       = []*regexp.Regexp{
+	TLSchemeLineRgx    = regexp.MustCompile("(\\S+)#(\\w+) *({\\S+})? *#* *\\[* *([^}=\\]]*) *]* = ([^;]+)")
+	GetFunctionInfoRgx = regexp.MustCompile(`([^.]*/?\w+)\.([\w.]+)`)
+	LambdaNameRgx      = regexp.MustCompile(`\w+\.func([0-9]+)`)
+	OldLayers          = []*regexp.Regexp{
 		regexp.MustCompile("Old[0-9]*$"),
 		regexp.MustCompile("ToBeDeprecated$"),
 		regexp.MustCompile("^\\S+[^0-9p][0-9]$"),

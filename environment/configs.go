@@ -1,7 +1,8 @@
-package utils
+package environment
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/logging"
 	"TLExtractor/telegram/scheme/types"
 	"encoding/json"
 	"os"
@@ -22,8 +23,8 @@ type storage struct {
 	ScreenPid    string              `json:"screen_name"`
 }
 
-func (c storage) Commit() error {
-	return commit(path.Join(consts.EnvFolder, consts.StorageFolder), c)
+func (c storage) Commit() {
+	commit(path.Join(consts.EnvFolder, consts.StorageFolder), c)
 }
 
 type credentials struct {
@@ -33,28 +34,16 @@ type credentials struct {
 	InstallationID int64  `json:"installation_id"`
 }
 
-func (c credentials) Commit() error {
-	return commit(path.Join(consts.EnvFolder, consts.CredentialsFolder), c)
+func (c credentials) Commit() {
+	commit(path.Join(consts.EnvFolder, consts.CredentialsFolder), c)
 }
 
-func commit(path string, data any) error {
+func commit(path string, data any) {
 	marshal, err := json.Marshal(data)
 	if err != nil {
-		return err
+		logging.Fatal(err)
 	}
 	if err = os.WriteFile(path, marshal, os.ModePerm); err != nil {
-		return err
+		logging.Fatal(err)
 	}
-	return nil
-}
-
-func LoadConfigs() error {
-	if err := os.MkdirAll(consts.EnvFolder, os.ModePerm); err != nil && !os.IsExist(err) {
-		return err
-	}
-	file, _ := os.ReadFile(path.Join(consts.EnvFolder, consts.StorageFolder))
-	_ = json.Unmarshal(file, &LocalStorage)
-	file, _ = os.ReadFile(path.Join(consts.EnvFolder, consts.CredentialsFolder))
-	_ = json.Unmarshal(file, &CredentialsStorage)
-	return nil
 }

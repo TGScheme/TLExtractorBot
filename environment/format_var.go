@@ -1,13 +1,13 @@
-package resources
+package environment
 
 import (
-	"TLExtractor/consts"
+	"TLExtractor/assets"
 	"github.com/flosch/pongo2/v6"
 	"strings"
 )
 
-func Format(varName string, args map[string]any) string {
-	fromString, err := pongo2.FromString(consts.Templates[varName])
+func FormatVar(varName string, args map[string]any) string {
+	fromString, err := pongo2.FromString(assets.Templates[varName])
 	if err != nil {
 		return ""
 	}
