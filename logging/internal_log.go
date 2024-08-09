@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"TLExtractor/consts"
 	"TLExtractor/logging/types"
 	"TLExtractor/utils"
 	"fmt"
@@ -45,9 +46,6 @@ var (
 
 func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 	var errMessage string
-	if message == nil {
-		return
-	}
 	for _, x := range message {
 		switch x.(type) {
 		case error:
@@ -55,8 +53,14 @@ func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 		case string:
 			errMessage += x.(string) + " "
 		default:
+			if utils.IsNil(x) {
+				continue
+			}
 			errMessage += fmt.Sprintf("%v", message) + " "
 		}
+	}
+	if len(errMessage) == 0 {
+		return
 	}
 	errMessage = strings.TrimSpace(errMessage)
 	if levelInfo.Foreground == nil {
@@ -70,7 +74,20 @@ func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 	if fatal {
 		printFunc = log.Fatal
 	}
-	mainDetails, _ := getInfo(2)
+	var mainDetails *types.CallerInfo
+	startSkips := 2
+	for {
+		details, err := getInfo(startSkips)
+		if err == nil {
+			mainDetails = details
+			break
+		}
+		if startSkips > 10 {
+			break
+		}
+		startSkips++
+	}
+
 	matches := regexp.MustCompile(`^(([[:lower:]^:]{2,10}): )?([\S \n]+)`).FindStringSubmatch(errMessage)
 	class := utils.Capitalize(matches[2])
 	if len(class) == 0 {
@@ -81,16 +98,18 @@ func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 		classColor = mainColor
 	}
 	termWidth, _, _ := term.GetSize(0)
-	availableTagWidth := termWidth / 100 * TagWidth
-	TagSpaces := strings.Repeat(" ", int(math.Max(float64(termWidth/100*TagWidth-len(class)), 0)))
-	if len(class) > availableTagWidth {
-		class = class[:availableTagWidth-1] + "..."
+	termWidth = int(math.Max(float64(termWidth), consts.MinTermWidth))
+	availableTagWidth := int(math.Max(float64(termWidth/100*TagWidth)-3, 3))
+	TagSpaces := strings.Repeat(" ", int(math.Max(float64(availableTagWidth-len(class)), 0)))
+	if len(class) >= availableTagWidth {
+		class = class[:availableTagWidth-3] + "..."
 		TagSpaces = " "
 	}
-	availablePackageWidth := termWidth / 100 * PackageWidth
-	PackageSpaces := strings.Repeat(" ", int(math.Max(float64(termWidth/100*PackageWidth-len(mainDetails.PackageName)), 0)))
+	availablePackageWidth := int(math.Max(float64(termWidth/100*PackageWidth)-3, 3))
+	PackageSpaces := strings.Repeat(" ", int(math.Max(float64(availablePackageWidth-len(mainDetails.PackageName)), 0)))
 	if len(mainDetails.PackageName) > availablePackageWidth {
-		mainDetails.PackageName = mainDetails.PackageName[:availablePackageWidth-1] + "..."
+		mainDetails.PackageName = mainDetails.PackageName[:availablePackageWidth-3] + "..."
+		PackageSpaces = " "
 	}
 	totalIndent := FixedTimeStampWidth + len(class) + len(TagSpaces) + len(mainDetails.PackageName) + len(PackageSpaces) + 5
 	errMess := strings.Join(strings.Split(matches[3], "\n"), "\n"+strings.Repeat(" ", totalIndent))
@@ -104,7 +123,7 @@ func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 		textColor(utils.Capitalize(errMess)),
 	)
 	var lines string
-	skips := 1
+	skips := startSkips - 1
 	if fatal {
 		for {
 			skips++

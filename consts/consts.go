@@ -27,6 +27,7 @@ const (
 	CheckInterval     = time.Second * 1
 	ServiceName       = "tl-extractor-service"
 	DebugModeMessage  = "DEBUG MODE ENABLED"
+	MinTermWidth       = 120
 )
 
 // Github

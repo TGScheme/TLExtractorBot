@@ -22,9 +22,12 @@ func getInfo(skips int) (*types.CallerInfo, error) {
 	funcInfo := consts.GetFunctionInfoRgx.FindStringSubmatch(callerInfo.FuncName)
 	callerInfo.PackageName = strings.ReplaceAll(funcInfo[1], "/", ".")
 	callerInfo.FilePath = path.Join(path.Join(strings.Split(funcInfo[1], "/")[1:]...), path.Base(file))
-	callerInfo.FuncName = funcInfo[2]
+	callerInfo.FuncName = funcInfo[3]
 	if lambdaMatches := consts.LambdaNameRgx.FindAllStringSubmatch(callerInfo.FuncName, -1); len(lambdaMatches) > 0 {
-		lambdaDetails, _ := getInfo(skips + 2)
+		lambdaDetails, err := getInfo(skips + 2)
+		if err != nil {
+			return nil, err
+		}
 		numFunc, _ := strconv.Atoi(lambdaMatches[0][1])
 		callerInfo.FuncName = fmt.Sprintf("lambda$%s$%d", lambdaDetails.FuncName, numFunc-1)
 	}
