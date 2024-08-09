@@ -1,0 +1,9 @@
+{%- if online -%}
+<b>✅ Bot Back Online</b>
+{%- else -%}
+<b>❗️ Bot Currently Offline</b>
+
+<b>Additional Info</b>
+<b>• Last Uptime:</b> <code>{{ uptime }}</code>
+<b>• Exit Reason:</b> <code>{{ exit_reason }}</code>
+{%- endif -%}

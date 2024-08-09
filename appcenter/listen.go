@@ -5,7 +5,6 @@ import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
 	"TLExtractor/logging"
-	"slices"
 	"time"
 )
 
@@ -29,7 +28,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				},
 			)
 			if err != nil {
-				logging.Fatal(err)
+				panic(err)
 			}
 			if environment.Debug {
 				break

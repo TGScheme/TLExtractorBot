@@ -3,31 +3,24 @@ package bot
 import (
 	"TLExtractor/environment"
 	"TLExtractor/logging"
-	"fmt"
+	"TLExtractor/utils"
 	"github.com/GoBotApiOfficial/gobotapi/methods"
-	"github.com/GoBotApiOfficial/gobotapi/types"
+	"time"
 )
 
-func (ctx *context) UpdateUptime(online bool) {
-	if len(environment.LocalStorage.BotName) == 0 {
-		invoke, err := ctx.client.Invoke(
-			&methods.GetMyName{},
-		)
-		if err != nil {
-			logging.Fatal(err)
-		}
-		environment.LocalStorage.BotName = invoke.Result.(types.BotName).Name
-		environment.LocalStorage.Commit()
-	}
-	var status string
-	if online {
-		status = "ONLINE"
-	} else {
-		status = "OFFLINE"
-	}
+func (ctx *context) UpdateUptime(online bool, exitReason string) {
 	_, err := ctx.client.Invoke(
-		&methods.SetMyName{
-			Name: fmt.Sprintf("%s [%s]", environment.LocalStorage.BotName, status),
+		&methods.SendMessage{
+			ChatID: environment.LocalStorage.LogChatID,
+			Text: environment.FormatVar(
+				"uptime",
+				map[string]any{
+					"online":      online,
+					"uptime":      utils.FormatDuration(time.Since(environment.StartTime)),
+					"exit_reason": exitReason,
+				},
+			),
+			ParseMode: "html",
 		},
 	)
 	if err != nil {

@@ -66,6 +66,42 @@ func init() {
 		environment.LocalStorage.ChannelID = result.Result.(types.ChatFullInfo).ID
 		break
 	}
+	logChatId := strconv.Itoa(int(environment.LocalStorage.LogChatID))
+	for {
+		if environment.LocalStorage.LogChatID == 0 {
+			if !service.Interactive() {
+				logging.Fatal("Log chat ID is required")
+			}
+			fmt.Print("Enter log chat ID or username: ")
+			_ = io.Scanln(&logChatId)
+			if !strings.HasPrefix(logChatId, "@") {
+				if _, err := strconv.Atoi(logChatId); err != nil {
+					logChatId = "@" + logChatId
+				}
+			}
+		} else {
+			break
+		}
+		result, err := bot.Invoke(
+			&methods.SendMessage{
+				ChatID: logChatId,
+				Text:   "Checking log chat ID..",
+			},
+		)
+		if err != nil {
+			environment.LocalStorage.ChannelID = 0
+			logging.Error(errors.New("chat not found"))
+			continue
+		}
+		_, _ = bot.Invoke(
+			&methods.DeleteMessage{
+				ChatID:    environment.LocalStorage.LogChatID,
+				MessageID: result.Result.(types.Message).MessageID,
+			},
+		)
+		environment.LocalStorage.LogChatID = result.Result.(types.Message).Chat.ID
+		break
+	}
 	environment.LocalStorage.Commit()
 	Client.client = bot
 }

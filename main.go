@@ -8,35 +8,29 @@ import (
 	"TLExtractor/github"
 	"TLExtractor/java/jadx"
 	"TLExtractor/logging"
-	_ "TLExtractor/screen"
+	"TLExtractor/services"
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
 	"TLExtractor/telegram/telegraph"
 	"TLExtractor/utils"
 	_ "TLExtractor/utils/package_manager"
 	"fmt"
-	"os"
-	"os/signal"
 	"slices"
-	"syscall"
 	"time"
 )
 
-func init() {
-	bot.Client.UpdateUptime(true)
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT)
-	signal.Notify(c, syscall.SIGILL, syscall.SIGTRAP)
-	signal.Notify(c, syscall.SIGABRT, syscall.SIGBUS, syscall.SIGFPE)
-	go func() {
-		<-c
-		bot.Client.UpdateUptime(false)
-		os.Exit(0)
-	}()
+func main() {
+	services.Run(run)
 }
 
-func main() {
+func run() {
+	bot.Client.UpdateUptime(true, "")
+	defer func() {
+		if r := recover(); r != nil {
+			bot.Client.UpdateUptime(false, "panic")
+			logging.Fatal(r)
+		}
+	}()
 	appcenter.Listen(func(update types.UpdateInfo) error {
 		if err := bot.Client.UpdateStatus(
 			environment.FormatVar(
@@ -67,6 +61,7 @@ func main() {
 				false,
 				false,
 			); err != nil {
+				bot.Client.UpdateUptime(false, "panic")
 				logging.Fatal(err)
 			}
 		}); err != nil {

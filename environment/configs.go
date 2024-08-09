@@ -2,7 +2,6 @@ package environment
 
 import (
 	"TLExtractor/consts"
-	"TLExtractor/logging"
 	"TLExtractor/telegram/scheme/types"
 	"encoding/json"
 	"os"
@@ -15,12 +14,12 @@ var CredentialsStorage credentials
 type storage struct {
 	LastID       uint16              `json:"last_id"`
 	ChannelID    int64               `json:"channel_id"`
+	LogChatID    int64               `json:"log_chat_id"`
 	MessageId    int64               `json:"message_id"`
 	StableLayer  *types.TLFullScheme `json:"stable_layer,omitempty"`
 	PreviewLayer *types.TLFullScheme `json:"preview_layer,omitempty"`
 	BannerURL    string              `json:"banner_url"`
 	RecentLayers []int               `json:"recent_layers"`
-	BotName      string              `json:"bot_name"`
 }
 
 func (c storage) Commit() {
@@ -41,9 +40,9 @@ func (c credentials) Commit() {
 func commit(path string, data any) {
 	marshal, err := json.Marshal(data)
 	if err != nil {
-		logging.Fatal(err)
+		panic(err)
 	}
 	if err = os.WriteFile(path, marshal, os.ModePerm); err != nil {
-		logging.Fatal(err)
+		panic(err)
 	}
 }

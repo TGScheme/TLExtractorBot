@@ -20,13 +20,15 @@ const (
 
 // Constants
 const (
-	Developer         = "drklo-2kb-ghpo"
-	AppName           = "telegram-beta-2"
-	Distribution      = "all-users-of-telegram-beta-2"
-	UpdateMessageRate = time.Second * 3
-	CheckInterval     = time.Second * 1
-	ServiceName       = "tl-extractor-service"
-	DebugModeMessage  = "DEBUG MODE ENABLED"
+	Developer          = "drklo-2kb-ghpo"
+	AppName            = "telegram-beta-2"
+	Distribution       = "all-users-of-telegram-beta-2"
+	ServiceDisplayName = "TL Extractor Service"
+	ServiceDescription = "Automatically fetches, decompile and commits new Telegram Android TL schema changes."
+	ServiceName        = "tl-extractor"
+	DebugModeMessage   = "DEBUG MODE ENABLED"
+	UpdateMessageRate  = time.Second * 3
+	CheckInterval      = time.Second * 1
 	MinTermWidth       = 120
 )
 
