@@ -1,33 +1,40 @@
-package resources
+package assets
 
 import (
-	"TLExtractor/consts"
+	"TLExtractor/logging"
 	"embed"
 	"fmt"
 	"github.com/flosch/pongo2/v6"
-	"path"
 	"path/filepath"
 	"strings"
 )
 
-func Load(langFolder embed.FS) error {
-	files, _ := langFolder.ReadDir("templates")
-	consts.Templates = make(map[string]string)
-	consts.Resources = make(map[string][]byte)
+var (
+	Templates map[string]string
+	Resources map[string][]byte
+)
+
+//go:embed *.gohtml *.png
+var assetsFolder embed.FS
+
+func init() {
+	Templates = make(map[string]string)
+	Resources = make(map[string][]byte)
+	files, _ := assetsFolder.ReadDir(".")
 	for _, file := range files {
 		ext := filepath.Ext(file.Name())
-		readFile, err := langFolder.ReadFile(path.Join("templates", file.Name()))
+		readFile, err := assetsFolder.ReadFile(file.Name())
 		if err != nil {
-			return err
+			logging.Fatal(err)
 		}
 		if ext == ".gohtml" {
 			fileName := file.Name()[:len(file.Name())-len(ext)]
-			consts.Templates[fileName] = string(readFile)
+			Templates[fileName] = string(readFile)
 		} else {
-			consts.Resources[file.Name()] = readFile
+			Resources[file.Name()] = readFile
 		}
 	}
-	for key, value := range consts.Templates {
+	for key, value := range Templates {
 		var foundImport, foundImportType bool
 		var builtLine, builtText, importName string
 		for _, char := range value {
@@ -44,14 +51,14 @@ func Load(langFolder embed.FS) error {
 					foundImportType = !foundImportType
 					if !foundImportType {
 						if importName == key {
-							return fmt.Errorf("recursive import in %s.gohtml", key)
+							logging.Fatal(fmt.Errorf("recursive import in %s.gohtml", key))
 						}
-						if res, ok := consts.Templates[importName]; ok {
+						if res, ok := Templates[importName]; ok {
 							builtText += res
 							foundImport = false
 							importName = ""
 						} else {
-							return fmt.Errorf("import %s not found in %s.gohtml", importName, key)
+							logging.Fatal(fmt.Errorf("import %s not found in %s.gohtml", importName, key))
 						}
 					}
 				} else if foundImportType {
@@ -63,13 +70,12 @@ func Load(langFolder embed.FS) error {
 		}
 		builtText += builtLine
 		if foundImportType || foundImport {
-			return fmt.Errorf("import not closed in %s.gohtml", key)
+			logging.Fatal(fmt.Errorf("import not closed in %s.gohtml", key))
 		}
-		consts.Templates[key] = strings.TrimSpace(builtText)
-		_, err := pongo2.FromString(consts.Templates[key])
+		Templates[key] = strings.TrimSpace(builtText)
+		_, err := pongo2.FromString(Templates[key])
 		if err != nil {
-			return err
+			logging.Fatal(err)
 		}
 	}
-	return nil
 }
