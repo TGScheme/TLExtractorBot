@@ -1,0 +1,124 @@
+package logging
+
+import (
+	"TLExtractor/logging/types"
+	"TLExtractor/utils"
+	"fmt"
+	"github.com/fatih/color"
+	"log"
+	"regexp"
+	"strings"
+)
+
+var (
+	debugLevel = types.LogLevelInfo{
+		Icon:       'D',
+		Background: color.New(color.ResetBold, 48, 2, 47, 93, 119),
+		Foreground: color.New(color.ResetBold, 38, 2, 187, 187, 187),
+		TextColor:  color.New(color.Reset, 38, 2, 39, 153, 153),
+	}
+	infoLevel = types.LogLevelInfo{
+		Icon:       'I',
+		Background: color.New(color.ResetBold, 48, 2, 105, 135, 89),
+		Foreground: color.New(color.Bold, 38, 2, 233, 245, 230),
+		TextColor:  color.New(color.Reset, 38, 2, 171, 192, 34),
+	}
+	warnLevel = types.LogLevelInfo{
+		Icon:       'W',
+		Background: color.New(color.ResetBold, 48, 2, 187, 181, 39),
+		TextColor:  color.New(color.Reset, 38, 2, 187, 181, 39),
+	}
+	errorLevel = types.LogLevelInfo{
+		Icon:       'E',
+		Background: color.New(color.ResetBold, 48, 2, 207, 91, 86),
+		TextColor:  color.New(color.Reset, 38, 2, 207, 91, 86),
+	}
+)
+
+func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
+	var errMessage string
+	if message == nil {
+		return
+	}
+	for _, x := range message {
+		switch x.(type) {
+		case error:
+			errMessage += x.(error).Error() + " "
+		case string:
+			errMessage += x.(string) + " "
+		default:
+			errMessage += fmt.Sprintf("%v", message) + " "
+		}
+	}
+	errMessage = strings.TrimSpace(errMessage)
+	if levelInfo.Foreground == nil {
+		levelInfo.Foreground = color.New(color.Bold, 38, 2, 0, 0, 0)
+	}
+	textColor := levelInfo.TextColor.SprintFunc()
+	fileColor := color.New(color.Underline, 38, 2, 97, 175, 225).SprintFunc()
+	mainColor := color.New(color.Bold, 38, 2, 171, 145, 186).SprintFunc()
+	classColor := color.New(color.Bold, 38, 2, 98, 198, 183).SprintFunc()
+	printFunc := log.Println
+	if fatal {
+		printFunc = log.Fatal
+	}
+	mainDetails, _ := getInfo(2)
+	matches := regexp.MustCompile(`^(([[:lower:]^:]{2,10}): )?([\S \n]+)`).FindStringSubmatch(errMessage)
+	class := utils.Capitalize(matches[2])
+	if len(class) == 0 {
+		class = strings.Split(mainDetails.PackageName, ".")[0]
+	}
+	if class == "main" {
+		class = utils.Capitalize(class)
+		classColor = mainColor
+	}
+	totalIndent := len(class) + len(mainDetails.PackageName) + 18 + 10
+	errMess := strings.Join(strings.Split(matches[3], "\n"), "\n "+strings.Repeat(" ", totalIndent))
+	description := fmt.Sprintf(
+		" %s  %s  %s %s",
+		classColor(class),
+		mainDetails.PackageName,
+		levelInfo.Background.SprintFunc()(levelInfo.Foreground.SprintFunc()(fmt.Sprintf(" %c ", levelInfo.Icon))),
+		textColor(utils.Capitalize(errMess)),
+	)
+	var lines string
+	skips := 1
+	if fatal {
+		for {
+			skips++
+			subDetails, runtimeErr := getInfo(skips)
+			if runtimeErr != nil {
+				break
+			}
+			if mainDetails.PackageName != subDetails.PackageName {
+				subDetails.FuncName = subDetails.PackageName + "." + subDetails.FuncName
+			}
+			lines += fmt.Sprintf(
+				"\n%s%s%s%s",
+				strings.Repeat(" ", totalIndent),
+				strings.Repeat(" ", 3),
+				textColor(
+					fmt.Sprintf(
+						"at %s(%s",
+						subDetails.FuncName,
+						fileColor(
+							fmt.Sprintf(
+								"%s:%d",
+								subDetails.FileName,
+								subDetails.Line,
+							),
+						),
+					),
+				),
+				textColor(")"),
+			)
+		}
+	}
+	printFunc(
+		fmt.Sprintf(
+			"%s%s",
+			description,
+			lines,
+		),
+	)
+}
