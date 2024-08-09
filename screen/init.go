@@ -57,7 +57,7 @@ func init() {
 		if err = os.MkdirAll(path.Join(consts.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !errors.Is(err, os.ErrExist) {
 			log.Fatal(err)
 		}
-		filePath := path.Join(consts.EnvFolder, consts.TempBins, fmt.Sprintf("exc%s", path.Ext(path.Base(os.Args[0]))))
+		filePath := path.Join(consts.EnvFolder, consts.TempBins, fmt.Sprintf("exc%s", path.Ext(os.Args[0])))
 		if err = os.WriteFile(filePath, file, os.ModePerm); err != nil {
 			log.Fatal(err)
 		}
