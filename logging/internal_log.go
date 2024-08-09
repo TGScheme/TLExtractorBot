@@ -5,9 +5,17 @@ import (
 	"TLExtractor/utils"
 	"fmt"
 	"github.com/fatih/color"
+	"golang.org/x/term"
 	"log"
+	"math"
 	"regexp"
 	"strings"
+)
+
+const (
+	FixedTimeStampWidth = 19
+	TagWidth            = 8
+	PackageWidth        = 15
 )
 
 var (
@@ -72,12 +80,26 @@ func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 		class = utils.Capitalize(class)
 		classColor = mainColor
 	}
-	totalIndent := len(class) + len(mainDetails.PackageName) + 18 + 10
-	errMess := strings.Join(strings.Split(matches[3], "\n"), "\n "+strings.Repeat(" ", totalIndent))
+	termWidth, _, _ := term.GetSize(0)
+	availableTagWidth := termWidth / 100 * TagWidth
+	TagSpaces := strings.Repeat(" ", int(math.Max(float64(termWidth/100*TagWidth-len(class)), 0)))
+	if len(class) > availableTagWidth {
+		class = class[:availableTagWidth-1] + "..."
+		TagSpaces = " "
+	}
+	availablePackageWidth := termWidth / 100 * PackageWidth
+	PackageSpaces := strings.Repeat(" ", int(math.Max(float64(termWidth/100*PackageWidth-len(mainDetails.PackageName)), 0)))
+	if len(mainDetails.PackageName) > availablePackageWidth {
+		mainDetails.PackageName = mainDetails.PackageName[:availablePackageWidth-1] + "..."
+	}
+	totalIndent := FixedTimeStampWidth + len(class) + len(TagSpaces) + len(mainDetails.PackageName) + len(PackageSpaces) + 5
+	errMess := strings.Join(strings.Split(matches[3], "\n"), "\n"+strings.Repeat(" ", totalIndent))
 	description := fmt.Sprintf(
-		" %s  %s  %s %s",
+		"%s%s%s%s%s %s",
 		classColor(class),
+		TagSpaces,
 		mainDetails.PackageName,
+		PackageSpaces,
 		levelInfo.Background.SprintFunc()(levelInfo.Foreground.SprintFunc()(fmt.Sprintf(" %c ", levelInfo.Icon))),
 		textColor(utils.Capitalize(errMess)),
 	)
@@ -94,9 +116,8 @@ func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 				subDetails.FuncName = subDetails.PackageName + "." + subDetails.FuncName
 			}
 			lines += fmt.Sprintf(
-				"\n%s%s%s%s%s",
-				strings.Repeat(" ", totalIndent),
-				strings.Repeat(" ", 3),
+				"\n%s%s%s%s",
+				strings.Repeat(" ", totalIndent+2),
 				textColor(
 					fmt.Sprintf(
 						"at %s(",
