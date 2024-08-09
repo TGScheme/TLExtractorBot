@@ -94,20 +94,21 @@ func internalLog(levelInfo types.LogLevelInfo, fatal bool, message ...any) {
 				subDetails.FuncName = subDetails.PackageName + "." + subDetails.FuncName
 			}
 			lines += fmt.Sprintf(
-				"\n%s%s%s%s",
+				"\n%s%s%s%s%s",
 				strings.Repeat(" ", totalIndent),
 				strings.Repeat(" ", 3),
 				textColor(
 					fmt.Sprintf(
-						"at %s(%s",
+						"at %s(",
 						subDetails.FuncName,
-						fileColor(
-							fmt.Sprintf(
-								"%s:%d",
-								subDetails.FileName,
-								subDetails.Line,
-							),
-						),
+					),
+				),
+				fileColor(
+					fmt.Sprintf(
+						"\u001B]8;;%s\u001B\\%s:%d\033]8;;\033\\",
+						fmt.Sprintf("%s:%d", subDetails.FilePath, subDetails.Line),
+						subDetails.FileName,
+						subDetails.Line,
 					),
 				),
 				textColor(")"),

@@ -20,7 +20,8 @@ func getInfo(skips int) (*types.CallerInfo, error) {
 		return nil, fmt.Errorf("runtime function")
 	}
 	funcInfo := consts.GetFunctionInfoRgx.FindStringSubmatch(callerInfo.FuncName)
-	callerInfo.PackageName = strings.Join(strings.Split(strings.ToLower(funcInfo[1]), "/"), ".")
+	callerInfo.PackageName = strings.ReplaceAll(funcInfo[1], "/", ".")
+	callerInfo.FilePath = path.Join(path.Join(strings.Split(funcInfo[1], "/")[1:]...), path.Base(file))
 	callerInfo.FuncName = funcInfo[2]
 	if lambdaMatches := consts.LambdaNameRgx.FindAllStringSubmatch(callerInfo.FuncName, -1); len(lambdaMatches) > 0 {
 		lambdaDetails, _ := getInfo(skips + 2)
