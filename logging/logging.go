@@ -16,6 +16,6 @@ func Error(message ...any) {
 	internalLog(errorLevel, false, message...)
 }
 
-func Fatal(message any) {
-	internalLog(errorLevel, true, message)
+func Fatal(message ...any) {
+	internalLog(errorLevel, true, message...)
 }
