@@ -22,7 +22,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				logging.Error(err)
 				continue
 			}
-			err := listener(
+			err = listener(
 				types.UpdateInfo{
 					VersionName: info.VersionName,
 					BuildNumber: info.BuildNumber[:4],
