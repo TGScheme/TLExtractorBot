@@ -68,7 +68,7 @@ var Requirements = []types.RequireInfo{
 // Regular Expressions
 var (
 	TLSchemeLineRgx    = regexp.MustCompile("(\\S+)#(\\w+) *({\\S+})? *#* *\\[* *([^}=\\]]*) *]* = ([^;]+)")
-	GetFunctionInfoRgx = regexp.MustCompile(`([^.]*/?\w+)\.([\w.]+)`)
+	GetFunctionInfoRgx = regexp.MustCompile(`([^.]*/?\w+)\.(\(\S+\)\.)?([\w.]+)`)
 	LambdaNameRgx      = regexp.MustCompile(`\w+\.func([0-9]+)`)
 	OldLayers          = []*regexp.Regexp{
 		regexp.MustCompile("Old[0-9]*$"),
