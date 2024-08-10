@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/Laky-64/http v1.0.0 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/lipgloss v0.12.1 // indirect

@@ -2,21 +2,21 @@ package scheme
 
 import (
 	"TLExtractor/consts"
-	"TLExtractor/http"
 	"TLExtractor/telegram/scheme/types"
+	"github.com/Laky-64/http"
 	"regexp"
 	"strings"
 )
 
 func getScheme() (*types.TLScheme, error) {
-	res := http.ExecuteRequest(consts.TDesktopTL)
-	if res.Error != nil {
-		return nil, res.Error
+	res, err := http.ExecuteRequest(consts.TDesktopTL)
+	if err != nil {
+		return nil, err
 	}
 	var generatedScheme types.TLScheme
 	var isMethodDeclaration bool
 	compileParams := regexp.MustCompile("(\\w+):(\\S+)")
-	for _, line := range strings.Split(string(res.Read()), "\n") {
+	for _, line := range strings.Split(string(res.Body), "\n") {
 		if matches := consts.TLSchemeLineRgx.FindAllStringSubmatch(line, -1); len(matches) > 0 {
 			tlBase := types.TLBase{
 				ID:   ReverseConstructor(matches[0][2]),

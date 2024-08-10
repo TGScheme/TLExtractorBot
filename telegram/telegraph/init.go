@@ -4,12 +4,12 @@ import (
 	"TLExtractor/assets"
 	"TLExtractor/consts"
 	"TLExtractor/environment"
-	"TLExtractor/http"
 	"TLExtractor/io"
 	"TLExtractor/telegram/telegraph/types"
 	"encoding/json"
 	"fmt"
 	"github.com/Laky-64/gologging"
+	"github.com/Laky-64/http"
 	"github.com/kardianos/service"
 	"net/url"
 	"slices"
@@ -52,7 +52,7 @@ func init() {
 				_ = io.Scanln(&shortName)
 				fmt.Print("Author url: ")
 				_ = io.Scanln(&authorUrl)
-				res := http.ExecuteRequest(
+				res, err := http.ExecuteRequest(
 					fmt.Sprintf(
 						"%s/createAccount?short_name=%s&author_name=%s&author_url=%s",
 						consts.TelegraphApi,
@@ -61,11 +61,11 @@ func init() {
 						url.PathEscape(authorUrl),
 					),
 				)
-				if res.Error != nil {
-					logging.Fatal(res.Error)
+				if err != nil {
+					gologging.Fatal(err)
 				}
 				var createRes types.CreateResult
-				err := json.Unmarshal(res.Read(), &createRes)
+				err = json.Unmarshal(res.Body, &createRes)
 				if err != nil {
 					gologging.Fatal(err)
 				}
@@ -75,18 +75,18 @@ func init() {
 				gologging.Warn("Please save it somewhere safe, you will not be able to see it again.")
 			}
 		}
-		res := http.ExecuteRequest(
+		res, err := http.ExecuteRequest(
 			fmt.Sprintf(
 				"%s/getAccountInfo?access_token=%s",
 				consts.TelegraphApi,
 				url.PathEscape(environment.CredentialsStorage.TelegraphToken),
 			),
 		)
-		if res.Error != nil {
+		if err != nil {
 			gologging.Fatal(err)
 		}
 		var authRes types.AccountInfo
-		err := json.Unmarshal(res.Read(), &authRes)
+		err = json.Unmarshal(res.Body, &authRes)
 		if err != nil {
 			gologging.Fatal(err)
 		}

@@ -3,10 +3,10 @@ package telegraph
 import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
-	"TLExtractor/http"
 	"TLExtractor/telegram/telegraph/types"
 	"encoding/json"
 	"fmt"
+	"github.com/Laky-64/http"
 )
 
 func (ctx *context) CreatePage(title string, html string) (string, error) {
@@ -26,22 +26,22 @@ func (ctx *context) CreatePage(title string, html string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	res := http.ExecuteRequest(
+	res, err := http.ExecuteRequest(
 		fmt.Sprintf("%s/createPage", consts.TelegraphApi),
 		http.Method("POST"),
 		http.Headers(map[string]string{"Content-Type": "application/json"}),
 		http.Body(body),
 	)
-	if res.Error != nil {
-		return "", res.Error
+	if err != nil {
+		return "", err
 	}
 	var createRes types.CreatePageResult
-	err = json.Unmarshal(res.Read(), &createRes)
+	err = json.Unmarshal(res.Body, &createRes)
 	if err != nil {
 		return "", err
 	}
 	if !createRes.OK {
-		return "", fmt.Errorf("failed to create page: %s", string(res.Read()))
+		return "", fmt.Errorf("failed to create page: %s", string(res.Body))
 	}
 	return createRes.Result.URL, nil
 }

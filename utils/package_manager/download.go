@@ -2,10 +2,10 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
-	"TLExtractor/http"
 	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
+	"github.com/Laky-64/http"
 	"io"
 	"os"
 	"path"
@@ -30,7 +30,7 @@ func download(info types.PackageInfo) error {
 		return nil
 	}
 	pb := utils.NewProgressBar(info.Size)
-	res := http.ExecuteRequest(
+	res, err := http.ExecuteRequest(
 		info.DownloadURL,
 		http.OverloadReader(
 			func(r io.Reader) io.Reader {
@@ -39,15 +39,15 @@ func download(info types.PackageInfo) error {
 		),
 	)
 	pb.Finish()
-	if res.Error != nil {
-		return res.Error
+	if err != nil {
+		return err
 	}
-	if err := os.MkdirAll(path.Join(consts.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
+	if err = os.MkdirAll(path.Join(consts.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
 	return os.WriteFile(
 		filePath,
-		res.Read(),
+		res.Body,
 		os.ModePerm,
 	)
 }

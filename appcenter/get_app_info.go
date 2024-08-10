@@ -3,14 +3,14 @@ package appcenter
 import (
 	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
-	"TLExtractor/http"
 	"encoding/json"
 	"fmt"
+	"github.com/Laky-64/http"
 )
 
 func getAppInfo() (*types.AppInfo, error) {
 	var appInfo types.AppInfo
-	res := http.ExecuteRequest(
+	res, err := http.ExecuteRequest(
 		fmt.Sprintf(
 			consts.AppCenterApi,
 			consts.Developer,
@@ -18,10 +18,10 @@ func getAppInfo() (*types.AppInfo, error) {
 			consts.Distribution,
 		),
 	)
-	if res.Error != nil {
-		return nil, res.Error
+	if err != nil {
+		return nil, err
 	}
-	if err := json.Unmarshal(res.Read(), &appInfo); err != nil {
+	if err = json.Unmarshal(res.Body, &appInfo); err != nil {
 		return nil, err
 	}
 	return &appInfo, nil
