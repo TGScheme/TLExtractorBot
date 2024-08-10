@@ -2,9 +2,9 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
-	"TLExtractor/logging"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
+	"github.com/Laky-64/gologging"
 	"os"
 	"path"
 	"runtime"
@@ -13,7 +13,7 @@ import (
 
 func init() {
 	if err := os.MkdirAll(path.Join(consts.EnvFolder, consts.PackagesFolder), os.ModePerm); err != nil && !os.IsExist(err) {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 	var requirements []types.PackageInfo
 	for _, p := range consts.Requirements {
@@ -22,13 +22,13 @@ func init() {
 		}
 		packageInfo, err := getPackageInfo(p)
 		if err != nil {
-			logging.Fatal(err)
+			gologging.Fatal(err)
 		}
 		requirements = append(requirements, *packageInfo)
 	}
 	localPackages, err := installedPackages()
 	if err != nil {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 	downloadPackages := comparePackages(localPackages, requirements)
 	if len(downloadPackages) > 0 {
@@ -39,13 +39,13 @@ func init() {
 		for _, p := range downloadPackages {
 			fmt.Println(fmt.Sprintf("Collecting %s==%s", p.Name, p.Version))
 			if err = download(p); err != nil {
-				logging.Fatal(err)
+				gologging.Fatal(err)
 			}
 		}
 		fmt.Println("Installing collected packages: " + strings.Join(missingPackages, " "))
 		for _, p := range downloadPackages {
 			if err = install(p); err != nil {
-				logging.Fatal(err)
+				gologging.Fatal(err)
 			}
 		}
 	}

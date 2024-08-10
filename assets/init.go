@@ -1,9 +1,9 @@
 package assets
 
 import (
-	"TLExtractor/logging"
 	"embed"
 	"fmt"
+	"github.com/Laky-64/gologging"
 	"github.com/flosch/pongo2/v6"
 	"path/filepath"
 	"strings"
@@ -25,7 +25,7 @@ func init() {
 		ext := filepath.Ext(file.Name())
 		readFile, err := assetsFolder.ReadFile(file.Name())
 		if err != nil {
-			logging.Fatal(err)
+			gologging.Fatal(err)
 		}
 		if ext == ".gohtml" {
 			fileName := file.Name()[:len(file.Name())-len(ext)]
@@ -51,14 +51,14 @@ func init() {
 					foundImportType = !foundImportType
 					if !foundImportType {
 						if importName == key {
-							logging.Fatal(fmt.Errorf("recursive import in %s.gohtml", key))
+							gologging.Fatal(fmt.Errorf("recursive import in %s.gohtml", key))
 						}
 						if res, ok := Templates[importName]; ok {
 							builtText += res
 							foundImport = false
 							importName = ""
 						} else {
-							logging.Fatal(fmt.Errorf("import %s not found in %s.gohtml", importName, key))
+							gologging.Fatal(fmt.Errorf("import %s not found in %s.gohtml", importName, key))
 						}
 					}
 				} else if foundImportType {
@@ -70,12 +70,12 @@ func init() {
 		}
 		builtText += builtLine
 		if foundImportType || foundImport {
-			logging.Fatal(fmt.Errorf("import not closed in %s.gohtml", key))
+			gologging.Fatal(fmt.Errorf("import not closed in %s.gohtml", key))
 		}
 		Templates[key] = strings.TrimSpace(builtText)
 		_, err := pongo2.FromString(Templates[key])
 		if err != nil {
-			logging.Fatal(err)
+			gologging.Fatal(err)
 		}
 	}
 }

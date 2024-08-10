@@ -2,9 +2,9 @@ package bot
 
 import (
 	"TLExtractor/environment"
-	"TLExtractor/logging"
 	"TLExtractor/utils"
 	"github.com/GoBotApiOfficial/gobotapi/methods"
+	"github.com/Laky-64/gologging"
 	"time"
 )
 
@@ -24,6 +24,6 @@ func (ctx *context) UpdateUptime(online bool, exitReason string) {
 		},
 	)
 	if err != nil {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 }

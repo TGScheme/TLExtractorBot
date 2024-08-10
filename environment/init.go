@@ -2,11 +2,11 @@ package environment
 
 import (
 	"TLExtractor/consts"
-	"TLExtractor/logging"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/Laky-64/gologging"
 	"github.com/fatih/color"
 	"golang.org/x/term"
 	"math"
@@ -29,7 +29,7 @@ func init() {
 	flag.Parse()
 	excPath, err := os.Executable()
 	if err != nil {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 	tmpPathFolders := strings.Split(excPath, string(os.PathSeparator))
 	Debug = len(tmpPathFolders) > 4 && strings.HasPrefix(tmpPathFolders[len(tmpPathFolders)-4], "go-build")
@@ -62,16 +62,16 @@ func init() {
 	}
 	consts.EnvFolder, _ = filepath.Abs(consts.EnvFolder)
 	if err = os.MkdirAll(consts.EnvFolder, os.ModePerm); err != nil && !os.IsExist(err) {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 	file, err := os.ReadFile(path.Join(consts.EnvFolder, consts.StorageFolder))
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 	_ = json.Unmarshal(file, &LocalStorage)
 	file, err = os.ReadFile(path.Join(consts.EnvFolder, consts.CredentialsFolder))
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 	_ = json.Unmarshal(file, &CredentialsStorage)
 }

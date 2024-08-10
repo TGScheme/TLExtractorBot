@@ -3,7 +3,7 @@ package services
 import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
-	"TLExtractor/logging"
+	"github.com/Laky-64/gologging"
 	"github.com/kardianos/service"
 )
 
@@ -25,30 +25,30 @@ func Run(runner func()) {
 	}
 	s, err := service.New(c, svcConfig)
 	if err != nil {
-		logging.Fatal(err)
+		gologging.Fatal(err)
 	}
 	_, err = s.Status()
 	if err != nil {
 		if !environment.Uninstall {
-			logging.Fatal(s.Install())
-			logging.Fatal(s.Start())
-			logging.Info("Service installed and started with name:", consts.ServiceName)
+			gologging.Fatal(s.Install())
+			gologging.Fatal(s.Start())
+			gologging.Info("Service installed and started with name:", consts.ServiceName)
 		} else {
-			logging.Error("Service not installed")
+			gologging.Error("Service not installed")
 		}
 		return
 	}
 	if environment.Uninstall {
 		if err = s.Stop(); err != nil {
-			logging.Fatal("Sudo required to stop and uninstall the service")
+			gologging.Fatal("Sudo required to stop and uninstall the service")
 		}
-		logging.Fatal(s.Uninstall())
-		logging.Info("Service uninstalled with name:", consts.ServiceName)
+		gologging.Fatal(s.Uninstall())
+		gologging.Info("Service uninstalled with name:", consts.ServiceName)
 		return
 	}
 	if !service.Interactive() {
-		logging.Fatal(s.Run())
+		gologging.Fatal(s.Run())
 	} else {
-		logging.Warn("Use \"service\" command to control the service")
+		gologging.Warn("Use \"service\" command to control the service")
 	}
 }

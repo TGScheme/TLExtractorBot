@@ -6,10 +6,10 @@ import (
 	"TLExtractor/environment"
 	"TLExtractor/http"
 	"TLExtractor/io"
-	"TLExtractor/logging"
 	"TLExtractor/telegram/telegraph/types"
 	"encoding/json"
 	"fmt"
+	"github.com/Laky-64/gologging"
 	"github.com/kardianos/service"
 	"net/url"
 	"slices"
@@ -22,14 +22,14 @@ func init() {
 	if len(environment.LocalStorage.BannerURL) == 0 {
 		mediaUrl, err := upload(assets.Resources["banner.png"], "image/png")
 		if err != nil {
-			logging.Fatal(err)
+			gologging.Fatal(err)
 		}
 		environment.LocalStorage.BannerURL = mediaUrl
 		environment.LocalStorage.Commit()
 	}
 	if len(environment.CredentialsStorage.TelegraphToken) == 0 {
 		if !service.Interactive() {
-			logging.Fatal("Telegraph token is required")
+			gologging.Fatal("Telegraph token is required")
 		}
 		fmt.Print("Do you have a telegraph token? (y/n): ")
 		var answer string
@@ -39,7 +39,7 @@ func init() {
 	for {
 		if len(environment.CredentialsStorage.TelegraphToken) == 0 {
 			if !service.Interactive() {
-				logging.Fatal("Telegraph token is invalid")
+				gologging.Fatal("Telegraph token is invalid")
 			}
 			if haveToken {
 				fmt.Print("Enter telegraph token: ")
@@ -67,12 +67,12 @@ func init() {
 				var createRes types.CreateResult
 				err := json.Unmarshal(res.Read(), &createRes)
 				if err != nil {
-					logging.Fatal(err)
+					gologging.Fatal(err)
 				}
 				environment.CredentialsStorage.TelegraphToken = createRes.Result.AccessToken
 				environment.CredentialsStorage.Commit()
-				logging.Info(fmt.Sprintf("Your token is: %s", environment.CredentialsStorage.TelegraphToken))
-				logging.Warn("Please save it somewhere safe, you will not be able to see it again.")
+				gologging.Info(fmt.Sprintf("Your token is: %s", environment.CredentialsStorage.TelegraphToken))
+				gologging.Warn("Please save it somewhere safe, you will not be able to see it again.")
 			}
 		}
 		res := http.ExecuteRequest(
@@ -83,19 +83,19 @@ func init() {
 			),
 		)
 		if res.Error != nil {
-			logging.Fatal(res.Error)
+			gologging.Fatal(err)
 		}
 		var authRes types.AccountInfo
 		err := json.Unmarshal(res.Read(), &authRes)
 		if err != nil {
-			logging.Fatal(err)
+			gologging.Fatal(err)
 		}
 		if authRes.OK {
 			Client.accountInfo = authRes
 			break
 		} else {
 			environment.CredentialsStorage.TelegraphToken = ""
-			logging.Error(consts.InvalidToken)
+			gologging.Error(consts.InvalidToken)
 		}
 	}
 }

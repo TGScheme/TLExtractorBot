@@ -4,13 +4,13 @@ import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
 	"TLExtractor/io"
-	"TLExtractor/logging"
 	"errors"
 	"fmt"
 	"github.com/GoBotApiOfficial/gobotapi"
 	"github.com/GoBotApiOfficial/gobotapi/logger"
 	"github.com/GoBotApiOfficial/gobotapi/methods"
 	"github.com/GoBotApiOfficial/gobotapi/types"
+	"github.com/Laky-64/gologging"
 	"github.com/kardianos/service"
 	"strconv"
 	"strings"
@@ -22,7 +22,7 @@ func init() {
 	for {
 		if len(environment.CredentialsStorage.BotToken) == 0 {
 			if !service.Interactive() {
-				logging.Fatal("Bot token is required")
+				gologging.Fatal("Bot token is required")
 			}
 			fmt.Print("Enter bot token: ")
 			_ = io.Scanln(&environment.CredentialsStorage.BotToken)
@@ -33,7 +33,7 @@ func init() {
 		_ = bot.Start()
 		if _, err := bot.Invoke(&methods.GetMe{}); err != nil {
 			environment.CredentialsStorage.BotToken = ""
-			logging.Error(consts.InvalidToken)
+			gologging.Error(consts.InvalidToken)
 			continue
 		}
 		break
@@ -43,7 +43,7 @@ func init() {
 	for {
 		if environment.LocalStorage.ChannelID == 0 {
 			if !service.Interactive() {
-				logging.Fatal("Channel ID is required")
+				gologging.Fatal("Channel ID is required")
 			}
 			fmt.Print("Enter channel ID or username: ")
 			_ = io.Scanln(&channelID)
@@ -60,7 +60,7 @@ func init() {
 		)
 		if err != nil {
 			environment.LocalStorage.ChannelID = 0
-			logging.Error(errors.New("channel not found"))
+			gologging.Error(errors.New("channel not found"))
 			continue
 		}
 		environment.LocalStorage.ChannelID = result.Result.(types.ChatFullInfo).ID
@@ -70,7 +70,7 @@ func init() {
 	for {
 		if environment.LocalStorage.LogChatID == 0 {
 			if !service.Interactive() {
-				logging.Fatal("Log chat ID is required")
+				gologging.Fatal("Log chat ID is required")
 			}
 			fmt.Print("Enter log chat ID or username: ")
 			_ = io.Scanln(&logChatId)
@@ -90,7 +90,7 @@ func init() {
 		)
 		if err != nil {
 			environment.LocalStorage.ChannelID = 0
-			logging.Error(errors.New("chat not found"))
+			gologging.Error(errors.New("chat not found"))
 			continue
 		}
 		_, _ = bot.Invoke(

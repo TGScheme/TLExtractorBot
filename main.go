@@ -7,7 +7,6 @@ import (
 	"TLExtractor/environment"
 	"TLExtractor/github"
 	"TLExtractor/java/jadx"
-	"TLExtractor/logging"
 	"TLExtractor/services"
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
@@ -15,6 +14,7 @@ import (
 	"TLExtractor/utils"
 	_ "TLExtractor/utils/package_manager"
 	"fmt"
+	"github.com/Laky-64/gologging"
 	"slices"
 	"time"
 )
@@ -28,7 +28,7 @@ func run() {
 	defer func() {
 		if r := recover(); r != nil {
 			bot.Client.UpdateUptime(false, "panic")
-			logging.Fatal(r)
+			gologging.Fatal(r)
 		}
 	}()
 	appcenter.Listen(func(update types.UpdateInfo) error {
@@ -62,7 +62,7 @@ func run() {
 				false,
 			); err != nil {
 				bot.Client.UpdateUptime(false, "panic")
-				logging.Fatal(err)
+				gologging.Fatal(err)
 			}
 		}); err != nil {
 			return err

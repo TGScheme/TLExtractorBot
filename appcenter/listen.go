@@ -4,7 +4,7 @@ import (
 	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
 	"TLExtractor/environment"
-	"TLExtractor/logging"
+	"github.com/Laky-64/gologging"
 	"time"
 )
 
@@ -13,12 +13,12 @@ func Listen(listener func(update types.UpdateInfo) error) {
 		time.Sleep(consts.CheckInterval)
 		info, err := getAppInfo()
 		if err != nil {
-			logging.Error(err)
+			gologging.Error(err)
 			continue
 		}
 		if info.ID > environment.LocalStorage.LastID {
 			if err = downloadApk(info); err != nil {
-				logging.Error(err)
+				gologging.Error(err)
 				continue
 			}
 			err = listener(
