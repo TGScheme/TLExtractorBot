@@ -2,6 +2,7 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/utils/package_manager/types"
 	"os"
 	"path"
@@ -9,7 +10,7 @@ import (
 )
 
 func installedPackages() ([]types.PackageInfo, error) {
-	dir, err := os.ReadDir(path.Join(consts.EnvFolder, consts.PackagesFolder))
+	dir, err := os.ReadDir(path.Join(environment.EnvFolder, consts.PackagesFolder))
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +23,7 @@ func installedPackages() ([]types.PackageInfo, error) {
 				packages = append(packages, types.PackageInfo{
 					Name:    dataInfo[0],
 					Version: dataInfo[1],
-					Path:    path.Join(consts.EnvFolder, consts.PackagesFolder, d.Name()),
+					Path:    path.Join(environment.EnvFolder, consts.PackagesFolder, d.Name()),
 				})
 			}
 		}

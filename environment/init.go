@@ -21,11 +21,12 @@ var (
 	Debug     bool
 	Uninstall bool
 	StartTime time.Time
+	EnvFolder = ".env"
 )
 
 func init() {
 	flag.BoolVar(&Uninstall, "U", false, "Uninstall service")
-	flag.StringVar(&consts.EnvFolder, "C", consts.EnvFolder, "Configuration folder")
+	flag.StringVar(&EnvFolder, "C", EnvFolder, "Configuration folder")
 	flag.Parse()
 	excPath, err := os.Executable()
 	if err != nil {
@@ -60,16 +61,16 @@ func init() {
 		consts.EnvFolder = path.Join(consts.EnvFolder, "..", ".env_debug")
 		consts.SchemeRepoName = "Schema-Tests"
 	}
-	consts.EnvFolder, _ = filepath.Abs(consts.EnvFolder)
-	if err = os.MkdirAll(consts.EnvFolder, os.ModePerm); err != nil && !os.IsExist(err) {
+	EnvFolder, _ = filepath.Abs(EnvFolder)
+	if err = os.MkdirAll(EnvFolder, os.ModePerm); err != nil && !os.IsExist(err) {
 		gologging.Fatal(err)
 	}
-	file, err := os.ReadFile(path.Join(consts.EnvFolder, consts.StorageFolder))
+	file, err := os.ReadFile(path.Join(EnvFolder, consts.StorageFolder))
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		gologging.Fatal(err)
 	}
 	_ = json.Unmarshal(file, &LocalStorage)
-	file, err = os.ReadFile(path.Join(consts.EnvFolder, consts.CredentialsFolder))
+	file, err = os.ReadFile(path.Join(EnvFolder, consts.CredentialsFolder))
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		gologging.Fatal(err)
 	}

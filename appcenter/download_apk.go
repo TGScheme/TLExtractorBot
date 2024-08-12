@@ -3,6 +3,7 @@ package appcenter
 import (
 	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"github.com/Laky-64/http"
 	"os"
 	"path"
@@ -15,8 +16,8 @@ func downloadApk(info *types.AppInfo) error {
 	if err != nil {
 		return err
 	}
-	if err = os.MkdirAll(path.Join(consts.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
+	if err = os.MkdirAll(path.Join(environment.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	return os.WriteFile(path.Join(consts.EnvFolder, consts.TempApk), res.Body, os.ModePerm)
+	return os.WriteFile(path.Join(environment.EnvFolder, consts.TempApk), res.Body, os.ModePerm)
 }

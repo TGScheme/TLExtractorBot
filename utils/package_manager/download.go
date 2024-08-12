@@ -2,6 +2,7 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
@@ -15,7 +16,7 @@ func download(info types.PackageInfo) error {
 	sizeHuman := utils.HumanReadableBytes(int64(info.Size))
 	fmt.Println(fmt.Sprintf("Downloading %s (%s)", info.FileName, sizeHuman))
 	filePath := path.Join(
-		consts.EnvFolder,
+		environment.EnvFolder,
 		consts.TempBins,
 		info.FileName,
 	)
@@ -42,7 +43,7 @@ func download(info types.PackageInfo) error {
 	if err != nil {
 		return err
 	}
-	if err = os.MkdirAll(path.Join(consts.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
+	if err = os.MkdirAll(path.Join(environment.EnvFolder, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
 	return os.WriteFile(

@@ -17,7 +17,7 @@ func Run(runner func()) {
 		Description: consts.ServiceDescription,
 		Arguments: []string{
 			"-C",
-			consts.EnvFolder,
+			environment.EnvFolder,
 		},
 	}
 	c := &context{

@@ -23,7 +23,7 @@ type storage struct {
 }
 
 func (c storage) Commit() {
-	commit(path.Join(consts.EnvFolder, consts.StorageFolder), c)
+	commit(path.Join(EnvFolder, consts.StorageFolder), c)
 }
 
 type credentials struct {
@@ -34,7 +34,7 @@ type credentials struct {
 }
 
 func (c credentials) Commit() {
-	commit(path.Join(consts.EnvFolder, consts.CredentialsFolder), c)
+	commit(path.Join(EnvFolder, consts.CredentialsFolder), c)
 }
 
 func commit(path string, data any) {

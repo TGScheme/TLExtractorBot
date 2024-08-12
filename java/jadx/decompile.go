@@ -2,6 +2,7 @@ package jadx
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/utils/proxy_reader"
 	"bytes"
 	"errors"
@@ -18,7 +19,7 @@ func Decompile(callable func(percentage int64)) error {
 	if err != nil {
 		return err
 	}
-	if err = os.MkdirAll(path.Join(consts.EnvFolder, consts.TempDecompiled), os.ModePerm); err != nil && !os.IsExist(err) {
+	if err = os.MkdirAll(path.Join(environment.EnvFolder, consts.TempDecompiled), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
 	java, err := javaExec()
@@ -38,8 +39,8 @@ func Decompile(callable func(percentage int64)) error {
 		"-j",
 		strconv.Itoa(runtime.GOMAXPROCS(0)),
 		"--output-dir",
-		path.Join(consts.EnvFolder, consts.TempDecompiled),
-		path.Join(consts.EnvFolder, consts.TempApk),
+		path.Join(environment.EnvFolder, consts.TempDecompiled),
+		path.Join(environment.EnvFolder, consts.TempApk),
 	)
 	pb := proxy_reader.NewProxyReader(
 		consts.UpdateMessageRate,

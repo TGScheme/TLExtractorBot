@@ -40,7 +40,6 @@ var (
 
 // Paths
 var (
-	EnvFolder         = ".env"
 	CredentialsFolder = "credentials.json"
 	StorageFolder     = "storage.json"
 	PackagesFolder    = "packages"

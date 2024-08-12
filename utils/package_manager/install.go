@@ -2,6 +2,7 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	io2 "TLExtractor/io"
 	"TLExtractor/utils/package_manager/types"
 	"archive/zip"
@@ -14,7 +15,7 @@ import (
 func install(info types.PackageInfo) error {
 	r, err := zip.OpenReader(
 		path.Join(
-			consts.EnvFolder,
+			environment.EnvFolder,
 			consts.TempBins,
 			info.FileName,
 		),
@@ -22,7 +23,7 @@ func install(info types.PackageInfo) error {
 	if err != nil {
 		return err
 	}
-	dirPackage := path.Join(consts.EnvFolder, consts.TempPackages, info.GetFullName())
+	dirPackage := path.Join(environment.EnvFolder, consts.TempPackages, info.GetFullName())
 	if _, err = os.Stat(dirPackage); err == nil {
 		_ = os.RemoveAll(dirPackage)
 	}
@@ -61,7 +62,7 @@ func install(info types.PackageInfo) error {
 		}
 		fmt.Println(fmt.Sprintf("      Successfully uninstalled %s", pkg.GetFullName()))
 	}
-	if err = io2.Move(dirPackage, path.Join(consts.EnvFolder, consts.PackagesFolder, info.GetFullName())); err != nil {
+	if err = io2.Move(dirPackage, path.Join(environment.EnvFolder, consts.PackagesFolder, info.GetFullName())); err != nil {
 		return err
 	}
 	if err = os.RemoveAll(dirPackage); err != nil {
