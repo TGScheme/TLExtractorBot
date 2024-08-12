@@ -7,7 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Laky-64/gologging"
-	"github.com/fatih/color"
+	"github.com/charmbracelet/lipgloss"
 	"golang.org/x/term"
 	"math"
 	"os"
@@ -36,29 +36,16 @@ func init() {
 	Debug = len(tmpPathFolders) > 4 && strings.HasPrefix(tmpPathFolders[len(tmpPathFolders)-4], "go-build")
 	StartTime = time.Now()
 	if Debug {
-		debugColors := color.New(38, 2, 72, 139, 41).SprintFunc()
-		termWidth, _, _ := term.GetSize(0)
-		termWidth = int(float64(termWidth) * 0.2)
-		termWidth = int(math.Max(float64(termWidth), consts.MinTermWidth))
-		//goland:noinspection GoBoolExpressions
-		if termWidth%2 != 0 && len(consts.DebugModeMessage)%2 == 0 {
-			termWidth--
-		}
-		borderSlashes := debugColors(strings.Repeat("/", termWidth))
-		fmt.Println(borderSlashes)
-		messageSlash := strings.Repeat("/", termWidth/2-1-len(consts.DebugModeMessage)/2)
-		fmt.Println(
-			debugColors(
-				fmt.Sprintf(
-					"%s %s %s",
-					messageSlash,
-					consts.DebugModeMessage,
-					messageSlash,
-				),
-			),
-		)
-		fmt.Println(borderSlashes + "\n")
-		consts.EnvFolder = path.Join(consts.EnvFolder, "..", ".env_debug")
+		termWidth, _, _ := term.GetSize(int(os.Stdout.Fd()))
+		termWidth = int(math.Max(float64(termWidth)*0.20, consts.MinTermWidth))
+		var debugStyle = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#488b29")).
+			Foreground(lipgloss.Color("#488b29")).
+			Align(lipgloss.Center).
+			Width(termWidth)
+		fmt.Println(debugStyle.Render(consts.DebugModeMessage))
+		EnvFolder = path.Join(EnvFolder, "..", ".env_debug")
 		consts.SchemeRepoName = "Schema-Tests"
 	}
 	EnvFolder, _ = filepath.Abs(EnvFolder)

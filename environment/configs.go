@@ -29,8 +29,8 @@ func (c storage) Commit() {
 type credentials struct {
 	BotToken       string `json:"bot_token"`
 	TelegraphToken string `json:"telegraph_token"`
-	ApplicationID  int64  `json:"application_id"`
-	InstallationID int64  `json:"installation_id"`
+	ApplicationID  int    `json:"application_id"`
+	InstallationID int    `json:"installation_id"`
 }
 
 func (c credentials) Commit() {
