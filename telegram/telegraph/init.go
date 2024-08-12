@@ -57,6 +57,7 @@ func init() {
 			environment.CredentialsStorage.TelegraphToken = ""
 			return consts.InvalidToken
 		}
+		environment.CredentialsStorage.Commit()
 		Client.accountInfo = authRes
 		return nil
 	}, tuiTypes.InitCheck, tuiTypes.FinalCheck)
