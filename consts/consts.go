@@ -29,7 +29,7 @@ const (
 	DebugModeMessage   = "DEBUG MODE ENABLED"
 	UpdateMessageRate  = time.Second * 3
 	CheckInterval      = time.Second * 1
-	MinTermWidth       = 120
+	MinTermWidth       = 45
 )
 
 // Github
