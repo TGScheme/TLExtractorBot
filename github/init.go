@@ -3,81 +3,84 @@ package github
 import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
-	"TLExtractor/io"
+	"TLExtractor/tui"
+	"TLExtractor/tui/types"
 	"context"
-	"fmt"
-	"github.com/Laky-64/gologging"
 	"github.com/bradleyfalzon/ghinstallation/v2"
+	"github.com/charmbracelet/huh"
 	"github.com/google/go-github/v62/github"
-	"github.com/kardianos/service"
 	"net/http"
 	"os"
 	"path"
-	"strings"
+	"strconv"
 )
 
 func init() {
 	Client = &clientContext{
 		ctx: context.Background(),
 	}
-	for {
-		var githubPemPath string
-		var file []byte
-		if _, err := os.Stat(path.Join(consts.EnvFolder, consts.GithubPem)); err != nil {
-			if !service.Interactive() {
-				gologging.Fatal("GitHub App PEM file is required")
-			}
-			fmt.Print("Enter the path to your GitHub App PEM file: ")
-			_ = io.Scanln(&githubPemPath)
-			file, err = os.ReadFile(strings.TrimSpace(githubPemPath))
-			if err != nil {
-				gologging.Error(fmt.Errorf("could not read file: %s", err))
-				continue
-			}
+	var filePath, appId, installationId string
+	githubApp := tui.NewMiniApp("github")
+	githubApp.SetLoadingMessage("Logging in to GitHub...")
+	githubApp.SetFields(
+		huh.NewFilePicker().
+			Title("Enter the path to your GitHub App PEM file:").
+			Description("You can create a GitHub App and download the PEM file from the GitHub Developer Settings.").
+			ShowPermissions(false).
+			AllowedTypes([]string{".pem"}).
+			ShowHidden(true).
+			Description("You can find your GitHub App ID in the GitHub Developer Settings.").
+			Value(&filePath),
+		huh.NewInput().
+			Title("Enter your GitHub App ID:").
+			Description("You can find your GitHub App ID in the GitHub Developer Settings.").
+			Placeholder("123456").
+			Validate(tui.Validate("GitHub App ID", types.IsInt)).
+			Value(&appId),
+		huh.NewInput().
+			Title("Enter your GitHub Installation ID:").
+			Description("You can find your GitHub Installation ID in the GitHub Developer Settings.").
+			Placeholder("12345678").
+			Validate(tui.Validate("GitHub Installation ID", types.IsInt)).
+			Value(&installationId),
+	)
+	githubApp.SetCheckFunc(func(checkType types.CheckType) error {
+		githubPemPath := path.Join(environment.EnvFolder, consts.GithubPem)
+		var checkPath string
+		if checkType == types.InitCheck {
+			checkPath = githubPemPath
 		} else {
-			file, err = os.ReadFile(path.Join(consts.EnvFolder, consts.GithubPem))
-			if err != nil {
-				gologging.Fatal(err)
-			}
+			environment.CredentialsStorage.ApplicationID, _ = strconv.Atoi(appId)
+			environment.CredentialsStorage.InstallationID, _ = strconv.Atoi(installationId)
+			checkPath = filePath
 		}
-		if environment.CredentialsStorage.ApplicationID == 0 {
-			if !service.Interactive() {
-				gologging.Fatal("GitHub App ID is required")
-			}
-			fmt.Print("Enter your Github App ID: ")
-			_ = io.Scanln(&environment.CredentialsStorage.ApplicationID)
+		file, err := os.ReadFile(checkPath)
+		if err != nil {
+			return err
 		}
-		if environment.CredentialsStorage.InstallationID == 0 {
-			if !service.Interactive() {
-				gologging.Fatal("GitHub Installation ID is required")
-			}
-			fmt.Print("Enter your Github Installation ID: ")
-			_ = io.Scanln(&environment.CredentialsStorage.InstallationID)
-		}
-
 		transport, err := ghinstallation.New(
 			http.DefaultTransport,
-			environment.CredentialsStorage.ApplicationID,
-			environment.CredentialsStorage.InstallationID,
+			int64(environment.CredentialsStorage.ApplicationID),
+			int64(environment.CredentialsStorage.InstallationID),
 			file,
 		)
 		if err != nil {
-			gologging.Error(err)
-			_ = os.Remove(path.Join(consts.EnvFolder, consts.GithubPem))
-			continue
+			_ = os.Remove(githubPemPath)
+			return err
 		}
-		if err = os.WriteFile(path.Join(consts.EnvFolder, consts.GithubPem), file, 0644); err != nil {
-			gologging.Fatal(err)
+		if checkType != types.InitCheck {
+			if err = os.WriteFile(githubPemPath, file, os.ModePerm); err != nil {
+				return err
+			}
 		}
 		Client.client = github.NewClient(&http.Client{Transport: transport})
 		if _, _, err = Client.client.Users.Get(Client.ctx, "octocat"); err != nil {
-			gologging.Error(err)
-			_ = os.Remove(path.Join(consts.EnvFolder, consts.GithubPem))
+			_ = os.Remove(githubPemPath)
 			environment.CredentialsStorage.ApplicationID = 0
 			environment.CredentialsStorage.InstallationID = 0
-			continue
+			return err
 		}
 		environment.CredentialsStorage.Commit()
-		break
-	}
+		return nil
+	}, types.InitCheck, types.SubmitCheck)
 }

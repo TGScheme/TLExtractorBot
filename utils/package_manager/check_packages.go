@@ -2,6 +2,7 @@ package package_manager
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/environment"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
 	"github.com/Laky-64/gologging"
@@ -11,8 +12,8 @@ import (
 	"strings"
 )
 
-func init() {
-	if err := os.MkdirAll(path.Join(consts.EnvFolder, consts.PackagesFolder), os.ModePerm); err != nil && !os.IsExist(err) {
+func CheckPackages() {
+	if err := os.MkdirAll(path.Join(environment.EnvFolder, consts.PackagesFolder), os.ModePerm); err != nil && !os.IsExist(err) {
 		gologging.Fatal(err)
 	}
 	var requirements []types.PackageInfo

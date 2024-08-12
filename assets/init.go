@@ -14,7 +14,7 @@ var (
 	Resources map[string][]byte
 )
 
-//go:embed *.gohtml *.png
+//go:embed *.gohtml *.png *.ascii
 var assetsFolder embed.FS
 
 func init() {

@@ -4,20 +4,19 @@ import (
 	"TLExtractor/assets"
 	"TLExtractor/consts"
 	"TLExtractor/environment"
-	"TLExtractor/io"
 	"TLExtractor/telegram/telegraph/types"
+	"TLExtractor/tui"
+	tuiTypes "TLExtractor/tui/types"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/Laky-64/gologging"
 	"github.com/Laky-64/http"
-	"github.com/kardianos/service"
+	"github.com/charmbracelet/huh"
 	"net/url"
-	"slices"
-	"strings"
 )
 
 func init() {
-	haveToken := false
 	Client = &context{}
 	if len(environment.LocalStorage.BannerURL) == 0 {
 		mediaUrl, err := upload(assets.Resources["banner.png"], "image/png")
@@ -27,53 +26,17 @@ func init() {
 		environment.LocalStorage.BannerURL = mediaUrl
 		environment.LocalStorage.Commit()
 	}
-	if len(environment.CredentialsStorage.TelegraphToken) == 0 {
-		if !service.Interactive() {
-			gologging.Fatal("Telegraph token is required")
-		}
-		fmt.Print("Do you have a telegraph token? (y/n): ")
-		var answer string
-		_ = io.Scanln(&answer)
-		haveToken = slices.Contains([]string{"y", "yes"}, strings.ToLower(answer))
-	}
-	for {
+	var alreadyHave bool
+	telegraphApp := tui.NewMiniApp("telegraph")
+	telegraphApp.SetFields(
+		huh.NewConfirm().
+			Title("Do you have a Telegraph token?").
+			Description("If you have a Telegraph token, you can enter it. Otherwise, we will create a new account for you.").
+			Value(&alreadyHave),
+	)
+	telegraphApp.SetCheckFunc(func(checkType tuiTypes.CheckType) error {
 		if len(environment.CredentialsStorage.TelegraphToken) == 0 {
-			if !service.Interactive() {
-				gologging.Fatal("Telegraph token is invalid")
-			}
-			if haveToken {
-				fmt.Print("Enter telegraph token: ")
-				_ = io.Scanln(&environment.CredentialsStorage.TelegraphToken)
-			} else {
-				var authorName, shortName, authorUrl string
-				fmt.Print("Author name: ")
-				_ = io.Scanln(&authorName)
-				fmt.Print("Short name: ")
-				_ = io.Scanln(&shortName)
-				fmt.Print("Author url: ")
-				_ = io.Scanln(&authorUrl)
-				res, err := http.ExecuteRequest(
-					fmt.Sprintf(
-						"%s/createAccount?short_name=%s&author_name=%s&author_url=%s",
-						consts.TelegraphApi,
-						url.PathEscape(shortName),
-						url.PathEscape(authorName),
-						url.PathEscape(authorUrl),
-					),
-				)
-				if err != nil {
-					gologging.Fatal(err)
-				}
-				var createRes types.CreateResult
-				err = json.Unmarshal(res.Body, &createRes)
-				if err != nil {
-					gologging.Fatal(err)
-				}
-				environment.CredentialsStorage.TelegraphToken = createRes.Result.AccessToken
-				environment.CredentialsStorage.Commit()
-				gologging.Info(fmt.Sprintf("Your token is: %s", environment.CredentialsStorage.TelegraphToken))
-				gologging.Warn("Please save it somewhere safe, you will not be able to see it again.")
-			}
+			return errors.New("telegraph token is required")
 		}
 		res, err := http.ExecuteRequest(
 			fmt.Sprintf(
@@ -83,19 +46,95 @@ func init() {
 			),
 		)
 		if err != nil {
-			gologging.Fatal(err)
+			return err
 		}
 		var authRes types.AccountInfo
 		err = json.Unmarshal(res.Body, &authRes)
 		if err != nil {
-			gologging.Fatal(err)
+			return err
 		}
-		if authRes.OK {
-			Client.accountInfo = authRes
-			break
-		} else {
+		if !authRes.OK {
 			environment.CredentialsStorage.TelegraphToken = ""
-			gologging.Error(consts.InvalidToken)
+			return consts.InvalidToken
 		}
-	}
+		Client.accountInfo = authRes
+		return nil
+	}, tuiTypes.InitCheck, tuiTypes.FinalCheck)
+
+	var authorName, shortName, authorUrl string
+	registerPage := telegraphApp.NewAppPage()
+	registerPage.SetLoadingMessage("Creating a new Telegraph account...")
+	registerPage.SetFields(
+		huh.NewInput().
+			Title("Author name").
+			Description("Enter the name of the author of the Telegraph account.").
+			Value(&authorName).
+			Validate(tui.Validate("Author name", tuiTypes.NoCheck)),
+		huh.NewInput().
+			Title("Short name").
+			Description("Enter a short name for your Telegraph account.").
+			Value(&shortName).
+			Validate(tui.Validate("Short name", tuiTypes.NoCheck)),
+		huh.NewInput().
+			Title("Author URL").
+			Description("Enter the URL of the author of the Telegraph account.").
+			Value(&authorUrl).
+			Validate(tui.Validate("Author URL", tuiTypes.IsURL)),
+	)
+	registerPage.HideFunc(func() bool {
+		return alreadyHave
+	})
+	registerPage.SetCheckFunc(func(checkType tuiTypes.CheckType) error {
+		res, err := http.ExecuteRequest(
+			fmt.Sprintf(
+				"%s/createAccount?short_name=%s&author_name=%s&author_url=%s",
+				consts.TelegraphApi,
+				url.PathEscape(shortName),
+				url.PathEscape(authorName),
+				url.PathEscape(authorUrl),
+			),
+		)
+		if err != nil {
+			return err
+		}
+		var createRes types.CreateResult
+		err = json.Unmarshal(res.Body, &createRes)
+		if err != nil {
+			return err
+		}
+		environment.CredentialsStorage.TelegraphToken = createRes.Result.AccessToken
+		environment.CredentialsStorage.Commit()
+		return nil
+	}, tuiTypes.SubmitCheck)
+
+	confirmTokenSaving := telegraphApp.NewAppPage()
+	confirmTokenSaving.SetFields(
+		huh.NewConfirm().
+			Title("Save your Telegraph token").
+			DescriptionFunc(func() string {
+				return fmt.Sprintf(
+					"Your Telegraph token is: %s\nPlease save it somewhere safe, you will not be able to see it again.",
+					environment.CredentialsStorage.TelegraphToken,
+				)
+			}, nil).
+			Affirmative("Continue").
+			Negative(""),
+	)
+	confirmTokenSaving.HideFunc(func() bool {
+		return alreadyHave
+	})
+
+	loginApp := telegraphApp.NewAppPage()
+	loginApp.SetLoadingMessage("Logging in to Telegraph...")
+	loginApp.SetFields(
+		huh.NewInput().
+			Title("Telegraph token").
+			Description("Enter the Telegraph token.").
+			Value(&environment.CredentialsStorage.TelegraphToken).
+			EchoMode(huh.EchoModePassword).
+			Validate(tui.Validate("Telegraph token", tuiTypes.NoCheck)),
+	)
+	loginApp.HideFunc(func() bool {
+		return !alreadyHave
+	})
 }

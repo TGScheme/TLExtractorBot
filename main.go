@@ -11,8 +11,9 @@ import (
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
 	"TLExtractor/telegram/telegraph"
+	"TLExtractor/tui"
 	"TLExtractor/utils"
-	_ "TLExtractor/utils/package_manager"
+	"TLExtractor/utils/package_manager"
 	"fmt"
 	"github.com/Laky-64/gologging"
 	"slices"
@@ -20,6 +21,8 @@ import (
 )
 
 func main() {
+	tui.Run()
+	package_manager.CheckPackages()
 	services.Run(run)
 }
 
