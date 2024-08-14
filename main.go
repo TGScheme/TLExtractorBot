@@ -91,8 +91,14 @@ func run() {
 			if err != nil {
 				return err
 			}
+			var stableScheme *schemeTypes.TLFullScheme
+			if environment.LocalStorage.StableLayer != nil {
+				stableScheme = environment.LocalStorage.StableLayer
+			} else {
+				stableScheme = environment.LocalStorage.PreviewLayer
+			}
 			stableDiffs := scheme.GetDiffs(
-				environment.LocalStorage.StableLayer,
+				stableScheme,
 				fullScheme,
 			)
 			url, err := telegraph.Client.CreatePage(
@@ -148,9 +154,6 @@ func run() {
 			}
 		}
 		if !environment.Debug {
-			if len(environment.LocalStorage.RecentLayers) == 0 {
-				environment.LocalStorage.StableLayer = environment.LocalStorage.PreviewLayer
-			}
 			if !slices.Contains(environment.LocalStorage.RecentLayers, fullScheme.Layer) {
 				environment.LocalStorage.RecentLayers = append(environment.LocalStorage.RecentLayers, fullScheme.Layer)
 			}
