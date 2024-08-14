@@ -126,7 +126,6 @@ func run() {
 						"time":   utils.FormatDuration(elapsedTime),
 						"layer":  fullScheme.Layer,
 						"stats":  stats,
-						"link":   url,
 					},
 				),
 				true,
