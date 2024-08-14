@@ -68,18 +68,18 @@ var Requirements = []types.RequireInfo{
 
 // Regular Expressions
 var (
-	TLSchemeLineRgx = regexp.MustCompile("(\\S+)#(\\w+) *({\\S+})? *#* *\\[* *([^}=\\]]*) *]* = ([^;]+)")
+	TLSchemeLineRgx = regexp.MustCompile(`(\S+)#(\w+) *({\S+})? *#* *\[* *([^}=\]]*) *]* = ([^;]+)`)
 	OldLayers       = []*regexp.Regexp{
-		regexp.MustCompile("Old[0-9]*$"),
-		regexp.MustCompile("ToBeDeprecated$"),
-		regexp.MustCompile("^\\S+[^0-9p][0-9]$"),
-		regexp.MustCompile("^TL\\.FileEncryptedLocation$"),
-		regexp.MustCompile("^TL\\.DocumentEncrypted$"),
-		regexp.MustCompile("ToDelete$"),
-		regexp.MustCompile("^TL\\.MessageEncryptedAction$"),
-		regexp.MustCompile("^TL_message\\.Secret$"),
-		regexp.MustCompile("^secret$"),
-		regexp.MustCompile("Layer[0-9]+$"),
+		regexp.MustCompile(`Old[0-9]*$`),
+		regexp.MustCompile(`ToBeDeprecated$`),
+		regexp.MustCompile(`^\S+[^0-9p][0-9]$`),
+		regexp.MustCompile(`^TL\.FileEncryptedLocation$`),
+		regexp.MustCompile(`^TL\.DocumentEncrypted$`),
+		regexp.MustCompile(`ToDelete$`),
+		regexp.MustCompile(`^TL\.MessageEncryptedAction$`),
+		regexp.MustCompile(`^TL_message\.Secret$`),
+		regexp.MustCompile(`^secret$`),
+		regexp.MustCompile(`Layer[0-9]+$`),
 	}
 )
 

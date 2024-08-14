@@ -15,9 +15,9 @@ func extractObject(class *javaTypes.RawClass) (types.TLInterface, error) {
 	var foundVector, isMethod bool
 	var deserializedPos, deserializeNesting, serializePos, deserializePos int
 	var methodResult string
-	compileResult := regexp.MustCompile("(return|=) *(.*?)\\.TLdeserialize")
-	vectorInfo := regexp.MustCompile("add\\(.*readInt([0-9]+)\\(")
-	compileConstructorRaw := regexp.MustCompile("abstractSerializedData[0-9]?\\.writeInt32\\(([0-9-]+)\\)")
+	compileResult := regexp.MustCompile(`(return|=) *(.*?)\.TLdeserialize`)
+	vectorInfo := regexp.MustCompile(`add\(.*readInt([0-9]+)\(`)
+	compileConstructorRaw := regexp.MustCompile(`abstractSerializedData[0-9]?\.writeInt32\(([0-9-]+)\)`)
 
 	for pos, line := range class.Content {
 		if res := java.GetVarDeclaration(line); res != nil {

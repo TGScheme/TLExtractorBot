@@ -8,7 +8,7 @@ import (
 )
 
 func FormatType(name string, clearTLName bool) (string, error) {
-	compile := regexp.MustCompile("ArrayList<(.*)>")
+	compile := regexp.MustCompile(`ArrayList<(.*)>`)
 	if matches := compile.FindAllStringSubmatch(name, -1); len(matches) > 0 {
 		formatted, err := FormatType(matches[0][1], clearTLName)
 		if err != nil {
@@ -35,7 +35,7 @@ func FormatType(name string, clearTLName bool) (string, error) {
 	case "byte[]", "bytes":
 		return "bytes", nil
 	}
-	compile = regexp.MustCompile("(.*?)_([^_]*?)$")
+	compile = regexp.MustCompile(`(.*?)_([^_]*?)$`)
 	if matches := compile.FindAllStringSubmatch(name, -1); len(matches) > 0 {
 		dataName := matches[0][1:]
 		name = dataName[0] + "." + utils.Capitalize(dataName[1])

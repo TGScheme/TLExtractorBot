@@ -22,14 +22,14 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 	var addedFlags []string
 	var flagName string
 	flagValue := -1
-	fastCheck := regexp.MustCompile("this\\.\\w+")
-	compileVars := regexp.MustCompile("\\(?(this|tLRPC[^.]+)\\.([^. ]+)( \\?|\\.add|\\.get|\\.serialize|\\)| !| = (abstractSerializedData|i[0-9+]*;|read|TLdeserialize;|\\(|\\w+\\$\\w+\\.\\w+deserialize))\\)?")
-	compileVarBuffer := regexp.MustCompile("^(this|tLRPC\\$[^.]+)*\\.*\\w* *=* *(abstractSerializedData[0-9]*)?(\\.write|\\.read|TLRPC\\$)([^(.]+).*?\\);")
-	compileVarFlag := regexp.MustCompile("this\\.flags[0-9]* = readInt[0-9]+;")
-	compileVarBool := regexp.MustCompile("this\\.\\w+ = \\([^)]*readInt32[0-9]*[^)]*\\)")
-	compileFlags := regexp.MustCompile("[\\w =]+[|& ][ (]([0-9]+)")
-	compileFlagName := regexp.MustCompile("flags[0-9]*")
-	compileUnVector := regexp.MustCompile("Vector<(.*?)>")
+	fastCheck := regexp.MustCompile(`this\.\w+`)
+	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. ]+)( \?|\.add|\.get|\.serialize|\)| !| = (abstractSerializedData|i[0-9+]*;|read|TLdeserialize;|\(|\w+\$\w+\.\w+deserialize))\)?`)
+	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *(abstractSerializedData[0-9]*)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
+	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
+	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
+	compileFlags := regexp.MustCompile(`[\w =]+[|& ][ (]([0-9]+)`)
+	compileFlagName := regexp.MustCompile(`flags[0-9]*`)
+	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	for pos, line := range class.Content {
 		if pos > declarationPos && declarationPos != 0 && line.Nesting >= 2 {
 			if matches := compileFlags.FindAllStringSubmatch(line.Line, -1); len(matches) > 0 {
