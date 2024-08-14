@@ -5,7 +5,7 @@ import (
 )
 
 func MergeOfficial(rawScheme *types.RawTLScheme, isE2E bool) (*types.RawTLScheme, error) {
-	var scheme *types.TLScheme
+	var scheme *types.TLRemoteScheme
 	if isE2E {
 		e2e, err := getE2EScheme()
 		if err != nil {
@@ -19,9 +19,5 @@ func MergeOfficial(rawScheme *types.RawTLScheme, isE2E bool) (*types.RawTLScheme
 		}
 		scheme = main
 	}
-	merged := mergeSchemes(scheme, NewFromRaw(rawScheme, isE2E))
-	return &types.RawTLScheme{
-		TLScheme: merged,
-		Layer:    rawScheme.Layer,
-	}, nil
+	return mergeSchemes(scheme, newFromRaw(rawScheme, isE2E), rawScheme.Layer), nil
 }

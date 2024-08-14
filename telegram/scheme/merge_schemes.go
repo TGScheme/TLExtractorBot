@@ -1,12 +1,16 @@
 package scheme
 
 import (
+	"TLExtractor/environment"
 	"TLExtractor/telegram/scheme/types"
 )
 
-func mergeSchemes(old, new *types.TLScheme) types.TLScheme {
-	var newScheme types.TLScheme
-	newScheme.Constructors = mergeObjects(old.Constructors, new.Constructors)
-	newScheme.Methods = mergeObjects(old.Methods, new.Methods)
-	return newScheme
+func mergeSchemes(remote *types.TLRemoteScheme, raw *types.TLScheme, rawLayer int) *types.RawTLScheme {
+	var rawScheme types.RawTLScheme
+	isSameLayer := remote.Layer == rawLayer
+	rawScheme.Constructors = mergeObjects(remote.Constructors, raw.Constructors, isSameLayer)
+	rawScheme.Methods = mergeObjects(remote.Methods, raw.Methods, isSameLayer)
+	environment.LocalStorage.Commit()
+	rawScheme.Layer = rawLayer
+	return &rawScheme
 }

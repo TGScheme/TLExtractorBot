@@ -5,17 +5,19 @@ import (
 	"TLExtractor/telegram/scheme/types"
 	"github.com/Laky-64/http"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
-func getScheme() (*types.TLScheme, error) {
+func getScheme() (*types.TLRemoteScheme, error) {
 	res, err := http.ExecuteRequest(consts.TDesktopTL)
 	if err != nil {
 		return nil, err
 	}
-	var generatedScheme types.TLScheme
+	var generatedScheme types.TLRemoteScheme
 	var isMethodDeclaration bool
 	compileParams := regexp.MustCompile(`(\w+):(\S+)`)
+	compileVersion := regexp.MustCompile(`// LAYER (\d+)`)
 	for _, line := range strings.Split(string(res.Body), "\n") {
 		line = strings.TrimSpace(line)
 		if matches := consts.TLSchemeLineRgx.FindAllStringSubmatch(line, -1); len(matches) > 0 {
@@ -44,6 +46,12 @@ func getScheme() (*types.TLScheme, error) {
 			isMethodDeclaration = true
 		} else if line == "---types---" {
 			isMethodDeclaration = false
+		} else if versionMatches := compileVersion.FindAllStringSubmatch(line, -1); len(versionMatches) > 0 {
+			atoi, err := strconv.Atoi(versionMatches[0][1])
+			if err != nil {
+				return nil, err
+			}
+			generatedScheme.Layer = atoi
 		}
 	}
 	return &generatedScheme, nil
