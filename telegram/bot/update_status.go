@@ -6,7 +6,7 @@ import (
 	"github.com/GoBotApiOfficial/gobotapi/types"
 )
 
-func (ctx *context) UpdateStatus(text string, withNotification, isFinal bool) error {
+func (ctx *context) UpdateStatus(text string, withNotification, isFinal bool, keyboard any) error {
 	if len(text) == 0 {
 		_, err := ctx.client.Invoke(
 			&methods.DeleteMessage{
@@ -54,6 +54,7 @@ func (ctx *context) UpdateStatus(text string, withNotification, isFinal bool) er
 				LinkPreviewOptions: &types.LinkPreviewOptions{
 					IsDisabled: true,
 				},
+				ReplyMarkup: keyboard,
 			},
 		)
 		if err != nil {

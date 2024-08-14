@@ -49,6 +49,7 @@ func run() {
 			),
 			false,
 			false,
+			nil,
 		); err != nil {
 			return err
 		}
@@ -67,6 +68,7 @@ func run() {
 				),
 				false,
 				false,
+				nil,
 			); err != nil {
 				bot.Client.UpdateUptime(false, "panic")
 				gologging.Fatal(err)
@@ -81,7 +83,7 @@ func run() {
 		}
 		if differences := scheme.GetDiffs(environment.LocalStorage.PreviewLayer, fullScheme); differences != nil {
 			stats := scheme.GetStats(differences)
-			commitUrls, err := github.Client.MakeCommit(
+			commitInfo, err := github.Client.MakeCommit(
 				fullScheme,
 				stats,
 				fmt.Sprintf("Updated to Layer %d", fullScheme.Layer),
@@ -100,7 +102,7 @@ func run() {
 					map[string]any{
 						"differences": differences,
 						"stats":       stats,
-						"commit_urls": commitUrls,
+						"commit_urls": commitInfo.FilesLines,
 						"banner_url":  environment.LocalStorage.BannerURL,
 						"main_scheme": scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
 						"e2e_scheme":  scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
@@ -123,11 +125,25 @@ func run() {
 				),
 				true,
 				true,
+				&tgTypes.InlineKeyboardMarkup{
+					InlineKeyboard: [][]tgTypes.InlineKeyboardButton{
+						{
+							{
+								Text: "Full Changelog",
+								URL:  url,
+							},
+							{
+								Text: "GitHub",
+								URL:  commitInfo.SourceURL,
+							},
+						},
+					},
+				},
 			); err != nil {
 				return err
 			}
 		} else {
-			if err = bot.Client.UpdateStatus("", false, false); err != nil {
+			if err = bot.Client.UpdateStatus("", false, false, nil); err != nil {
 				return err
 			}
 		}
