@@ -17,6 +17,7 @@ func getScheme() (*types.TLScheme, error) {
 	var isMethodDeclaration bool
 	compileParams := regexp.MustCompile("(\\w+):(\\S+)")
 	for _, line := range strings.Split(string(res.Body), "\n") {
+		line = strings.TrimSpace(line)
 		if matches := consts.TLSchemeLineRgx.FindAllStringSubmatch(line, -1); len(matches) > 0 {
 			tlBase := types.TLBase{
 				ID:   ReverseConstructor(matches[0][2]),
