@@ -28,7 +28,7 @@ func MergeParameters(old, new []types.Parameter, isSameConstructor bool) []types
 		if i < len(old) {
 			content := old[i]
 			res := flagExtractor.FindAllStringSubmatch(content.Type, -1)
-			isFlagAddable := len(res) > 0 && slices.Contains(availableFlags, res[0][1])
+			isFlagAddable := len(res) > 0 && slices.Contains(availableFlags, res[0][1]) && isSameConstructor
 			if slices.Contains(addableKeys, content.Name) || isFlagAddable {
 				mergedList = append(mergedList, content)
 			}
