@@ -2,13 +2,16 @@ package github
 
 import (
 	"TLExtractor/consts"
+	"TLExtractor/github/types"
 	"TLExtractor/telegram/scheme"
 	schemeTypes "TLExtractor/telegram/scheme/types"
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 )
 
-func (ctx *clientContext) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs schemeTypes.DifferenceStats, commitMessage string) (map[string]string, error) {
+func (ctx *clientContext) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs schemeTypes.DifferenceStats, commitMessage string) (*types.CommitInfo, error) {
 	commitFiles := make(map[string]string)
 	if diffs.MainApi.Total > 0 {
 		commitFiles["main_api.tl"] = scheme.ToString(fullScheme.MainApi, fullScheme.Layer, true)
@@ -26,10 +29,21 @@ func (ctx *clientContext) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs
 	if err != nil {
 		return nil, err
 	}
-	var commitURLs = make(map[string]string)
+	commitInfo := &types.CommitInfo{
+		FilesLines: make(map[string]string),
+	}
+	hashes := slices.Collect(maps.Values(files))
+	commitInfo.SourceURL = fmt.Sprintf(
+		"%s/%s/%s/tree/%s",
+		consts.GithubURL,
+		consts.SchemeRepoOwner,
+		consts.SchemeRepoName,
+		hashes[len(hashes)-1],
+	)
+
 	for file, content := range commitFiles {
 		for constructor, line := range getLines(content) {
-			commitURLs[constructor] = fmt.Sprintf(
+			commitInfo.FilesLines[constructor] = fmt.Sprintf(
 				"%s/%s/%s/blob/%s/%s#L%d",
 				consts.GithubURL,
 				consts.SchemeRepoOwner,
@@ -40,5 +54,5 @@ func (ctx *clientContext) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs
 			)
 		}
 	}
-	return commitURLs, nil
+	return commitInfo, nil
 }
