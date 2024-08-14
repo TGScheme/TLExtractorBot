@@ -47,6 +47,7 @@ func init() {
 		fmt.Println(debugStyle.Render(consts.DebugModeMessage))
 		EnvFolder = path.Join(EnvFolder, "..", ".env_debug")
 		consts.SchemeRepoName = "Schema-Tests"
+		gologging.SetLevel(gologging.DebugLevel)
 	}
 	EnvFolder, _ = filepath.Abs(EnvFolder)
 	if err = os.MkdirAll(EnvFolder, os.ModePerm); err != nil && !os.IsExist(err) {
