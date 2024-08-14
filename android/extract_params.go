@@ -110,6 +110,8 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 					if vectorRes := compileUnVector.FindAllStringSubmatch(parameter.Type, -1); len(matches) > 0 {
 						parameter.Type = vectorRes[0][1]
 					}
+				} else if !strings.HasPrefix(parameter.Type, "Vector") && fromLoop {
+					parameter.Type = fmt.Sprintf("Vector<%s>", parameter.Type)
 				}
 				if openedFlags {
 					if flagValue == -1 {
