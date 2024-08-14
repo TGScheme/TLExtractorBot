@@ -3,14 +3,14 @@ module TLExtractor
 go 1.23rc2
 
 require (
-	github.com/GoBotApiOfficial/gobotapi v1.7.8
-	github.com/Laky-64/gologging v1.0.1
+	github.com/GoBotApiOfficial/gobotapi v1.7.9
+	github.com/Laky-64/gologging v1.0.7
 	github.com/Laky-64/http v1.0.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.26.6
 	github.com/charmbracelet/huh v0.5.2
-	github.com/charmbracelet/huh/spinner v0.0.0-20240809225911-cadaa638c7fa
+	github.com/charmbracelet/huh/spinner v0.0.0-20240813141447-57c1e0379197
 	github.com/charmbracelet/lipgloss v0.12.1
 	github.com/cheggaaa/pb/v3 v3.1.5
 	github.com/flosch/pongo2/v6 v6.0.0
@@ -25,7 +25,7 @@ require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/catppuccin/go v0.2.0 // indirect
 	github.com/charmbracelet/x/ansi v0.1.4 // indirect
-	github.com/charmbracelet/x/exp/strings v0.0.0-20240809174237-9ab0ca04ce0c // indirect
+	github.com/charmbracelet/x/exp/strings v0.0.0-20240813204730-a29dab672bf2 // indirect
 	github.com/charmbracelet/x/input v0.1.3 // indirect
 	github.com/charmbracelet/x/term v0.1.1 // indirect
 	github.com/charmbracelet/x/windows v0.1.2 // indirect
