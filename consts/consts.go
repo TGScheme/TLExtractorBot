@@ -10,6 +10,8 @@ import (
 
 // Api Links
 const (
+	//TDesktopTL   = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/65f7bdb91411e5f03fb97df7b5f1f5b3adb01069/Telegram/SourceFiles/mtproto/scheme/api.tl"
+	//AppCenterApi = "https://install.appcenter.ms/api/v0.1/apps/%s/%s/distribution_groups/%s/releases/961"
 	TDesktopTL   = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/dev/Telegram/SourceFiles/mtproto/scheme/api.tl"
 	AppCenterApi = "https://install.appcenter.ms/api/v0.1/apps/%s/%s/distribution_groups/%s/releases/latest"
 	E2ETL        = "https://core.telegram.org/schema/end-to-end-json"
