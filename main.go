@@ -10,11 +10,13 @@ import (
 	"TLExtractor/services"
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
+	schemeTypes "TLExtractor/telegram/scheme/types"
 	"TLExtractor/telegram/telegraph"
 	"TLExtractor/tui"
 	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager"
 	"fmt"
+	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
 	"github.com/Laky-64/gologging"
 	"slices"
 	"time"
@@ -28,12 +30,14 @@ func main() {
 
 func run() {
 	bot.Client.UpdateUptime(true, "")
-	defer func() {
-		if r := recover(); r != nil {
-			bot.Client.UpdateUptime(false, "panic")
-			gologging.Fatal(r)
-		}
-	}()
+	if !environment.Debug {
+		defer func() {
+			if r := recover(); r != nil {
+				bot.Client.UpdateUptime(false, "panic")
+				gologging.Fatal(r)
+			}
+		}()
+	}
 	appcenter.Listen(func(update types.UpdateInfo) error {
 		if err := bot.Client.UpdateStatus(
 			environment.FormatVar(
