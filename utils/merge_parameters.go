@@ -15,9 +15,6 @@ func MergeParameters(old, new []types.Parameter, isSameConstructor bool) []types
 	var keys, addableKeys, availableFlags []string
 	flagExtractor := regexp.MustCompile(`(flags[0-9]*)\.[0-9]+\?`)
 	i, j := 0, 0
-	for _, content := range old {
-		keys = append(keys, content.Name)
-	}
 	for _, content := range new {
 		addableKeys = append(addableKeys, content.Name)
 		if content.Type == "#" {
@@ -28,9 +25,12 @@ func MergeParameters(old, new []types.Parameter, isSameConstructor bool) []types
 		if i < len(old) {
 			content := old[i]
 			res := flagExtractor.FindAllStringSubmatch(content.Type, -1)
-			isFlagAddable := len(res) > 0 && slices.Contains(availableFlags, res[0][1]) && isSameConstructor
-			if slices.Contains(addableKeys, content.Name) || isFlagAddable {
+			if len(res) > 0 && slices.Contains(availableFlags, res[0][1]) &&
+				!slices.Contains(addableKeys, content.Name) &&
+				!slices.Contains(keys, content.Name) &&
+				isSameConstructor {
 				mergedList = append(mergedList, content)
+				keys = append(keys, content.Name)
 			}
 			i++
 		}
