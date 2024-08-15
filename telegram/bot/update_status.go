@@ -6,7 +6,7 @@ import (
 	"github.com/GoBotApiOfficial/gobotapi/types"
 )
 
-func (ctx *context) UpdateStatus(text string, withNotification, isFinal bool, keyboard any) error {
+func (ctx *context) UpdateStatus(text string, withNotification, isFinal bool, keyboard *types.InlineKeyboardMarkup) error {
 	if len(text) == 0 {
 		_, err := ctx.client.Invoke(
 			&methods.DeleteMessage{
