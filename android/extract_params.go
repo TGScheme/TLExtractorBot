@@ -22,7 +22,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 	var addedFlags []string
 	var flagName string
 	flagValue := -1
-	fastCheck := regexp.MustCompile(`this\.\w+`)
+	//fastCheck := regexp.MustCompile(`this\.\w+`)
 	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. ]+)( \?|\.add|\.get|\.serialize|\)| !| = (abstractSerializedData|i[0-9+]*;|read|TLdeserialize;|\(|\w+\$\w+\.\w+deserialize))\)?`)
 	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *(abstractSerializedData[0-9]*)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
@@ -135,8 +135,6 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 				}
 				parameter.Name = fixParamName(parameter.Name)
 				params = append(params, parameter)
-			} else if fastCheck.MatchString(line.Line) && environment.Debug {
-				gologging.Debug("Fast check:", line.Line, class.FullName())
 			}
 		}
 		if pos > declarationPos && line.Nesting == 1 {
