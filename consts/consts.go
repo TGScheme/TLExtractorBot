@@ -81,6 +81,16 @@ var (
 		regexp.MustCompile(`^secret$`),
 		regexp.MustCompile(`Layer[0-9]+$`),
 	}
+	BrokenNames = map[*regexp.Regexp]string{
+		regexp.MustCompile(`^((?P<first>is_admin)|is_(?P<second>.*))$`): "$first$second",
+		regexp.MustCompile(`^web_`):                                     "",
+		regexp.MustCompile(`__b`):                                       "_B",
+		regexp.MustCompile(`_item$`):                                    "",
+		regexp.MustCompile(`^hash2$`):                                   "hash",
+		regexp.MustCompile(`^via_invite$`):                              "via_request",
+		regexp.MustCompile(`^_`):                                        "",
+		regexp.MustCompile(`^doc$`):                                     "id",
+	}
 )
 
 // MtProto Errors
