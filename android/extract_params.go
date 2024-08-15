@@ -1,13 +1,12 @@
 package android
 
 import (
+	"TLExtractor/android/types"
 	"TLExtractor/consts"
-	"TLExtractor/environment"
 	"TLExtractor/java"
 	javaTypes "TLExtractor/java/types"
-	"TLExtractor/telegram/scheme/types"
+	schemeTypes "TLExtractor/telegram/scheme/types"
 	"fmt"
-	"github.com/Laky-64/gologging"
 	"math"
 	"regexp"
 	"slices"
@@ -15,16 +14,17 @@ import (
 	"strings"
 )
 
-func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Parameter, error) {
-	var params []types.Parameter
+func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes.Parameter, error) {
+	var params []schemeTypes.Parameter
 	var openedFlags, fromIf, fromLoop bool
 	var flagNesting, forNesting int
 	var addedFlags []string
+	pendingFlags := make(map[string]types.FlagInfo)
 	var flagName string
 	flagValue := -1
 	//fastCheck := regexp.MustCompile(`this\.\w+`)
-	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. ]+)( \?|\.add|\.get|\.serialize|\)| !| = (abstractSerializedData|i[0-9+]*;|read|TLdeserialize;|\(|\w+\$\w+\.\w+deserialize))\)?`)
-	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *(abstractSerializedData[0-9]*)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
+	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. ]+)( \?|\.add|\.get|\.serialize|\)| !| = (Boolean\.valueOf\(abstractSerializedData|abstractSerializedData|i[0-9+]*;|read|TLdeserialize;|\(|\w+\$\w+\.\w+deserialize))\)?`)
+	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?abstractSerializedData[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
 	compileFlags := regexp.MustCompile(`[\w =]+[|& ][ (]([0-9]+)`)
@@ -68,11 +68,11 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 				forNesting = line.Nesting - 1
 			}
 			if matches := compileVars.FindAllStringSubmatch(line.Line, -1); len(matches) > 0 {
-				var parameter types.Parameter
+				var parameter schemeTypes.Parameter
 				var fromBuffer bool
 				parameter.Name = matches[0][2]
 				if matchedType := compileVarBuffer.FindAllStringSubmatch(line.Line, -1); len(matchedType) > 0 {
-					parameter.Type = java.ParseType(matchedType[0][4])
+					parameter.Type = java.ParseType(matchedType[0][5])
 					fromBuffer = true
 				} else if declaredType, ok := class.Vars[matches[0][2]]; ok {
 					parameter.Type = java.ParseType(declaredType)
@@ -113,17 +113,31 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]types.Param
 				} else if !strings.HasPrefix(parameter.Type, "Vector") && fromLoop {
 					parameter.Type = fmt.Sprintf("Vector<%s>", parameter.Type)
 				}
-				if openedFlags {
+				if pendingFlag, ok := pendingFlags[parameter.Name]; openedFlags || ok {
+					if ok {
+						flagName = pendingFlag.Name
+						flagValue = pendingFlag.Value
+						delete(pendingFlags, parameter.Name)
+					}
 					if flagValue == -1 {
 						return nil, consts.FlagNotFound
 					}
 					if !fromBuffer && parameter.Type == "Bool" {
 						parameter.Type = "true"
 					}
-					parameter.Type = fmt.Sprintf("%s.%d?%s", flagName, flagValue, parameter.Type)
+					if !fromIf && !slices.Contains([]string{"true", "#"}, parameter.Type) {
+						pendingFlags[parameter.Name] = types.FlagInfo{
+							Name:  flagName,
+							Value: flagValue,
+						}
+						continue
+					}
+					if parameter.Name != flagName {
+						parameter.Type = fmt.Sprintf("%s.%d?%s", flagName, flagValue, parameter.Type)
+					}
 					if !slices.Contains(addedFlags, flagName) {
 						addedFlags = append(addedFlags, flagName)
-						params = append(params, types.Parameter{
+						params = append(params, schemeTypes.Parameter{
 							Name: flagName,
 							Type: "#",
 						})
