@@ -8,12 +8,17 @@ import (
 func getObjsDiffs[T types.TLInterface](old, new []T) []types.TLObjDifferences {
 	var diff []types.TLObjDifferences
 	mappedOldObjects := make(map[string]types.TLInterface)
+	reverseNames := make(map[string]string)
 	for _, oldInterface := range old {
 		packageName := fmt.Sprintf("%s.%d", oldInterface.Package(), oldInterface.GetLayer())
 		mappedOldObjects[packageName] = oldInterface
+		reverseNames[oldInterface.Constructor()] = packageName
 	}
 	for _, newInterface := range new {
 		packageName := fmt.Sprintf("%s.%d", newInterface.Package(), newInterface.GetLayer())
+		if reversedPackageName, ok := reverseNames[newInterface.Constructor()]; ok {
+			packageName = reversedPackageName
+		}
 		if _, found := mappedOldObjects[packageName]; !found {
 			diff = append(diff, types.TLObjDifferences{
 				Object: newInterface,
