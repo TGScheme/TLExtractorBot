@@ -1,6 +1,6 @@
 module TLExtractor
 
-go 1.23rc2
+go 1.23.0
 
 require (
 	github.com/GoBotApiOfficial/gobotapi v1.8.5
