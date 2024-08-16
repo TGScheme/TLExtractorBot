@@ -134,7 +134,6 @@ func run() {
 						"banner_url":  environment.LocalStorage.BannerURL,
 						"main_scheme": scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
 						"e2e_scheme":  scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
-						"is_patch":    environment.IsPatch(),
 					},
 				),
 			)
@@ -145,10 +144,11 @@ func run() {
 				environment.FormatVar(
 					"message",
 					map[string]any{
-						"update": update,
-						"time":   utils.FormatDuration(elapsedTime),
-						"layer":  fullScheme.Layer,
-						"stats":  stats,
+						"update":   update,
+						"time":     utils.FormatDuration(elapsedTime),
+						"layer":    fullScheme.Layer,
+						"stats":    stats,
+						"is_patch": environment.IsPatch(),
 					},
 				),
 				true,
