@@ -6,18 +6,20 @@ func getSchemeStats(schemeDifferences *types.TLSchemeDifferences) types.SchemeSt
 	var stats types.SchemeStats
 	for _, diff := range schemeDifferences.ConstructorsDifference {
 		if diff.IsNew {
-			stats.Additions++
+			stats.Constructors.Additions++
 		} else {
-			stats.Changes++
+			stats.Constructors.Changes++
 		}
 	}
 	for _, diff := range schemeDifferences.MethodsDifference {
 		if diff.IsNew {
-			stats.Additions++
+			stats.Methods.Additions++
 		} else {
-			stats.Changes++
+			stats.Constructors.Changes++
 		}
 	}
-	stats.Total = stats.Additions + stats.Changes
+	stats.Total = stats.Constructors.Total() + stats.Methods.Total()
+	stats.TotalAdditions = stats.Constructors.Additions + stats.Methods.Additions
+	stats.TotalChanges = stats.Constructors.Changes + stats.Methods.Changes
 	return stats
 }

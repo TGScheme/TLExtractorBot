@@ -5,9 +5,9 @@
 <h3>End-to-end schema changes</h3>
 {% endif -%}
 {%- if diffs.MethodsDifference | length > 0 %}
-{{ getObjectsDifference("Methods", schemeStats, diffs.MethodsDifference) }}
+{{ getObjectsDifference("Methods", schemeStats.Methods, diffs.MethodsDifference) }}
 {%- endif %}
 {% if diffs.ConstructorsDifference | length > 0 -%}
-{{ getObjectsDifference("Constructors", schemeStats, diffs.ConstructorsDifference) }}
+{{ getObjectsDifference("Constructors", schemeStats.Constructors, diffs.ConstructorsDifference) }}
 {%- endif %}
 {% endmacro -%}
