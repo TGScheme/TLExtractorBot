@@ -12,5 +12,6 @@ func mergeSchemes(remote *types.TLRemoteScheme, raw *types.TLScheme, rawLayer in
 	rawScheme.Methods = mergeObjects(remote.Methods, raw.Methods, isSameLayer)
 	environment.LocalStorage.Commit()
 	rawScheme.Layer = rawLayer
+	rawScheme.IsSync = remote.Layer == rawLayer
 	return &rawScheme
 }

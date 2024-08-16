@@ -127,8 +127,12 @@ func run() {
 				stableScheme,
 				fullScheme,
 			)
+			pageTitle := fmt.Sprintf("Layer %d", fullScheme.Layer)
+			if !fullScheme.IsSync {
+				pageTitle = fmt.Sprintf("%s Preview", pageTitle)
+			}
 			url, err := telegraph.Client.CreatePage(
-				fmt.Sprintf("Layer %d Preview", fullScheme.Layer),
+				pageTitle,
 				environment.FormatVar(
 					"changelogs",
 					map[string]any{

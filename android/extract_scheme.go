@@ -22,5 +22,6 @@ func ExtractScheme() (*schemeTypes.TLFullScheme, error) {
 		MainApi: mainScheme.TLScheme,
 		E2EApi:  e2eScheme.TLScheme,
 		Layer:   mainScheme.Layer,
+		IsSync:  mainScheme.IsSync,
 	}, nil
 }
