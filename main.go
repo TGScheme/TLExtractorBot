@@ -105,10 +105,14 @@ func run() {
 		}
 		if differences := scheme.GetDiffs(environment.LocalStorage.PreviewLayer, fullScheme); differences != nil {
 			stats := scheme.GetStats(differences)
+			commitMessage := fmt.Sprintf("Updated to Layer %d", fullScheme.Layer)
+			if environment.IsPatch() {
+				commitMessage = fmt.Sprintf("Patch %d", fullScheme.Layer)
+			}
 			commitInfo, err := github.Client.MakeCommit(
 				fullScheme,
 				stats,
-				fmt.Sprintf("Updated to Layer %d", fullScheme.Layer),
+				commitMessage,
 			)
 			if err != nil {
 				return err
