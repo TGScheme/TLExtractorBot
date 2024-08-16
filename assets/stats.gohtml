@@ -1,9 +1,9 @@
 {% macro getStats(scheme) -%}
 {%- if scheme.Additions > 0 -%}
-{{scheme.Additions}} additions
+{{scheme.Additions}} addition{{ scheme.Additions | pluralize }}
 {%- endif -%}
 {%- if scheme.Additions > 0 && scheme.Changes > 0 -%}, {% endif %}
 {%- if scheme.Changes > 0 -%}
-{{scheme.Changes}} changes
+{{scheme.Changes}} change{{ scheme.Changes | pluralize }}
 {%- endif -%}
 {%- endmacro %}
