@@ -62,9 +62,9 @@ func init() {
 			Value(&channel),
 		huh.NewInput().
 			Title("Log chat ID").
-			Description("Enter log User ID or channel username where the bot will send logs").
-			Placeholder("@channel").
-			Validate(tui.Validate("Log chat ID", tuiTypes.NoCheck)).
+			Description("Enter User ID where the bot will send logs").
+			Placeholder("123456789").
+			Validate(tui.Validate("Log chat ID", tuiTypes.IsInt)).
 			Value(&logChat),
 	)
 	infoPage.SetCheckFunc(func(checkType tuiTypes.CheckType) error {
