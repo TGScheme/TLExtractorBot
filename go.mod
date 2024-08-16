@@ -5,7 +5,7 @@ go 1.23rc2
 require (
 	github.com/GoBotApiOfficial/gobotapi v1.8.5
 	github.com/Laky-64/gologging v1.0.7
-	github.com/Laky-64/http v1.0.0
+	github.com/Laky-64/http v1.0.2
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.26.6
@@ -25,7 +25,7 @@ require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/catppuccin/go v0.2.0 // indirect
 	github.com/charmbracelet/x/ansi v0.1.4 // indirect
-	github.com/charmbracelet/x/exp/strings v0.0.0-20240815133304-13e74f13df31 // indirect
+	github.com/charmbracelet/x/exp/strings v0.0.0-20240815200342-61de596daa2b // indirect
 	github.com/charmbracelet/x/input v0.1.3 // indirect
 	github.com/charmbracelet/x/term v0.1.1 // indirect
 	github.com/charmbracelet/x/windows v0.1.2 // indirect
