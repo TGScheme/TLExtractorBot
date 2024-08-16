@@ -16,7 +16,8 @@ func Listen(listener func(update types.UpdateInfo) error) {
 			gologging.Error(err)
 			continue
 		}
-		if info.ID > environment.LocalStorage.LastID {
+		if info.ID > environment.LocalStorage.LastID && !environment.IsBuilding() || environment.IsPatch() {
+			environment.SetBuildingStatus(true)
 			if err = downloadApk(info); err != nil {
 				gologging.Error(err)
 				continue
@@ -35,6 +36,8 @@ func Listen(listener func(update types.UpdateInfo) error) {
 			}
 			environment.LocalStorage.LastID = info.ID
 			environment.LocalStorage.Commit()
+			environment.SetPatchStatus(false)
+			environment.SetBuildingStatus(false)
 		}
 	}
 }

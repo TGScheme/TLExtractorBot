@@ -93,6 +93,12 @@ var (
 	}
 )
 
+var SupportedBotAliases = []string{
+	".",
+	"/",
+	"!",
+}
+
 // MtProto Errors
 var (
 	ConstructorNotFound = errors.New("constructor not found")

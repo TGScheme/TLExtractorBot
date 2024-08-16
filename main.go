@@ -4,6 +4,7 @@ import (
 	"TLExtractor/android"
 	"TLExtractor/appcenter"
 	"TLExtractor/appcenter/types"
+	"TLExtractor/consts"
 	"TLExtractor/environment"
 	"TLExtractor/github"
 	"TLExtractor/java/jadx"
@@ -16,6 +17,9 @@ import (
 	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager"
 	"fmt"
+	"github.com/GoBotApiOfficial/gobotapi"
+	"github.com/GoBotApiOfficial/gobotapi/filters"
+	"github.com/GoBotApiOfficial/gobotapi/methods"
 	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
 	"github.com/Laky-64/gologging"
 	"slices"
@@ -38,6 +42,22 @@ func run() {
 			}
 		}()
 	}
+	bot.Client.OnMessage(filters.Filter(func(client *gobotapi.Client, update tgTypes.Message) {
+		status := environment.IsBuilding()
+		if !status {
+			environment.SetPatchStatus(true)
+		}
+		_, _ = client.Invoke(&methods.SendMessage{
+			ChatID: update.Chat.ID,
+			Text: environment.FormatVar(
+				"patch_message",
+				map[string]any{
+					"is_building": status,
+				},
+			),
+			ParseMode: "HTML",
+		})
+	}, filters.And(filters.Command("patch", consts.SupportedBotAliases...), filters.ChatID(environment.LocalStorage.LogChatID))))
 	appcenter.Listen(func(update types.UpdateInfo) error {
 		if err := bot.Client.UpdateStatus(
 			environment.FormatVar(
@@ -45,6 +65,7 @@ func run() {
 				map[string]any{
 					"update":   update,
 					"progress": 0,
+					"is_patch": environment.IsPatch(),
 				},
 			),
 			false,
@@ -64,6 +85,7 @@ func run() {
 					map[string]any{
 						"update":   update,
 						"progress": percentage,
+						"is_patch": environment.IsPatch(),
 					},
 				),
 				false,
@@ -112,6 +134,7 @@ func run() {
 						"banner_url":  environment.LocalStorage.BannerURL,
 						"main_scheme": scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
 						"e2e_scheme":  scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
+						"is_patch":    environment.IsPatch(),
 					},
 				),
 			)

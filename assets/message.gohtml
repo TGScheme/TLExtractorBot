@@ -1,6 +1,10 @@
 import "stats"
 
+{%- if is_patch -%}
+<b>💡 Telegram for Android</b> has received a patch for the <b>TL-schema</b>!
+{%- else -%}
 <b>💡 Telegram for Android</b> has been updated to version <b>{{update.VersionName}} ({{update.BuildNumber}})</b>!
+{%- endif %}
 
 {% if !stats -%}
 <i>Decompiling... ({{progress}}%)</i>

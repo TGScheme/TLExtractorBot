@@ -39,7 +39,6 @@ func init() {
 			}
 		}
 		bot = gobotapi.NewClient(environment.CredentialsStorage.BotToken)
-		bot.NoUpdates = true
 		bot.NoNotice = true
 		bot.LoggingLevel = logger.Silent
 		_ = bot.Start()
