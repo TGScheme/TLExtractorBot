@@ -18,8 +18,8 @@ func getSchemeStats(schemeDifferences *types.TLSchemeDifferences) types.SchemeSt
 			stats.Constructors.Changes++
 		}
 	}
-	stats.Total = stats.Constructors.Total() + stats.Methods.Total()
 	stats.TotalAdditions = stats.Constructors.Additions + stats.Methods.Additions
 	stats.TotalChanges = stats.Constructors.Changes + stats.Methods.Changes
+	stats.Total = stats.TotalAdditions + stats.TotalChanges
 	return stats
 }
