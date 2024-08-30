@@ -65,19 +65,19 @@ func extractObject(class *javaTypes.RawClass) (types.TLInterface, error) {
 		}
 	}
 	var deserializedParams, serializedParams []types.Parameter
-	if deserializePos != 0 {
-		params, err := extractParams(class, deserializePos)
-		if err != nil {
-			return nil, err
-		}
-		deserializedParams = params
-	}
 	if serializePos != 0 {
 		params, err := extractParams(class, serializePos)
 		if err != nil {
 			return nil, err
 		}
 		serializedParams = params
+	}
+	if deserializePos != 0 {
+		params, err := extractParams(class, deserializePos)
+		if err != nil {
+			return nil, err
+		}
+		deserializedParams = params
 	}
 	if len(serializedParams) > len(deserializedParams) {
 		if len(deserializedParams) != 0 {
