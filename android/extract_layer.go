@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func ExtractLayer() (int, error) {
+func extractLayer() (int, error) {
 	readFile, err := os.ReadFile(path.Join(environment.EnvFolder, consts.TempSources, "TLRPC$Message.java"))
 	if err != nil {
 		return -1, err

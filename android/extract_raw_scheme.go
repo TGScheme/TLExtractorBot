@@ -27,7 +27,7 @@ func extractRawScheme() (*types.RawTLScheme, error) {
 			scheme.Constructors = append(scheme.Constructors, file.(*types.TLConstructor))
 		}
 	}
-	scheme.Layer, err = ExtractLayer()
+	scheme.Layer, err = extractLayer()
 	if err != nil {
 		return nil, err
 	}
