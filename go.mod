@@ -8,10 +8,10 @@ require (
 	github.com/Laky-64/http v1.0.2
 	github.com/blacktop/go-macho v1.1.232
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
-	github.com/charmbracelet/bubbles v0.18.0
-	github.com/charmbracelet/bubbletea v0.26.6
-	github.com/charmbracelet/huh v0.5.2
-	github.com/charmbracelet/huh/spinner v0.0.0-20240813141447-57c1e0379197
+	github.com/charmbracelet/bubbles v0.19.0
+	github.com/charmbracelet/bubbletea v1.1.0
+	github.com/charmbracelet/huh v0.5.3
+	github.com/charmbracelet/huh/spinner v0.0.0-20240829113522-b963c398e1f1
 	github.com/charmbracelet/lipgloss v0.13.0
 	github.com/cheggaaa/pb/v3 v3.1.5
 	github.com/flosch/pongo2/v6 v6.0.0
@@ -22,7 +22,7 @@ require (
 )
 
 require (
-	github.com/Laky-64/goswift v1.0.5 // indirect
+	github.com/Laky-64/goswift v1.0.6 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
-	github.com/muesli/termenv v0.15.2 // indirect
+	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
