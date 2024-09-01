@@ -11,4 +11,5 @@ type TLInterface interface {
 	IsMethod() bool
 	GetLayer() int
 	SetLayer(int)
+	IsSecret() bool
 }
