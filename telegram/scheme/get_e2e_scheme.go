@@ -7,7 +7,7 @@ import (
 	"github.com/Laky-64/http"
 )
 
-func getE2EScheme() (*types.TLRemoteScheme, error) {
+func GetE2EScheme() (*types.TLRemoteScheme, error) {
 	request, err := http.ExecuteRequest(consts.E2ETL)
 	if err != nil {
 		return nil, err

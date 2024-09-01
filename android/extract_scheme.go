@@ -10,18 +10,10 @@ func ExtractScheme() (*schemeTypes.TLFullScheme, error) {
 	if err != nil {
 		return nil, err
 	}
-	mainScheme, err := scheme.MergeOfficial(rawScheme, false)
-	if err != nil {
-		return nil, err
-	}
-	e2eScheme, err := scheme.MergeOfficial(rawScheme, true)
-	if err != nil {
-		return nil, err
-	}
-	return &schemeTypes.TLFullScheme{
-		MainApi: mainScheme.TLScheme,
-		E2EApi:  e2eScheme.TLScheme,
-		Layer:   mainScheme.Layer,
-		IsSync:  mainScheme.IsSync,
-	}, nil
+	return scheme.MergeUpstream(rawScheme, schemeTypes.AndroidPatch, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
+		if isE2E {
+			return scheme.GetE2EScheme()
+		}
+		return scheme.GetScheme()
+	})
 }

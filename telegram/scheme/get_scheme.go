@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func getScheme() (*types.TLRemoteScheme, error) {
+func GetScheme() (*types.TLRemoteScheme, error) {
 	res, err := http.ExecuteRequest(consts.TDesktopTL)
 	if err != nil {
 		return nil, err
