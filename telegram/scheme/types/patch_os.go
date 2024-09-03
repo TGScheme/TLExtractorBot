@@ -1,8 +1,8 @@
 package types
 
-type PatchOS int
+type PatchOS string
 
 const (
-	AndroidPatch PatchOS = iota
-	IOSPatch
+	AndroidPatch PatchOS = "android"
+	IOSPatch     PatchOS = "ios"
 )

@@ -13,10 +13,10 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 	correctNames := make(map[string]string)
 	originalObjects := make(map[string]string)
 	if environment.LocalStorage.PatchedObjects == nil {
-		environment.LocalStorage.PatchedObjects = make(map[types.PatchOS]map[string]types.PatchInfo)
+		environment.LocalStorage.PatchedObjects = make(map[types.PatchOS]map[string]*types.PatchInfo)
 	}
 	if _, ok := environment.LocalStorage.PatchedObjects[patchOs]; !ok {
-		environment.LocalStorage.PatchedObjects[patchOs] = make(map[string]types.PatchInfo)
+		environment.LocalStorage.PatchedObjects[patchOs] = make(map[string]*types.PatchInfo)
 	}
 	for _, oldInterface := range old {
 		constructor := ParseConstructor(oldInterface.Constructor())
@@ -43,7 +43,7 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 					continue
 				}
 			} else if oldInterface.Constructor() != newInterface.Constructor() && isSameLayer {
-				environment.LocalStorage.PatchedObjects[patchOs][newInterface.Package()] = types.PatchInfo{
+				environment.LocalStorage.PatchedObjects[patchOs][newInterface.Package()] = &types.PatchInfo{
 					OldConstructor:     newInterface.Constructor(),
 					PatchedConstructor: oldInterface.Constructor(),
 				}
