@@ -3,20 +3,17 @@ package main
 import (
 	"TLExtractor/android"
 	"TLExtractor/consts"
-	"TLExtractor/debug_menu"
 	"TLExtractor/environment"
 	"TLExtractor/gemini"
 	"TLExtractor/github"
+	"TLExtractor/ios"
 	"TLExtractor/java/jadx"
-	"TLExtractor/services"
 	"TLExtractor/store_api"
 	"TLExtractor/store_api/types"
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
 	schemeTypes "TLExtractor/telegram/scheme/types"
 	"TLExtractor/telegram/telegraph"
-	"TLExtractor/tui"
-	"TLExtractor/utils/package_manager"
 	"errors"
 	"fmt"
 	"github.com/GoBotApiOfficial/gobotapi"
@@ -28,13 +25,17 @@ import (
 )
 
 func main() {
-	tui.Run()
-	if environment.Debug && !debug_menu.ReadyToTest {
+	//tui.Run()
+	//package_manager.CheckPackages()
+	//services.Run(run)
+	file, err := ios.Decompile()
+	if err != nil {
 		return
 	}
-	scheme.ListenCoreFork()
-	package_manager.CheckPackages()
-	services.Run(run)
+	_, err = ios.ExtractScheme(file)
+	if err != nil {
+		gologging.Fatal(err)
+	}
 }
 
 func run() {

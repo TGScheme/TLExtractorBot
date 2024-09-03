@@ -1,0 +1,4237 @@
+STP X28, X27, [SP,#-96]!
+STP X26, X25, [SP,#16]
+STP X24, X23, [SP,#32]
+STP X22, X21, [SP,#48]
+STP X20, X19, [SP,#64]
+STP X29, X30, [SP,#80]
+ADD X29, SP, #0x50
+SUB SP, SP, #0x430
+MOV X21, X2
+LSR X8, X2, #57
+AND W8, W8, #0x78
+BFXIL W8, W21, #0, #3
+MOV X20, X1
+MOV X19, X0
+ADRP X9, .+0x4000 (4096 instructions)
+ADD X9, X9, #0x264 (153 instructions)
+ADR X10, .+0x0
+LDRSW X11, [X9,X8,LSL #2]
+ADD X10, X10, X11
+BR X10
+ADD X0, X21, #0x10
+ADD X1, SP, #0x280
+BL .+0xfffffffffff2b86c
+LDR W21, [X21,#56]
+TBZ W20, #0, .+0x14 (updateBotBusinessConnect) FIRST IF??
+MOV W0, #0xc97a
+MOVK W0, #0x8ae5, LSL #16
+MOV X20, X19
+BL .+0x247fc4
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffff3378c
+B .+0x3e98
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDR X24, [X8,#24]
+LDRB W25, [X8,#32]
+LDR W22, [X8,#36]
+LDRB W26, [X8,#40]
+LDR X21, [X8,#48]
+TBZ W20, #0, .+0x14 (updateDraftMessage) ELSE??
+MOV W0, #0xec6d
+MOVK W0, #0x1b49, LSL #16
+MOV X20, X19
+BL .+0x247f80
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246e00
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X24
+MOV X3, X25
+BL .+0xfffffffffffad220
+TBZ W23, #0, .+0x18
+TBNZ W26, #0, .+0x40c0
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246dd4
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x220c54
+AND X8, X21, #0xffffffffffffff8
+LDR W26, [X8,#16]
+LDR X27, [X8,#24]
+LDR W25, [X8,#32]
+LDRB W28, [X8,#36]
+LDP X23, X24, [X8,#40]
+LDP X22, X21, [X8,#56]
+TBZ W20, #0, .+0x14 (updateNewAuthorization) ANOTHER ELSE??
+MOV W0, #0xabef
+MOVK W0, #0x8951, LSL #16
+MOV X20, X19
+BL .+0x247ee8
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246d68
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246dd8
+TBZ W26, #0, .+0x3dbc
+TBNZ W28, #0, .+0x4030
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246d40
+CBZ X24, .+0x4020
+MOV X0, X23
+MOV X1, X24
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x246e28
+CBZ X21, .+0x400c
+MOV X0, X21
+BL .+0x28d00c
+MOV X0, X22
+B .+0x27a4
+AND X8, X21, #0xffffffffffffff8
+LDR W26, [X8,#16]
+LDR X23, [X8,#24]
+LDRB W25, [X8,#32]
+LDP X21, X22, [X8,#40]
+LDRB W24, [X8,#56]
+TBZ W20, #0, .+0x14
+MOV W0, #0xe40b
+MOVK W0, #0x1824, LSL #16
+MOV X20, X19
+BL .+0x247e58
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246cd8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X25
+BL .+0xfffffffffffad0f8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+MOV X4, X24
+B .+0x3730
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDR X21, [X8,#24]
+LDRB W22, [X8,#32]
+TBZ W20, #0, .+0x14
+MOV W0, #0x7752
+MOVK W0, #0xebe0, LSL #16
+MOV X20, X19
+BL .+0x247df8
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246c78
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffffad07c
+AND X8, X21, #0xffffffffffffff8
+LDR W21, [X8,#16]
+LDR X23, [X8,#24]
+LDRB W24, [X8,#32]
+LDP X9, X28, [X8,#40]
+STR X9, [SP,#448]
+LDR X9, [X8,#56]
+STR X9, [SP,#432]
+LDP X9, X22, [X8,#64]
+STR X9, [SP,#416]
+LDP X25, X9, [X8,#80]
+STR X9, [SP,#400]
+LDR X9, [X8,#96]
+STR X9, [SP,#384]
+LDR X9, [X8,#104]
+STR X9, [SP,#368]
+LDR X9, [X8,#112]
+STR X9, [SP,#352]
+LDR X9, [X8,#120]
+STR X9, [SP,#336]
+LDR X9, [X8,#128]
+STR X9, [SP,#320]
+LDR X9, [X8,#136]
+STR X9, [SP,#304]
+LDR X9, [X8,#144]
+STR X9, [SP,#288]
+LDR X9, [X8,#152]
+STR X9, [SP,#272]
+LDR X9, [X8,#160]
+STR X9, [SP,#464]
+LDR X9, [X8,#168]
+STR X9, [SP,#256]
+LDR X10, [X8,#176]
+LDR X9, [X8,#184]
+STP X9, X10, [SP,#232]
+LDR X10, [X8,#192]
+LDR X9, [X8,#200]
+STP X9, X10, [SP,#216]
+LDR X10, [X8,#208]
+LDR X9, [X8,#216]
+STP X9, X10, [SP,#200]
+LDR X10, [X8,#224]
+LDP X9, X8, [X8,#232]
+STP X9, X10, [SP,#184]
+STR X8, [SP,#176]
+TBZ W20, #0, .+0x14
+MOV W0, #0x101d
+MOVK W0, #0xae3f, LSL #16
+MOV X20, X19
+BL .+0x247cf0
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246b70
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffacf90
+TBZ W21, #0, .+0x3bc0
+MOV X8, #0xffffffff00000000
+MOV X9, X28
+CMP X28, X8
+B CC, .+0x10
+LDR X8, [SP,#464]
+AND X8, X8, #0x7fffffff00000000
+CBZ X8, .+0x3e28
+LDR X8, [SP,#448]
+STR X8, [SP,#640]
+MOV X0, X8
+STR X9, [SP,#648]
+LDR X8, [SP,#432]
+STR X8, [SP,#656]
+MOV X2, X8
+LDR X8, [SP,#416]
+STR X8, [SP,#664]
+MOV X3, X8
+STR X22, [SP,#672]
+MOV X4, X22
+STP X25, X22, [SP,#160]
+STR X25, [SP,#680]
+MOV X5, X25
+LDR X8, [SP,#400]
+STR X8, [SP,#688]
+MOV X6, X8
+LDR X8, [SP,#384]
+STR X8, [SP,#696]
+MOV X7, X8
+LDR X8, [SP,#368]
+STR X8, [SP,#704]
+LDR X10, [SP,#352]
+STR X10, [SP,#712]
+LDR X11, [SP,#336]
+STR X11, [SP,#720]
+LDR X12, [SP,#320]
+STR X12, [SP,#728]
+LDR X13, [SP,#304]
+STR X13, [SP,#736]
+LDR X14, [SP,#288]
+STR X14, [SP,#744]
+LDR X15, [SP,#272]
+STR X15, [SP,#752]
+LDR X16, [SP,#464]
+STR X16, [SP,#760]
+LDR X17, [SP,#256]
+STR X17, [SP,#768]
+LDP X24, X1, [SP,#232]
+STR X1, [SP,#776]
+STR X24, [SP,#784]
+LDP X28, X25, [SP,#216]
+STR X25, [SP,#792]
+STR X28, [SP,#800]
+LDP X27, X26, [SP,#200]
+STR X26, [SP,#808]
+STR X27, [SP,#816]
+LDP X22, X21, [SP,#184]
+STR X21, [SP,#824]
+STR X22, [SP,#832]
+LDR X23, [SP,#176]
+STR X23, [SP,#840]
+STP X22, X23, [SP,#128]
+STP X27, X21, [SP,#112]
+STP X28, X26, [SP,#96]
+STP X24, X25, [SP,#80]
+STP X17, X1, [SP,#64]
+STP X15, X16, [SP,#48]
+STP X13, X14, [SP,#32]
+STP X11, X12, [SP,#16]
+STP X8, X10, [SP]
+MOV X1, X9
+STR X9, [SP,#152]
+BL .+0xffffffffff699f68
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x1a5e8
+STP X22, X23, [SP,#128]
+STP X27, X21, [SP,#112]
+STP X28, X26, [SP,#96]
+STP X24, X25, [SP,#80]
+LDR X8, [SP,#240]
+STR X8, [SP,#72]
+LDR X8, [SP,#256]
+STR X8, [SP,#64]
+LDR X8, [SP,#464]
+STR X8, [SP,#56]
+LDR X8, [SP,#272]
+STR X8, [SP,#48]
+LDR X8, [SP,#288]
+STR X8, [SP,#40]
+LDR X8, [SP,#304]
+STR X8, [SP,#32]
+LDR X8, [SP,#320]
+STR X8, [SP,#24]
+LDR X8, [SP,#336]
+STR X8, [SP,#16]
+LDR X8, [SP,#352]
+STR X8, [SP,#8]
+LDR X8, [SP,#368]
+STR X8, [SP]
+LDR X0, [SP,#448]
+LDP X1, X5, [SP,#152]
+LDR X2, [SP,#432]
+LDR X3, [SP,#416]
+LDR X4, [SP,#168]
+LDR X6, [SP,#400]
+LDR X7, [SP,#384]
+BL .+0xffffffffff69df18
+B .+0x3a0c
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDRB W24, [X8,#24]
+LDR W22, [X8,#28]
+LDR X21, [X8,#32]
+TBZ W20, #0, .+0x14
+MOV W0, #0xc3db
+MOVK W0, #0x7063, LSL #16
+MOV X20, X19
+BL .+0x247aec
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffacd9c
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246958
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x247ab8
+MOV X0, X21
+BL .+0xfffffffffffd52c0
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x3ab4
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x3b0c
+MOV X20, X19
+BL .+0x247a90
+MOV X0, X21
+BL .+0xffffffffff68d178
+CBZ X0, .+0x397c
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x3b58
+MOV X0, X21
+BL .+0x28cbf0
+MOV X22, #0x0
+ADD X8, X21, X22, LSL #3
+LDR X0, [X8,#32]
+ADD X22, X22, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246964
+CMP X20, X22
+B NE, .+0xffffffffffffffe4
+B .+0x37fc
+AND X8, X21, #0xffffffffffffff8
+LDRB W22, [X8,#16]
+LDR X21, [X8,#24]
+TBZ W20, #0, .+0x14
+MOV W0, #0x272a
+MOVK W0, #0xee3b, LSL #16
+MOV X20, X19
+BL .+0x247a28
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+BL .+0xfffffffffffc317c
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x247a08
+MOV X0, X21
+BL .+0xfffffffffffd522c
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x3a08
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x3a60
+MOV X20, X19
+BL .+0x2479e0
+MOV X0, X21
+BL .+0xfffffffffffd5234
+CBZ X0, .+0x38cc
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x3aac
+MOV X0, X21
+BL .+0x28cb40
+ADD X24, X21, #0x28
+LDUR X22, [X24,#-8]
+LDRB W23, [X24],#16
+MOV X0, X22
+MOV X1, X23
+BL .+0xffffffffff804990
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+BL .+0xfffffffffffd5ebc
+MOV X0, X22
+MOV X1, X23
+BL .+0xffffffffff804984
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffc8
+B .+0x3730
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x27f8
+MOV W0, #0xd0f
+MOVK W0, #0x3e05, LSL #16
+B .+0x27e4
+AND X8, X21, #0xffffffffffffff8
+LDP W26, W25, [X8,#16]
+LDRB W27, [X8,#24]
+LDR X24, [X8,#32]
+LDP W23, W22, [X8,#40]
+LDR W21, [X8,#48]
+TBZ W20, #0, .+0x14
+MOV W0, #0x6e10
+MOVK W0, #0x922e, LSL #16
+MOV X20, X19
+BL .+0x247938
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2467b8
+TBZ W26, #0, .+0x18
+TBNZ W27, #0, .+0x3aa0
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2467a0
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246810
+B .+0x2fd4
+AND X8, X21, #0xffffffffffffff8
+LDP X21, X22, [X8,#16]
+TBZ W20, #0, .+0x36f8
+MOV W0, #0x69d4
+MOVK W0, #0xf162, LSL #16
+B .+0x228c
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x3504
+MOV W0, #0x5198
+MOVK W0, #0xfb8, LSL #16
+B .+0x34f0
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X21, [X8,#24]
+TBZ W20, #0, .+0x14
+MOV W0, #0xd201
+MOVK W0, #0xbb2, LSL #16
+MOV X20, X19
+BL .+0x2478ac
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24672c
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x24788c
+MOV X0, X21
+BL .+0xfffffffffffd5094
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x3890
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x38e8
+MOV X20, X19
+BL .+0x247864
+MOV X0, X21
+BL .+0xffffffffff68cf4c
+CBZ X0, .+0x3750
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x3934
+MOV X0, X21
+BL .+0x28c9c4
+MOV X22, #0x0
+ADD X8, X21, X22, LSL #3
+LDR X0, [X8,#32]
+ADD X22, X22, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246738
+CMP X20, X22
+B NE, .+0xffffffffffffffe4
+B .+0x35d0
+AND X8, X21, #0xffffffffffffff8
+LDP W21, W24, [X8,#16]
+LDRB W25, [X8,#24]
+LDR W23, [X8,#28]
+LDRB W22, [X8,#32]
+TBZ W20, #0, .+0x14
+MOV W0, #0x4dc1
+MOVK W0, #0x2c08, LSL #16
+MOV X20, X19
+BL .+0x2477f4
+BFI X21, X24, #32, #32
+STRB W25, [SP,#640]
+STRB W22, [SP,#560]
+AND W3, W25, #0xff
+BFI X3, X23, #32, #32
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X4, X22
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xffffffffffff2268
+AND X8, X21, #0xffffffffffffff8
+LDR X21, [X8,#16]
+ADD X0, X8, #0x18
+ADD X1, SP, #0x280
+BL .+0xffffffffff85374c
+TBZ W20, #0, .+0x14
+MOV W0, #0x857f
+MOVK W0, #0xc01e, LSL #16
+MOV X20, X19
+BL .+0x247788
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246688
+B .+0x1724
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x3394
+MOV W0, #0xb79d
+MOVK W0, #0x1592, LSL #16
+B .+0x3380
+MOV X8, #0xfffffffffffffffb
+MOVK X8, #0xfff, LSL #48
+ADD X8, X21, X8
+ADD X8, X8, #0x2
+ROR X8, X8, #3
+ADRP X9, .+0x4000
+ADD X9, X9, #0x454
+ADR X10, .+0x0
+LDRSW X11, [X9,X8,LSL #2]
+ADD X10, X10, X11
+BR X10
+TBZ W20, #0, .+0x3624
+MOV W0, #0xa20b
+MOVK W0, #0x17b7, LSL #16
+B .+0x3724
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDP X24, X23, [X8,#24]
+LDR X27, [X8,#40]
+LDRB W28, [X8,#48]
+LDR W26, [X8,#52]
+LDP X25, X9, [X8,#56]
+STR X9, [SP,#464]
+LDP X9, X21, [X8,#72]
+STR X9, [SP,#448]
+TBZ W20, #0, .+0x14 (updateBotCallbackQuery) SECOND IF??
+MOV W0, #0xc48d
+MOVK W0, #0xb9cf, LSL #16
+MOV X20, X19
+BL .+0x2476e4
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246564
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2465d4
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2465c4
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X27
+MOV X3, X28
+BL .+0xfffffffffffac964
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246520
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246590
+TBZ W22, #0, .+0x18
+LDR X0, [SP,#464]
+CBZ X0, .+0x37f8
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24682c
+TBZ W22, #1, .+0x355c
+CBZ X21, .+0x37e8
+MOV X0, X21
+BL .+0x28c7d8
+LDR X0, [SP,#448]
+B .+0x1f70
+AND X21, X21, #0xffffffffffffff8
+LDR X22, [X21,#16]
+LDRB W23, [X21,#24]
+ADD X0, X21, #0x20
+ADD X1, SP, #0x280
+BL .+0xfffffffffff2afd8
+LDR W21, [X21,#112]
+TBZ W20, #0, .+0x14 (updateBotChatBoost)
+MOV W0, #0xd49c
+MOVK W0, #0x904d, LSL #16
+MOV X20, X19
+BL .+0x247620
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+BL .+0xfffffffffffac8d0
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffff329f4
+B .+0x34e0
+AND X21, X21, #0xffffffffffffff8
+LDR X26, [X21,#16]
+LDRB W27, [X21,#24]
+LDR W25, [X21,#28]
+LDP X24, X22, [X21,#32]
+ADD X0, X21, #0x38
+LDR X23, [X21,#48]
+ADD X1, SP, #0x280
+BL .+0xffffffffff6788d8
+LDR W21, [X21,#180]
+TBZ W20, #0, .+0x14 (updateBotChatInviteRequester)
+MOV W0, #0xa986
+MOVK W0, #0x11df, LSL #16
+MOV X20, X19
+BL .+0x2475bc
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X26
+MOV X3, X27
+BL .+0xfffffffffffac86c
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246428
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246498
+MOV X0, X22
+MOV X1, X23
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x246504
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x222afc
+B .+0x3448
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDRB W24, [X8,#24]
+LDP X22, X21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateBotCommands)
+MOV W0, #0x2f2e
+MOVK W0, #0x4d71, LSL #16
+MOV X20, X19
+BL .+0x24753c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffac7ec
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246428
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x247508
+MOV X0, X21
+BL .+0xfffffffffffcab54
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x3510
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x3568
+MOV X20, X19
+BL .+0x2474e0
+MOV X0, X21
+BL .+0xfffffffffffd4d1c
+CBZ X0, .+0x33cc
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x35b4
+MOV X0, X21
+BL .+0x28c640
+ADD X26, X21, #0x38
+LDP X22, X23, [X26,#-24]
+LDP X24, X25, [X26,#-8]
+MOV X0, X23
+BL .+0x28c62c
+MOV X0, X25
+BL .+0x28c624
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+MOV X4, X24
+MOV X5, X25
+BL .+0xfffffffffff32d5c
+MOV X0, X25
+BL .+0x28c5e8
+MOV X0, X23
+BL .+0x28c5e0
+ADD X26, X26, #0x20
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffb4
+B .+0x321c
+AND X8, X21, #0xffffffffffffff8
+LDP X25, X26, [X8,#16]
+LDR X23, [X8,#32]
+LDRB W24, [X8,#40]
+LDR X22, [X8,#48]
+LDR W21, [X8,#56]
+TBZ W20, #0, .+0x14 (updateBotDeleteBusinessMessage)
+MOV W0, #0x982e
+MOVK W0, #0xa02a, LSL #16
+MOV X20, X19
+BL .+0x24743c
+MOV X0, X25
+MOV X1, X26
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x2463b8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffac6d8
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x247404
+MOV X0, X22
+BL .+0xfffffffffffd4c1c
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x3410
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x3468
+MOV X20, X19
+BL .+0x2473dc
+MOV X0, X22
+BL .+0xffffffffff68caa8
+CBZ X0, .+0x2ac8
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x34b4
+MOV X0, X22
+BL .+0x28c53c
+MOV X23, #0x0
+ADD X8, X22, X23, LSL #2
+LDR W0, [X8,#32]
+ADD X23, X23, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246230
+CMP X20, X23
+B NE, .+0xffffffffffffffe4
+B .+0x2024
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDP X25, X26, [X8,#24]
+LDP X24, X22, [X8,#40]
+LDR W21, [X8,#56]
+TBZ W20, #0, .+0x14 (updateBotEditBusinessMessage)
+MOV W0, #0x587c
+MOVK W0, #0x7df, LSL #16
+MOV X20, X19
+BL .+0x24736c
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2461ec
+MOV X0, X25
+MOV X1, X26
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x2462d8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X24
+BL .+0xfffffffffff5d430
+TBZ W23, #0, .+0x2a2c
+MOV X8, #0xf000000000000007
+BICS XZR, X8, X22
+B NE, .+0x5e0
+BRK #0x1
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDP X28, X27, [X8,#24]
+LDP X25, X26, [X8,#40]
+LDUR Q1, [X8,#56]
+LDUR Q0, [X8,#72]
+STP Q0, Q1, [SP,#400]
+LDRH W22, [X8,#92]
+LDR W21, [X8,#88]
+LDRB W24, [X8,#94]
+LDRB W9, [X8,#95]
+STR W9, [SP,#432]
+LDP X9, X8, [X8,#96]
+STR X9, [SP,#464]
+STR X8, [SP,#448]
+TBZ W20, #0, .+0x14 (updateBotInlineQuery)
+MOV W0, #0x379c
+MOVK W0, #0x496f, LSL #16
+MOV X20, X19
+BL .+0x2472d4
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x246154
+MOV X0, X28
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2461c4
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2461b4
+MOV X0, X25
+MOV X1, X26
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x246220
+TBZ W23, #0, .+0x3c
+TBNZ W24, #0, .+0x3414
+BFI X21, X22, #32, #16
+LDR Q1, [SP,#416]
+LDR Q0, [SP,#400]
+STP Q1, Q0, [SP,#640]
+STR W21, [SP,#672]
+LSR X8, X21, #32
+STRB W8, [SP,#676]
+UBFX X8, X21, #40, #1
+STRB W8, [SP,#677]
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x22933c
+TBZ W23, #1, .+0x1c
+LDR W2, [SP,#432]
+CMP W2, #0x6
+B EQ, .+0x33d4
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x22a334
+LDR X0, [SP,#464]
+LDR X1, [SP,#448]
+B .+0x303c
+AND X8, X21, #0xffffffffffffff8
+LDR W21, [X8,#16]
+LDP X24, X28, [X8,#24]
+LDR X23, [X8,#40]
+LDR Q1, [X8,#48]
+LDR Q0, [X8,#64]
+STP Q0, Q1, [SP,#432]
+LDRH W9, [X8,#84]
+STR X9, [SP,#416]
+LDR W25, [X8,#80]
+LDRB W22, [X8,#86]
+LDP X26, X27, [X8,#88]
+LDR X9, [X8,#104]
+STR X9, [SP,#464]
+LDR X9, [X8,#112]
+STR X9, [SP,#400]
+LDP X9, X8, [X8,#120]
+STR X9, [SP,#384]
+STR X8, [SP,#368]
+TBZ W20, #0, .+0x14 (updateBotInlineSend)
+MOV W0, #0x2a07
+MOVK W0, #0x12f1, LSL #16
+MOV X20, X19
+BL .+0x2471cc
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24604c
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2460bc
+MOV X0, X28
+MOV X1, X23
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x246128
+TBZ W21, #0, .+0x40
+TBNZ W22, #0, .+0x3324
+LDR X8, [SP,#416]
+BFI X25, X8, #32, #16
+LDR Q1, [SP,#448]
+LDR Q0, [SP,#432]
+STP Q1, Q0, [SP,#640]
+STR W25, [SP,#672]
+LSR X8, X25, #32
+STRB W8, [SP,#676]
+UBFX X8, X25, #40, #1
+STRB W8, [SP,#677]
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x229240
+MOV X0, X26
+MOV X1, X27
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x2460d4
+TBZ W21, #1, .+0x3038
+MOV X8, #0xfffffffeffffffff
+LDR X2, [SP,#464]
+CMP X2, X8
+B HI, .+0x32c8
+MOV X0, X19
+MOV W1, #0x1
+LDR X3, [SP,#400]
+LDR X4, [SP,#384]
+LDR X5, [SP,#368]
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x233c98
+AND X8, X21, #0xffffffffffffff8
+LDP X25, X21, [X8,#16]
+LDP X22, X23, [X8,#32]
+LDR X24, [X8,#48]
+TBZ W20, #0, .+0x14 (updateBotMenuButton)
+MOV W0, #0x5813
+MOVK W0, #0x14b8, LSL #16
+MOV X20, X19
+BL .+0x2470d8
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245fd8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+MOV X4, X23
+MOV X5, X24
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffffc9ae8
+AND X8, X21, #0xffffffffffffff8
+LDR X28, [X8,#16]
+LDRB W21, [X8,#24]
+LDP W27, W26, [X8,#28]
+LDR X24, [X8,#40]
+LDRB W25, [X8,#48]
+LDP X23, X22, [X8,#56]
+LDR W8, [X8,#72]
+STR W8, [SP,#464]
+TBZ W20, #0, .+0x14 (updateBotMessageReaction)
+MOV W0, #0xd3ce
+MOVK W0, #0xac21, LSL #16
+MOV X20, X19
+BL .+0x247058
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X28
+MOV X3, X21
+BL .+0xfffffffffffac308
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245ec4
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245eb4
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X24
+MOV X3, X25
+BL .+0xfffffffffffac2d4
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x247000
+MOV X0, X23
+BL .+0xfffffffffffd4810
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x3010
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x3068
+MOV X20, X19
+BL .+0x246fd8
+MOV X0, X23
+BL .+0xffffffffff68c734
+CBZ X0, .+0x6c
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x30b4
+MOV X0, X23
+BL .+0x28c138
+ADD X26, X23, #0x30
+LDP X21, X24, [X26,#-16]
+LDRB W25, [X26],#24
+MOV X0, X21
+MOV X1, X24
+MOV X2, X25
+BL .+0xffffffffff644190
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X24
+MOV X4, X25
+BL .+0xfffffffffffd5cd8
+MOV X0, X21
+MOV X1, X24
+MOV X2, X25
+BL .+0xffffffffff64499c
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffbc
+MOV X0, X23
+BL .+0x28c0cc
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x246f54
+MOV X0, X22
+BL .+0xfffffffffffd4764
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x3018
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x3010
+MOV X20, X19
+BL .+0x246f2c
+MOV X0, X22
+BL .+0xffffffffff68c688
+CBZ X0, .+0x6c
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x3058
+MOV X0, X22
+BL .+0x28c08c
+ADD X25, X22, #0x30
+LDP X21, X23, [X25,#-16]
+LDRB W24, [X25],#24
+MOV X0, X21
+MOV X1, X23
+MOV X2, X24
+BL .+0xffffffffff6440e4
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X23
+MOV X4, X24
+BL .+0xfffffffffffd5c2c
+MOV X0, X21
+MOV X1, X23
+MOV X2, X24
+BL .+0xffffffffff6448f0
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffbc
+MOV X0, X22
+BL .+0x28c020
+LDR W0, [SP,#464]
+B .+0x25ac
+AND X8, X21, #0xffffffffffffff8
+LDR X25, [X8,#16]
+LDRB W26, [X8,#24]
+LDP W24, W23, [X8,#28]
+LDR X22, [X8,#40]
+LDR W21, [X8,#48]
+TBZ W20, #0, .+0x14 (updateBotMessageReactions)
+MOV W0, #0x7759
+MOVK W0, #0x9cb, LSL #16
+MOV X20, X19
+BL .+0x246e84
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X25
+MOV X3, X26
+BL .+0xfffffffffffac134
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245cf0
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245ce0
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x246e40
+MOV X0, X22
+BL .+0xfffffffffffd4660
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x2e54
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x2eac
+MOV X20, X19
+BL .+0x246e18
+MOV X0, X22
+BL .+0xfffffffffffd4668
+CBZ X0, .+0x2cf4
+MOV X23, X0
+CMP X0, #0x1
+B LT, .+0x2ef8
+MOV X0, X22
+BL .+0x28bf78
+ADD X24, X22, #0x20
+ADD X1, SP, #0x280
+MOV X0, X24
+BL .+0xfffffffffff27a40
+ADD X0, SP, #0x280
+BL .+0xfffffffffffd8704
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffd5c28
+ADD X0, SP, #0x280
+BL .+0xfffffffffff27a5c
+ADD X24, X24, #0x28
+SUBS X23, X23, #0x1
+B NE, .+0xffffffffffffffcc
+B .+0x1608
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDP X25, X26, [X8,#24]
+LDP X24, X22, [X8,#40]
+LDR W21, [X8,#56]
+TBZ W20, #0, .+0x14 (updateBotNewBusinessMessage)
+MOV W0, #0x347c
+MOVK W0, #0x9ddb, LSL #16
+MOV X20, X19
+BL .+0x246d90
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245c10
+MOV X0, X25
+MOV X1, X26
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x245cfc
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X24
+BL .+0xfffffffffff5ce54
+TBZ W23, #0, .+0x2450
+MOV X8, #0xf000000000000007
+BICS XZR, X8, X22
+B EQ, .+0x2ee8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+BL .+0xfffffffffff5ce34
+B .+0x2430
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDP X25, X28, [X8,#24]
+LDP X27, X21, [X8,#40]
+LDR X9, [X8,#56]
+STR X9, [SP,#320]
+LDR Q1, [X8,#64]
+LDR Q0, [X8,#80]
+STP Q0, Q1, [SP,#432]
+LDR Q1, [X8,#96]
+LDR Q0, [X8,#112]
+STP Q0, Q1, [SP,#400]
+LDR Q1, [X8,#128]
+LDR Q0, [X8,#144]
+STP Q0, Q1, [SP,#368]
+LDR Q1, [X8,#160]
+LDR Q0, [X8,#176]
+STP Q0, Q1, [SP,#336]
+LDR X9, [X8,#192]
+STR X9, [SP,#304]
+LDP X9, X26, [X8,#200]
+STR X9, [SP,#288]
+LDP X23, X24, [X8,#216]
+LDR X8, [X8,#232]
+STR X8, [SP,#464]
+TBZ W20, #0, .+0x14 (updateBotPrecheckoutQuery)
+MOV W0, #0x9a96
+MOVK W0, #0x8caa, LSL #16
+MOV X20, X19
+BL .+0x246cc0
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245b40
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245bb0
+MOV X0, X28
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245ba0
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245e44
+TBZ W22, #0, .+0x68
+LDR Q0, [SP,#448]
+FMOV X8, D0
+CMP X8, #0x1
+B EQ, .+0x2e0c
+STR W21, [SP,#640]
+LDR X8, [SP,#320]
+STR X8, [SP,#648]
+STR Q0, [SP,#656]
+LDR Q1, [SP,#432]
+LDR Q0, [SP,#416]
+STP Q1, Q0, [SP,#672]
+LDR Q1, [SP,#400]
+LDR Q0, [SP,#384]
+STP Q1, Q0, [SP,#704]
+LDR Q1, [SP,#368]
+LDR Q0, [SP,#352]
+STP Q1, Q0, [SP,#736]
+LDR Q0, [SP,#336]
+STR Q0, [SP,#768]
+LDR X8, [SP,#304]
+STR X8, [SP,#784]
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffabbf8
+TBZ W22, #1, .+0x1c
+CBZ X26, .+0x2db4
+LDR X0, [SP,#288]
+MOV X1, X26
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x245b8c
+MOV X0, X23
+MOV X1, X24
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x245b78
+LDR X0, [SP,#464]
+B .+0x2810
+AND X8, X21, #0xffffffffffffff8
+LDP X23, X22, [X8,#16]
+LDR X21, [X8,#32]
+ADD X0, X8, #0x28
+ADD X1, SP, #0x280
+BL .+0xfffffffffff27a10
+TBZ W20, #0, .+0x14 (updateBotShippingQuery)
+MOV W0, #0xfd7d
+MOVK W0, #0xb5ae, LSL #16
+MOV X20, X19
+BL .+0x246bb4
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245ab4
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245aa4
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245d48
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffc1c10
+B .+0x2a68
+AND X8, X21, #0xffffffffffffff8
+LDR X24, [X8,#16]
+LDR W23, [X8,#24]
+LDRB W22, [X8,#28]
+LDR W21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateBotStopped)
+MOV W0, #0xa49
+MOVK W0, #0xc487, LSL #16
+MOV X20, X19
+BL .+0x246b48
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245a48
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2459b8
+B .+0xa04
+AND X8, X21, #0xffffffffffffff8
+LDP X21, X22, [X8,#16]
+TBZ W20, #0, .+0x126c (updateBotWebhookJSON)
+MOV W0, #0xc0c3
+MOVK W0, #0x8317, LSL #16
+MOV X20, X19
+BL .+0x246b08
+B .+0x1258
+AND X8, X21, #0xffffffffffffff8
+LDP X24, X21, [X8,#16]
+LDR X23, [X8,#32]
+LDR W22, [X8,#40]
+TBZ W20, #0, .+0x14 (updateBotWebhookJSONQuery)
+MOV W0, #0x40a6
+MOVK W0, #0x9b92, LSL #16
+MOV X20, X19
+BL .+0x246ae0
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2459e0
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X23
+BL .+0x212d2c
+MOV X0, X22
+B .+0x21b0
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDRB W25, [X8,#24]
+LDP X21, X22, [X8,#32]
+LDR X24, [X8,#48]
+TBZ W20, #0, .+0x14 (updateBroadcastRevenueTransactions)
+MOV W0, #0x61f5
+MOVK W0, #0xdfd9, LSL #16
+MOV X20, X19
+BL .+0x246a8c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X25
+BL .+0xfffffffffffabd3c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+MOV X4, X24
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffffc9628
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDP X23, X28, [X8,#24]
+LDP X26, X27, [X8,#40]
+LDP X25, X24, [X8,#56]
+LDP X9, X21, [X8,#72]
+STR X9, [SP,#464]
+TBZ W20, #0, .+0x14 (updateBusinessBotCallbackQuery)
+MOV W0, #0xfda7
+MOVK W0, #0x1ea2, LSL #16
+MOV X20, X19
+BL .+0x246a14
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245894
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245904
+MOV X0, X28
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2458f4
+MOV X0, X26
+MOV X1, X27
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x245960
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X25
+BL .+0xfffffffffff5cab8
+TBZ W22, #2, .+0x20
+MOV X8, #0xf000000000000007
+BICS XZR, X8, X24
+B EQ, .+0x2b58
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X24
+BL .+0xfffffffffff5ca98
+LDR X0, [SP,#464]
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2458a0
+TBZ W22, #0, .+0x2884
+CBZ X21, .+0x2b34
+MOV X0, X21
+BL .+0x28bd1c
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245b38
+MOV X0, X21
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x28bcd4
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x2570 (updateChannel)
+MOV W0, #0x4c09
+MOVK W0, #0x635b, LSL #16
+B .+0x255c
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDR W21, [X8,#24]
+TBZ W20, #0, .+0x1f08 (updateChannelAvailableMessages)
+MOV W0, #0xc698
+MOVK W0, #0xb23f, LSL #16
+B .+0x1ef4
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x1eb8
+MOV W0, #0x27f4
+MOVK W0, #0xd29a, LSL #16 (updateChannelMessageForwards)
+B .+0x1ea4
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x1e9c (updateChannelMessageViews)
+MOV W0, #0xac08
+MOVK W0, #0xf226, LSL #16
+B .+0x1e88
+AND X8, X21, #0xfffffffffffff8
+LDR W21, [X8,#16]!
+LDR Q0, [X8,#184]!
+STR Q0, [SP,#320]
+LDUR X26, [X8,#-176]
+LDUR W25, [X8,#-168]
+LDP X24, X23, [X8,#-160]
+LDUR Q1, [X8,#-144]
+LDUR Q0, [X8,#-128]
+STP Q0, Q1, [SP,#432]
+LDUR Q1, [X8,#-112]
+LDUR Q0, [X8,#-96]
+STP Q0, Q1, [SP,#400]
+LDURB W28, [X8,#-80]
+LDUR Q1, [X8,#-72]
+LDUR Q0, [X8,#-56]
+STP Q0, Q1, [SP,#368]
+LDUR Q1, [X8,#-40]
+LDUR Q0, [X8,#-24]
+STP Q0, Q1, [SP,#336]
+LDURB W27, [X8,#-8]
+LDR Q0, [X8,#16]
+STR Q0, [SP,#464]
+LDR Q1, [X8,#32]
+LDR Q0, [X8,#48]
+STP Q0, Q1, [SP,#288]
+LDR Q1, [X8,#64]
+LDR Q0, [X8,#80]
+STP Q0, Q1, [SP,#256]
+LDR Q0, [X8,#96]
+STR Q0, [SP,#240]
+LDR X9, [X8,#112]
+STR X9, [SP,#232]
+LDRB W9, [X8,#120]
+STR W9, [SP,#224]
+LDR W22, [X8,#124]
+TBZ W20, #0, .+0x14 (updateChannelParticipant)
+MOV W0, #0x3abb
+MOVK W0, #0x985d, LSL #16
+MOV X20, X19
+BL .+0x246840
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2456c0
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245730
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2456a0
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245710
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245700
+TBZ W21, #0, .+0x38
+CMP W28, #0xff
+B EQ, .+0x2994
+LDR Q1, [SP,#448]
+LDR Q0, [SP,#432]
+STP Q1, Q0, [SP,#560]
+LDR Q1, [SP,#416]
+LDR Q0, [SP,#400]
+STP Q1, Q0, [SP,#592]
+STRB W28, [SP,#624]
+ADD X20, SP, #0x230
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x19c8ec
+LDR Q1, [SP,#464]
+TBZ W21, #1, .+0x3c
+CMP W27, #0xff
+B EQ, .+0x295c
+LDR Q1, [SP,#384]
+LDR Q0, [SP,#368]
+STP Q1, Q0, [SP,#480]
+LDR Q1, [SP,#352]
+LDR Q0, [SP,#336]
+STP Q1, Q0, [SP,#512]
+STRB W27, [SP,#544]
+ADD X20, SP, #0x1e0
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x19c8b0
+LDR Q1, [SP,#464]
+TBZ W21, #2, .+0x58
+FMOV X8, D1
+CMP X8, #0x1
+B EQ, .+0x2920
+LDR Q0, [SP,#320]
+STP Q0, Q1, [SP,#640]
+LDR Q2, [SP,#304]
+LDR Q0, [SP,#288]
+STP Q2, Q0, [SP,#672]
+LDR Q2, [SP,#272]
+LDR Q0, [SP,#256]
+STP Q2, Q0, [SP,#704]
+LDR Q0, [SP,#240]
+STR Q0, [SP,#736]
+LDR X8, [SP,#232]
+STR X8, [SP,#752]
+LDR W8, [SP,#224]
+STRB W8, [SP,#760]
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x221cb8
+MOV X0, X22
+B .+0x1e14
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDR X22, [X8,#24]
+LDR W21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateChannelPinnedTopic)
+MOV W0, #0xfbe3
+MOVK W0, #0x192e, LSL #16
+MOV X20, X19
+BL .+0x2466f4
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245574
+B .+0x1cc0
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDP X23, X21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateChannelPinnedTopics)
+MOV W0, #0x8602
+MOVK W0, #0xfe19, LSL #16
+MOV X20, X19
+BL .+0x2466c0
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245540
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2455b0
+TBZ W22, #0, .+0x2594
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x24668c
+CBZ X21, .+0x2844
+MOV X0, X21
+BL .+0xfffffffffffd3ea0
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x27bc
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x27bc
+MOV X20, X19
+BL .+0x246660
+MOV X0, X21
+BL .+0xffffffffff68bd2c
+CBZ X0, .+0x254c
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x27a8
+ADD X22, X21, #0x20
+MOV X0, X21
+BL .+0x28b7bc
+LDR W0, [X22],#4
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2454bc
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffec
+B .+0x23d4
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDR X24, [X8,#24]
+LDR W22, [X8,#32]
+LDRB W25, [X8,#36]
+LDR X21, [X8,#40]
+TBZ W20, #0, .+0x14 (updateChannelReadMessagesContents)
+MOV W0, #0x55d
+MOVK W0, #0xea29, LSL #16
+MOV X20, X19
+BL .+0x2465f4
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245474
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2454e4
+TBZ W23, #0, .+0x18
+TBNZ W25, #0, .+0x278c
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24544c
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x2465ac
+MOV X0, X21
+BL .+0xfffffffffffd3dc4
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x25c4
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x261c
+MOV X20, X19
+BL .+0x246584
+MOV X0, X21
+BL .+0xffffffffff68bc50
+CBZ X0, .+0x2470
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x2668
+MOV X0, X21
+BL .+0x28b6e4
+MOV X22, #0x0
+ADD X8, X21, X22, LSL #2
+LDR W0, [X8,#32]
+ADD X22, X22, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2453d8
+CMP X20, X22
+B NE, .+0xffffffffffffffe4
+B .+0x22f0
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X23, [X8,#24]
+LDR W21, [X8,#32]
+LDRB W24, [X8,#36]
+TBZ W20, #0, .+0x14 (updateChannelTooLong)
+MOV W0, #0x941f
+MOVK W0, #0x108d, LSL #16
+MOV X20, X19
+BL .+0x246514
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245394
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245404
+TBZ W22, #0, .+0x23e8
+TBZ W24, #0, .+0x1be4
+BRK #0x1
+AND X8, X21, #0xffffffffffffff8
+LDR W24, [X8,#16]
+LDR X25, [X8,#24]
+LDR W23, [X8,#32]
+LDRB W26, [X8,#36]
+LDR X21, [X8,#40]
+ADD X0, X8, #0x38
+LDRB W22, [X8,#48]
+ADD X1, SP, #0x280
+BL .+0xffffffffff852470
+TBZ W20, #0, .+0x14 (updateChannelUserTyping)
+MOV W0, #0xc923
+MOVK W0, #0x8c88, LSL #16
+MOV X20, X19
+BL .+0x2464ac
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24532c
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24539c
+TBZ W24, #0, .+0x424
+TBNZ W26, #0, .+0x2648
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245304
+B .+0x40c
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDRB W21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateChannelViewForumAsMessages)
+MOV W0, #0x8920
+MOVK W0, #0x7b6, LSL #16
+MOV X20, X19
+BL .+0x246450
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245350
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffff3178c
+AND X21, X21, #0xffffffffffffff8
+LDR X23, [X21,#16]
+ADD X0, X21, #0x18
+ADD X1, SP, #0x280
+BL .+0xffffffffff692cd8
+LDR W22, [X21,#440]
+LDR W21, [X21,#444]
+TBZ W20, #0, .+0x14 (updateChannelWebPage)
+MOV W0, #0xa99f
+MOVK W0, #0x2f2b, LSL #16
+MOV X20, X19
+BL .+0x2463e4
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2452e4
+B .+0x2298
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x1ff0 (updateChat)
+MOV W0, #0x6a4e
+MOVK W0, #0xf89a, LSL #16
+B .+0x1fdc
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDRB W24, [X8,#24]
+LDP W22, W25, [X8,#28]
+LDR W21, [X8,#36]
+TBZ W20, #0, .+0x14 (updateChatDefaultBannedRights)
+MOV W0, #0x1850
+MOVK W0, #0x54c0, LSL #16
+MOV X20, X19
+BL .+0x246390
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffab640
+BFI X22, X25, #32, #32
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+BL .+0x19d500
+B .+0x1a5c
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X24, [X8,#24]
+LDR W23, [X8,#32]
+LDP X28, X27, [X8,#40]
+LDR X9, [X8,#56]
+STR X9, [SP,#416]
+LDR X9, [X8,#64]
+STR X9, [SP,#400]
+LDRB W26, [X8,#76]
+LDR W25, [X8,#72]
+LDR X9, [X8,#80]
+STR X9, [SP,#384]
+LDR X9, [X8,#88]
+STR X9, [SP,#368]
+LDRB W9, [X8,#100]
+STR X9, [SP,#432]
+LDR W21, [X8,#96]
+LDUR Q1, [X8,#104]
+LDUR Q0, [X8,#120]
+STR Q0, [SP,#464]
+LDUR Q0, [X8,#136]
+STP Q0, Q1, [SP,#336]
+LDUR Q1, [X8,#152]
+LDUR Q0, [X8,#168]
+STP Q0, Q1, [SP,#304]
+LDUR Q1, [X8,#184]
+LDUR Q0, [X8,#200]
+STP Q0, Q1, [SP,#272]
+LDR X9, [X8,#216]
+STR X9, [SP,#256]
+LDRB W9, [X8,#224]
+STR W9, [SP,#240]
+LDR W8, [X8,#228]
+STR W8, [SP,#448]
+TBZ W20, #0, .+0x14 (updateChatParticipant)
+MOV W0, #0x663a
+MOVK W0, #0xd087, LSL #16
+MOV X20, X19
+BL .+0x2462c4
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245144
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2451b4
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245124
+MOV X0, X28
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245194
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245184
+TBZ W22, #0, .+0x2c
+BFI X25, X26, #32, #32
+UBFX X8, X25, #32, #8
+CMP X8, #0xfe
+B HI, .+0x2428
+AND X4, X25, #0xffffffffff
+MOV X0, X19
+MOV W1, #0x1
+LDR X2, [SP,#416]
+LDR X3, [SP,#400]
+BL .+0x2105d8
+LDR Q1, [SP,#464]
+TBZ W22, #1, .+0x34
+LDR X8, [SP,#432]
+BFI X21, X8, #32, #32
+UBFX X8, X21, #32, #8
+CMP X8, #0xfe
+B HI, .+0x23f8
+AND X4, X21, #0xffffffffff
+MOV X0, X19
+MOV W1, #0x1
+LDR X2, [SP,#384]
+LDR X3, [SP,#368]
+BL .+0x2105a4
+LDR Q1, [SP,#464]
+TBZ W22, #2, .+0x58
+FMOV X8, D1
+CMP X8, #0x1
+B EQ, .+0x23d0
+LDR Q0, [SP,#352]
+STP Q0, Q1, [SP,#640]
+LDR Q2, [SP,#336]
+LDR Q0, [SP,#320]
+STP Q2, Q0, [SP,#672]
+LDR Q2, [SP,#304]
+LDR Q0, [SP,#288]
+STP Q2, Q0, [SP,#704]
+LDR Q0, [SP,#272]
+STR Q0, [SP,#736]
+LDR X8, [SP,#256]
+STR X8, [SP,#752]
+LDR W8, [SP,#240]
+STRB W8, [SP,#760]
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x221750
+LDR W0, [SP,#448]
+B .+0x18ac
+AND X8, X21, #0xffffffffffffff8
+LDP X25, X24, [X8,#16]
+LDR X23, [X8,#32]
+LDP W22, W21, [X8,#40]
+TBZ W20, #0, .+0x14 (updateChatParticipantAdd)
+MOV W0, #0x5451
+MOVK W0, #0x3dda, LSL #16
+MOV X20, X19
+BL .+0x24618c
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24508c
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24507c
+B .+0x1714
+AND X8, X21, #0xffffffffffffff8
+LDP X24, X23, [X8,#16]
+LDRB W22, [X8,#32]
+LDR W21, [X8,#36]
+TBZ W20, #0, .+0x14 (updateChatParticipantAdmin)
+MOV W0, #0x61a2
+MOVK W0, #0xd7ca, LSL #16
+MOV X20, X19
+BL .+0x246144
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245044
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x245034
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+BL .+0xfffffffffff3148c
+B .+0x1808
+AND X8, X21, #0xffffffffffffff8
+LDP X23, X22, [X8,#16]
+LDR W21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateChatParticipantDelete)
+MOV W0, #0x3d77
+MOVK W0, #0xe32f, LSL #16
+MOV X20, X19
+BL .+0x2460f0
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244ff0
+B .+0x16bc
+AND X8, X21, #0xffffffffffffff8
+ADD X0, X8, #0x10
+ADD X1, SP, #0x280
+BL .+0xffffffffff667e14
+TBZ W20, #0, .+0x14 (updateChatParticipants)
+MOV W0, #0x1198
+MOVK W0, #0x776, LSL #16
+MOV X20, X19
+BL .+0x2460b8
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x210534
+B .+0x1f9c
+AND X8, X21, #0xffffffffffffff8
+LDP X23, X21, [X8,#16]
+LDRB W22, [X8,#32]
+ADD X0, X8, #0x28
+ADD X1, SP, #0x280
+BL .+0xffffffffff85203c
+TBZ W20, #0, .+0x14 (updateChatUserTyping)
+MOV W0, #0x7af0
+MOVK W0, #0x8348, LSL #16
+MOV X20, X19
+BL .+0x246078
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244f78
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+BL .+0xfffffffffffab318
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffe7934
+B .+0x1f38
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x14 (updateDcOptions)
+MOV W0, #0x9873
+MOVK W0, #0x8e5e, LSL #16
+MOV X20, X19
+BL .+0x246024
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x246014
+MOV X0, X21
+BL .+0xfffffffffffd3828
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x2030
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x2088
+MOV X20, X19
+BL .+0x245fec
+MOV X0, X21
+BL .+0xfffffffffffd3834
+CBZ X0, .+0x1ed8
+MOV X22, X0
+CMP X0, #0x1
+B LT, .+0x20d4
+MOV X0, X21
+BL .+0x28b14c
+ADD X23, X21, #0x20
+ADD X1, SP, #0x280
+MOV X0, X23
+BL .+0xfffffffffff28e1c
+ADD X0, SP, #0x280
+BL .+0x13744
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x2122a4
+ADD X0, SP, #0x280
+BL .+0xfffffffffff28e38
+ADD X23, X23, #0x28
+SUBS X22, X22, #0x1
+B NE, .+0xffffffffffffffcc
+MOV X0, X21
+BL .+0x28b0f0
+B .+0x1e7c
+AND X8, X21, #0xffffffffffffff8
+LDP X24, X23, [X8,#16]
+LDP W22, W21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateDeleteChannelMessages)
+MOV W0, #0x5b12
+MOVK W0, #0xc32d, LSL #16
+MOV X20, X19
+BL .+0x245f64
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244e64
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245f44
+MOV X0, X23
+BL .+0xfffffffffffd375c
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1f64
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x1fbc
+MOV X20, X19
+BL .+0x245f1c
+MOV X0, X23
+BL .+0xffffffffff68b5e8
+CBZ X0, .+0x15f8
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x2008
+MOV X0, X23
+BL .+0x28b07c
+MOV X24, #0x0
+ADD X8, X23, X24, LSL #2
+LDR W0, [X8,#32]
+ADD X24, X24, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244d70
+CMP X20, X24
+B NE, .+0xffffffffffffffe4
+B .+0x1248
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateDeleteMessages)
+MOV W0, #0xb0e5
+MOVK W0, #0xa20d, LSL #16
+MOV X20, X19
+BL .+0x245eb4
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245ea4
+MOV X0, X23
+BL .+0xfffffffffffd36bc
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1ec8
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x1f20
+MOV X20, X19
+BL .+0x245e7c
+MOV X0, X23
+BL .+0xffffffffff68b548
+CBZ X0, .+0x1558
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x1f6c
+MOV X0, X23
+BL .+0x28afdc
+MOV X24, #0x0
+ADD X8, X23, X24, LSL #2
+LDR W0, [X8,#32]
+ADD X24, X24, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244cd0
+CMP X20, X24
+B NE, .+0xffffffffffffffe4
+B .+0x11a8
+AND X8, X21, #0xfffffffffffff8
+LDR W21, [X8,#16]
+TBZ W20, #0, .+0x1520 (updateDeleteQuickReply)
+MOV W0, #0xf1ec
+MOVK W0, #0x53e6, LSL #16
+B .+0x18e8
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateDeleteQuickReplyMessages)
+MOV W0, #0xe7cd
+MOVK W0, #0x566f, LSL #16
+MOV X20, X19
+BL .+0x245dfc
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244c7c
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245ddc
+MOV X0, X21
+BL .+0xfffffffffffd35f4
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1e04
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x1e5c
+MOV X20, X19
+BL .+0x245db4
+MOV X0, X21
+BL .+0xffffffffff68b480
+CBZ X0, .+0x1ca0
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x1ea8
+MOV X0, X21
+BL .+0x28af14
+MOV X22, #0x0
+ADD X8, X21, X22, LSL #2
+LDR W0, [X8,#32]
+ADD X22, X22, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244c08
+CMP X20, X22
+B NE, .+0xffffffffffffffe4
+B .+0x1b20
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDRB W23, [X8,#24]
+LDR X21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateDeleteScheduledMessages)
+MOV W0, #0x6cee
+MOVK W0, #0x9086, LSL #16
+MOV X20, X19
+BL .+0x245d48
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+BL .+0xfffffffffffaaff8
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245d24
+MOV X0, X21
+BL .+0xfffffffffffd353c
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1d50
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x1da8
+MOV X20, X19
+BL .+0x245cfc
+MOV X0, X21
+BL .+0xffffffffff68b3c8
+CBZ X0, .+0x1be8
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x1df4
+MOV X0, X21
+BL .+0x28ae5c
+MOV X22, #0x0
+ADD X8, X21, X22, LSL #2
+LDR W0, [X8,#32]
+ADD X22, X22, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244b50
+CMP X20, X22
+B NE, .+0xffffffffffffffe4
+B .+0x1a68
+AND X8, X21, #0xffffffffffffff8
+LDP W21, W22, [X8,#16]
+LDR X9, [X8,#24]
+STR X9, [SP,#464]
+LDP X9, X24, [X8,#32]
+STR X9, [SP,#448]
+LDP X25, X27, [X8,#48]
+LDP X26, X28, [X8,#64]
+LDP X23, X8, [X8,#80]
+STR X8, [SP,#432]
+TBZ W20, #0, .+0x14 (updateDialogFilter)
+MOV W0, #0xde7d
+MOVK W0, #0x26ff, LSL #16
+MOV X20, X19
+BL .+0x245c78
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244af8
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244ae8
+TBZ W21, #0, .+0x1b4c
+MOV X8, #0xfffffffdffffffff
+CMP X26, X8
+B HI, .+0x1e1c
+MOV X9, X26
+LDR X21, [SP,#464]
+STR X21, [SP,#640]
+LDR X22, [SP,#448]
+STR X22, [SP,#648]
+STR X24, [SP,#656]
+STR X25, [SP,#664]
+STR X27, [SP,#672]
+STR X26, [SP,#680]
+STR X28, [SP,#688]
+STR X23, [SP,#696]
+LDR X26, [SP,#432]
+STR X26, [SP,#704]
+STR X26, [SP]
+MOV X0, X21
+MOV X1, X22
+MOV X2, X24
+MOV X3, X25
+MOV X4, X27
+MOV X5, X9
+STR X9, [SP,#416]
+MOV X6, X28
+MOV X7, X23
+BL .+0xffffffffff642d4c
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x212448
+STR X26, [SP]
+MOV X0, X21
+MOV X1, X22
+MOV X2, X24
+MOV X3, X25
+MOV X4, X27
+LDR X5, [SP,#416]
+MOV X6, X28
+MOV X7, X23
+BL .+0xffffffffff64352c
+B .+0x1aa4
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x14 (updateDialogFilterOrder)
+MOV W0, #0x2105
+MOVK W0, #0xa5d7, LSL #16
+MOV X20, X19
+BL .+0x245b90
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245b80
+MOV X0, X21
+BL .+0xfffffffffffd3398
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1bb0
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x1c08
+MOV X20, X19
+BL .+0x245b58
+MOV X0, X21
+BL .+0xffffffffff68b224
+CBZ X0, .+0x1a44
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x1c54
+MOV X0, X21
+BL .+0x28acb8
+MOV X22, #0x0
+ADD X8, X21, X22, LSL #2
+LDR W0, [X8,#32]
+ADD X22, X22, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2449ac
+CMP X20, X22
+B NE, .+0xffffffffffffffe4
+B .+0x18c4
+AND X8, X21, #0xffffffffffffff8
+LDP W24, W23, [X8,#16]
+LDRB W25, [X8,#24]
+LDR X21, [X8,#32]
+LDRB W22, [X8,#40]
+TBZ W20, #0, .+0x14 (updateDialogPinned)
+MOV W0, #0xe51c
+MOVK W0, #0x6e6f, LSL #16
+MOV X20, X19
+BL .+0x245ae8
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244968
+TBZ W24, #1, .+0x1354
+TBZ W25, #0, .+0x1340
+BRK #0x1
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDR X21, [X8,#24]
+LDRB W22, [X8,#32]
+TBZ W20, #0, .+0x1328 (updateDialogUnreadMark)
+MOV W0, #0x59c3
+MOVK W0, #0xe164, LSL #16
+B .+0x1314
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x894 (updateEditChannelMessage) MUST BE updateDraftMessage
+MOV W0, #0x4df7
+MOVK W0, #0x1b3f, LSL #16
+B .+0x880
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x878 (updateEditMessage)
+MOV W0, #0x70a3
+MOVK W0, #0xe403, LSL #16
+B .+0x864
+AND X8, X21, #0xfffffffffffff8
+LDR W21, [X8,#16]
+TBZ W20, #0, .+0x1160 (updateEncryptedChatTyping)
+MOV W0, #0xf156
+MOVK W0, #0x1710, LSL #16
+B .+0x1528
+AND X8, X21, #0xffffffffffffff8
+LDP W23, W22, [X8,#16]
+LDR W21, [X8,#24]
+TBZ W20, #0, .+0x1124 (updateEncryptedMessagesRead)
+MOV W0, #0x25b7
+MOVK W0, #0x38fe, LSL #16
+MOV X20, X19
+BL .+0x245a3c
+B .+0x1110
+AND X21, X21, #0xffffffffffffff8
+ADD X0, X21, #0x10
+ADD X1, SP, #0x280
+BL .+0xffffffffff643a28
+LDR W21, [X21,#76]
+TBZ W20, #0, .+0x14 (updateEncryption)
+MOV W0, #0xe88d
+MOVK W0, #0xb4a2, LSL #16
+MOV X20, X19
+BL .+0x245a10
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x220a10
+B .+0x18e4
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateFolderPeers)
+MOV W0, #0xdc0
+MOVK W0, #0x1936, LSL #16
+MOV X20, X19
+BL .+0x2459dc
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x2459cc
+MOV X0, X23
+BL .+0xfffffffffffd31f4
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1a00
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x1a58
+MOV X20, X19
+BL .+0x2459a4
+MOV X0, X23
+BL .+0xffffffffff67d47c
+CBZ X0, .+0x1080
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x1aa4
+MOV X0, X23
+BL .+0x28ab04
+ADD X25, X23, #0x2c
+LDUR X2, [X25,#-12]
+LDURB W8, [X25,#-4]
+AND X9, X24, #0xffffff00
+ORR X24, X9, X8
+LDR W8, [X25],#16
+BFI X24, X8, #32, #32
+MOV X0, X19
+MOV W1, #0x1
+MOV X3, X24
+BL .+0x227474
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffd4
+B .+0xcc0
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDRB W23, [X8,#24]
+LDR W21, [X8,#28]
+TBZ W20, #0, .+0x116c (updateGeoLiveViewed)
+MOV W0, #0xb939
+MOVK W0, #0x871f, LSL #16
+B .+0x1158
+AND X8, X21, #0xffffffffffffff8
+LDR X21, [X8,#16]
+ADD X0, X8, #0x18
+ADD X1, SP, #0x280
+BL .+0xffffffffff643ad8
+TBZ W20, #0, .+0x14 (updateGroupCall)
+MOV W0, #0x4500
+MOVK W0, #0x14b2, LSL #16
+MOV X20, X19
+BL .+0x245904
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244804
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x227cac
+B .+0x17d8
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDP X21, X22, [X8,#24]
+TBZ W20, #0, .+0x14 (updateGroupCallConnection)
+MOV W0, #0x3982
+MOVK W0, #0xb78, LSL #16
+MOV X20, X19
+BL .+0x2458c0
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244740
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x211af0
+AND X8, X21, #0xffffffffffffff8
+LDP X23, X24, [X8,#16]
+LDR X22, [X8,#32]
+LDR W21, [X8,#40]
+TBZ W20, #0, .+0x14 (updateGroupCallParticipants)
+MOV W0, #0xdb4e
+MOVK W0, #0xf2eb, LSL #16
+MOV X20, X19
+BL .+0x24585c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0x240b30
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245838
+MOV X0, X22
+BL .+0xfffffffffffd3064
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1870
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x18c8
+MOV X20, X19
+BL .+0x245810
+MOV X0, X22
+BL .+0xfffffffffffd3068
+CBZ X0, .+0x16ec
+MOV X23, X0
+CMP X0, #0x1
+B LT, .+0x1914
+MOV X0, X22
+BL .+0x28a970
+ADD X24, X22, #0x20
+ADD X1, SP, #0x280
+MOV X0, X24
+BL .+0xffffffffffbdf8a4
+ADD X0, SP, #0x280
+BL .+0xffffffffffbdf974
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x227de4
+ADD X0, SP, #0x280
+BL .+0xffffffffffbdfa08
+ADD X24, X24, #0xa0
+SUBS X23, X23, #0x1
+B NE, .+0xffffffffffffffcc
+MOV X0, X22
+BL .+0x28a914
+B .+0x1690
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDP X25, X24, [X8,#24]
+LDP X9, X26, [X8,#40]
+STR X9, [SP,#464]
+LDP X28, X23, [X8,#56]
+LDP X27, X9, [X8,#72]
+STR X9, [SP,#448]
+LDP X9, X21, [X8,#88]
+STR X9, [SP,#432]
+TBZ W20, #0, .+0x14 (updateInlineBotCallbackQuery)
+MOV W0, #0x9052
+MOVK W0, #0x691e, LSL #16
+MOV X20, X19
+BL .+0x24576c
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2445ec
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24465c
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24464c
+MOV X0, X19
+MOV W1, #0x1
+LDR X2, [SP,#464]
+MOV X3, X26
+MOV X4, X28
+MOV X5, X23
+BL .+0x2322bc
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244620
+TBZ W22, #0, .+0x18
+LDR X0, [SP,#448]
+CBZ X0, .+0x18dc
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2448bc
+TBZ W22, #1, .+0x15ec
+CBZ X21, .+0x18cc
+MOV X0, X21
+BL .+0x28a868
+LDR X0, [SP,#432]
+MOV X1, X21
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x244664
+B .+0x1484
+AND X8, X21, #0xffffffffffffff8
+LDP X21, X22, [X8,#16]
+LDP W23, W25, [X8,#32]
+LDR X24, [X8,#40]
+TBZ W20, #0, .+0x14 (updateLangPack)
+MOV W0, #0x2f4d
+MOVK W0, #0x5602, LSL #16
+MOV X20, X19
+BL .+0x2456ac
+BFI X23, X25, #32, #32
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+MOV X4, X23
+MOV X5, X24
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffff5a24c
+AND X8, X21, #0xffffffffffffff8
+LDP X21, X22, [X8,#16]
+TBZ W20, #0, .+0x146c (updateLangPackTooLong)
+MOV W0, #0x264
+MOVK W0, #0x4656, LSL #16
+MOV X20, X19
+BL .+0x245654
+B .+0x1458
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDRB W24, [X8,#24]
+LDR W22, [X8,#28]
+LDR X21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateMessageExtendedMedia)
+MOV W0, #0x1724
+MOVK W0, #0xd5a4, LSL #16
+MOV X20, X19
+BL .+0x245628
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffaa8d8
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244494
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x2455f4
+MOV X0, X21
+BL .+0xfffffffffffd2e10
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1630
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x1688
+MOV X20, X19
+BL .+0x2455cc
+MOV X0, X21
+BL .+0xfffffffffffd2e18
+CBZ X0, .+0x14b8
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x16d4
+MOV X0, X21
+BL .+0x28a72c
+MOV X24, #0x0
+ADD X8, X21, X24, LSL #3
+LDR X22, [X8,#32]
+ADD X24, X24, #0x1
+AND X23, X22, #0x7fffffffffffffff
+MOV X0, X23
+BL .+0x28a92c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+BL .+0xfffffffffff91c40
+MOV X0, X23
+BL .+0x28a8fc
+CMP X20, X24
+B NE, .+0xffffffffffffffcc
+B .+0x1320
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X21, [X8,#24]
+TBZ W20, #0, .+0x10b8 (updateMessageID)
+MOV W0, #0xbfd6
+MOVK W0, #0x4e90, LSL #16
+B .+0x10a4
+AND X8, X21, #0xffffffffffffff8
+LDR W21, [X8,#16]
+LDP X22, X25, [X8,#24]
+LDR X9, [X8,#40]
+STR X9, [SP,#464]
+LDP X9, X27, [X8,#48]
+STR X9, [SP,#448]
+LDP X28, X9, [X8,#64]
+STR X9, [SP,#432]
+LDR X24, [X8,#80]
+LDRB W26, [X8,#92]
+ADD X0, X8, #0x60
+LDR W23, [X8,#88]
+ADD X1, SP, #0x230
+BL .+0xffffffffff643760
+TBZ W20, #0, .+0x14 (updateMessagePoll)
+MOV W0, #0x657b
+MOVK W0, #0xaca1, LSL #16
+MOV X20, X19
+BL .+0x245500
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244380
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2443f0
+TBZ W21, #0, .+0x58
+CBZ X27, .+0x16b8
+STR X25, [SP,#640]
+BFI X23, X26, #32, #8
+LDR X8, [SP,#464]
+STR W8, [SP,#648]
+LDR X8, [SP,#448]
+STR X8, [SP,#656]
+STR X27, [SP,#664]
+STR X28, [SP,#672]
+LDR X8, [SP,#432]
+STR X8, [SP,#680]
+STR W24, [SP,#688]
+UBFX X8, X24, #32, #1
+STRB W8, [SP,#692]
+STR W23, [SP,#696]
+UBFX X8, X23, #32, #1
+STRB W8, [SP,#700]
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffbf864
+ADD X20, SP, #0x230
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffbfecc
+B .+0x136c
+AND X8, X21, #0xffffffffffffff8
+LDP X25, X23, [X8,#16]
+LDRB W24, [X8,#32]
+LDR X22, [X8,#40]
+LDR W21, [X8,#48]
+TBZ W20, #0, .+0x14 (updateMessagePollVote)
+MOV W0, #0xe77
+MOVK W0, #0x24f4, LSL #16
+MOV X20, X19
+BL .+0x24544c
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24434c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffaa6ec
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245418
+MOV X0, X22
+BL .+0xfffffffffffc8a6c
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1458
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x14b0
+MOV X20, X19
+BL .+0x2453f0
+MOV X0, X22
+BL .+0x28a568
+BL .+0xffffffffff67ced0
+CBZ X0, .+0x70
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x14f8
+MOV X0, X22
+BL .+0xffffffffffc3e5e0
+MOV X23, X0
+MOV X24, #0x0
+B .+0x38
+MOV X0, X24
+MOV X1, X22
+BL .+0xffffffffffc3f380
+MOV X25, X0
+ADD X24, X24, #0x1
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244560
+MOV X0, X25
+BL .+0x28a718
+CMP X20, X24
+B EQ, .+0x1c
+TBZ W23, #0, .+0xffffffffffffffcc
+ADD X8, X22, X24, LSL #3
+LDR X25, [X8,#32]
+MOV X0, X25
+BL .+0x28a714
+B .+0xffffffffffffffc8
+MOV X0, X22
+BL .+0x28a4d4
+B .+0xa60
+AND X8, X21, #0xffffffffffffff8
+LDR W26, [X8,#16]
+LDR X28, [X8,#24]
+LDRB W25, [X8,#32]
+LDP W27, W9, [X8,#36]
+STR W9, [SP,#448]
+LDRB W9, [X8,#44]
+STR W9, [SP,#464]
+LDR W21, [X8,#48]
+LDP X22, X23, [X8,#56]
+LDR X24, [X8,#72]
+TBZ W20, #0, .+0x14 (updateMessageReactions)
+MOV W0, #0x3cb8
+MOVK W0, #0x5e1b, LSL #16
+MOV X20, X19
+BL .+0x245328
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2441a8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X28
+MOV X3, X25
+BL .+0xfffffffffffaa5c8
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244184
+TBZ W26, #0, .+0x1c
+LDR W8, [SP,#464]
+TBNZ W8, #0, .+0x14cc
+LDR W0, [SP,#448]
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x244168
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+MOV X4, X23
+MOV X5, X24
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffff9cb14
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X21, [X8,#24]
+TBZ W20, #0, .+0xdec (updateMoveStickerSetToTop)
+MOV W0, #0xcf85
+MOVK W0, #0x86fc, LSL #16
+B .+0xdd8
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x6c (updateNewChannelMessage)
+MOV W0, #0x4d9
+MOVK W0, #0x62ba, LSL #16
+B .+0x58
+AND X21, X21, #0xffffffffffffff8
+ADD X0, X21, #0x10
+ADD X1, SP, #0x280
+BL .+0xffffffffff7f3f84
+LDR W21, [X21,#76]
+TBZ W20, #0, .+0x14 (updateNewEncryptedMessage)
+MOV W0, #0xbd9a
+MOVK W0, #0x12bc, LSL #16
+MOV X20, X19
+BL .+0x245240
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x22063c
+B .+0x1114
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateNewMessage)
+MOV W0, #0xafd
+MOVK W0, #0x1f2b, LSL #16
+MOV X20, X19
+BL .+0x24520c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+BL .+0xfffffffffff5b2f4
+B .+0x8e0
+AND X8, X21, #0xffffffffffffff8
+LDR W21, [X8,#16]
+LDP X22, X23, [X8,#24]
+LDP W24, W25, [X8,#40]
+TBZ W20, #0, .+0x14 (updateNewQuickReply)
+MOV W0, #0xa717
+MOVK W0, #0xf53d, LSL #16
+MOV X20, X19
+BL .+0x2451d4
+BFI X24, X25, #32, #32
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+MOV X4, X23
+MOV X5, X24
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffffd3e18
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x14 (updateNewScheduledMessage)
+MOV W0, #0x1dfb
+MOVK W0, #0x39a5, LSL #16
+MOV X20, X19
+BL .+0x24517c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffff5b248
+AND X8, X21, #0xffffffffffffff8
+ADD X0, X8, #0x10
+ADD X1, SP, #0x280
+BL .+0xffffffffffe74388
+TBZ W20, #0, .+0x14 (updateNewStickerSet)
+MOV W0, #0x30aa
+MOVK W0, #0x688a, LSL #16
+MOV X20, X19
+BL .+0x24512c
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xef9a8
+B .+0x1010
+AND X8, X21, #0xffffffffffffff8
+LDP X21, X22, [X8,#16]
+ADD X0, X8, #0x20
+ADD X1, SP, #0x280
+BL .+0xffffffffff69bdcc
+TBZ W20, #0, .+0x14 (updateNotifySettings)
+MOV W0, #0x68ef
+MOVK W0, #0xbec2, LSL #16
+MOV X20, X19
+BL .+0x2450f0
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+BL .+0xfffffffffffa3eb0
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffaa6a4
+B .+0xfc0
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X23, [X8,#24]
+LDRB W24, [X8,#32]
+LDR W21, [X8,#36]
+LDRB W25, [X8,#40]
+TBZ W20, #0, .+0x14 (updatePeerHistoryTTL)
+MOV W0, #0xb9a5
+MOVK W0, #0xbb9b, LSL #16
+MOV X20, X19
+BL .+0x24509c
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243f1c
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X23
+MOV X3, X24
+BL .+0xfffffffffffaa33c
+TBZ W22, #0, .+0xf6c
+TBZ W25, #0, .+0x768
+BRK #0x1
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x14 (updatePeerLocated)
+MOV W0, #0xcfb0
+MOVK W0, #0xb4af, LSL #16
+MOV X20, X19
+BL .+0x245050
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x245040
+MOV X0, X21
+BL .+0xfffffffffffd2870
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x1084
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x10dc
+MOV X20, X19
+BL .+0x245018
+MOV X0, X21
+BL .+0xffffffffff68a750
+CBZ X0, .+0xf04
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x1128
+MOV X0, X21
+BL .+0x28a178
+ADD X22, X21, #0x30
+LDP X2, X3, [X22,#-16]
+LDR W4, [X22],#24
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffaa4d0
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffe8
+B .+0xd88
+AND X8, X21, #0xffffffffffffff8
+LDR X21, [X8,#16]
+LDRB W22, [X8,#24]
+ADD X0, X8, #0x20
+ADD X1, SP, #0x280
+BL .+0xffffffffff7fcb88
+TBZ W20, #0, .+0x14 (updatePeerSettings)
+MOV W0, #0x7366
+MOVK W0, #0x6a7e, LSL #16
+MOV X20, X19
+BL .+0x244fa8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+BL .+0xfffffffffffaa258
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffaa8f4
+B .+0xe78
+AND X8, X21, #0xffffffffffffff8
+ADD X0, X8, #0x10
+ADD X1, SP, #0x280
+BL .+0xffffffffff642d44
+TBZ W20, #0, .+0x14 (updatePhoneCall)
+MOV W0, #0x6b1e
+MOVK W0, #0xab0f, LSL #16
+MOV X20, X19
+BL .+0x244f5c
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffaaba0
+B .+0xe40
+AND X8, X21, #0xffffffffffffff8
+LDP X22, X21, [X8,#16]
+TBZ W20, #0, .+0x14 (updatePhoneCallSignalingData)
+MOV W0, #0xbf09
+MOVK W0, #0x2661, LSL #16
+MOV X20, X19
+BL .+0x244f2c
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243e2c
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x2440b4
+AND X8, X21, #0xffffffffffffff8
+LDR W25, [X8,#16]
+LDP X24, X23, [X8,#24]
+LDP W22, W21, [X8,#40]
+TBZ W20, #0, .+0x14 (updatePinnedChannelMessages)
+MOV W0, #0x8608
+MOVK W0, #0x5bb9, LSL #16
+MOV X20, X19
+BL .+0x244ecc
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243d4c
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243dbc
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x244e9c
+MOV X0, X23
+BL .+0xfffffffffffd26b4
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0xee4
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0xf3c
+MOV X20, X19
+BL .+0x244e74
+MOV X0, X23
+BL .+0xffffffffff68a540
+CBZ X0, .+0x550
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0xf88
+MOV X0, X23
+BL .+0x289fd4
+MOV X24, #0x0
+ADD X8, X23, X24, LSL #2
+LDR W0, [X8,#32]
+ADD X24, X24, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243cc8
+CMP X20, X24
+B NE, .+0xffffffffffffffe4
+B .+0x1a0
+AND X8, X21, #0xffffffffffffff8
+LDP W22, W23, [X8,#16]
+LDRB W24, [X8,#24]
+LDR X21, [X8,#32]
+TBZ W20, #0, .+0x14 (updatePinnedDialogs)
+MOV W0, #0x3ca2
+MOVK W0, #0xfa0f, LSL #16
+MOV X20, X19
+BL .+0x244e08
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243c88
+TBZ W22, #1, .+0x18
+TBNZ W24, #0, .+0xfd8
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243c70
+TBZ W22, #0, .+0xcd4
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x244dcc
+CBZ X21, .+0xfb4
+MOV X0, X21
+BL .+0xfffffffffffd25fc
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0xf00
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0xf00
+MOV X20, X19
+BL .+0x244da0
+MOV X0, X21
+BL .+0xfffffffffffd25fc
+CBZ X0, .+0xc8c
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0xeec
+MOV X0, X21
+BL .+0x289f00
+ADD X22, X21, #0x28
+LDUR X2, [X22,#-8]
+LDRB W3, [X22],#16
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x211b4c
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffe8
+B .+0xb10
+AND X8, X21, #0xffffffffffffff8
+LDR W26, [X8,#16]
+LDR X24, [X8,#24]
+LDRB W25, [X8,#32]
+LDR X23, [X8,#40]
+LDP W22, W21, [X8,#48]
+TBZ W20, #0, .+0x14 (updatePinnedMessages)
+MOV W0, #0xeab5
+MOVK W0, #0xed85, LSL #16
+MOV X20, X19
+BL .+0x244d30
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243bb0
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X24
+MOV X3, X25
+BL .+0xfffffffffffa9fd0
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x244cfc
+MOV X0, X23
+BL .+0xfffffffffffd2514
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0xd48
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0xda0
+MOV X20, X19
+BL .+0x244cd4
+MOV X0, X23
+BL .+0xffffffffff68a3a0
+CBZ X0, .+0x3b0
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0xdec
+MOV X0, X23
+BL .+0x289e34
+MOV X24, #0x0
+ADD X8, X23, X24, LSL #2
+LDR W0, [X8,#32]
+ADD X24, X24, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243b28
+CMP X20, X24
+B NE, .+0xffffffffffffffe4
+MOV X0, X23
+BL .+0x289df0
+B .+0x36c
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X21, [X8,#24]
+TBZ W20, #0, .+0x14 (updatePinnedSavedDialogs)
+MOV W0, #0x85a6
+MOVK W0, #0x686c, LSL #16
+MOV X20, X19
+BL .+0x244c64
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243ae4
+TBZ W22, #0, .+0xb48
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x244c40
+CBZ X21, .+0xe2c
+MOV X0, X21
+BL .+0xfffffffffffd2470
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0xd78
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0xd78
+MOV X20, X19
+BL .+0x244c14
+MOV X0, X21
+BL .+0xfffffffffffd2470
+CBZ X0, .+0xb00
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0xd64
+MOV X0, X21
+BL .+0x289d74
+ADD X22, X21, #0x28
+LDUR X2, [X22,#-8]
+LDRB W3, [X22],#16
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x2119c0
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffe8
+B .+0x984
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x14 (updateQuickReplies) MUST BE updatePrivacy
+MOV W0, #0xab2
+MOVK W0, #0xf947, LSL #16
+MOV X20, X19
+BL .+0x244bb4
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x244ba4
+MOV X0, X21
+BL .+0xfffffffffffd23dc
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0xbf4
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0xc4c
+MOV X20, X19
+BL .+0x244b7c
+MOV X0, X21
+BL .+0xfffffffffffd23dc
+CBZ X0, .+0xa68
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0xc98
+MOV X0, X21
+BL .+0x289cdc
+ADD X26, X21, #0x3c
+LDUR W22, [X26,#-28]
+LDUR X23, [X26,#-20]
+LDUR X24, [X26,#-12]
+LDUR X25, [X26,#-4]
+MOV X0, X24
+BL .+0x289cc0
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+MOV X4, X24
+MOV X5, X25
+BL .+0xfffffffffffd37a4
+MOV X0, X24
+BL .+0x289c84
+ADD X26, X26, #0x20
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffbc
+B .+0x8c0
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDR X26, [X8,#24]
+LDP W25, W24, [X8,#32]
+LDR X22, [X8,#40]
+LDRB W28, [X8,#48]
+LDR W21, [X8,#52]
+LDRB W27, [X8,#56]
+TBZ W20, #0, .+0x14 (updateReadChannelDiscussionInbox)
+MOV W0, #0x9546
+MOVK W0, #0xd6b1, LSL #16
+MOV X20, X19
+BL .+0x244ad8
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243958
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2439c8
+MOV X0, X25
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243938
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243928
+TBZ W23, #0, .+0x98c
+TBNZ W28, #0, .+0xc84
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243990
+TBZ W27, #0, .+0x174
+BRK #0x1
+AND X8, X21, #0xffffffffffffff8
+LDR X23, [X8,#16]
+LDP W22, W21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateReadChannelDiscussionOutbox)
+MOV W0, #0x9e7c
+MOVK W0, #0x695c, LSL #16
+MOV X20, X19
+BL .+0x244a58
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243958
+B .+0x12c
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDR W21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateReadChannelOutbox) MUST BE updateReadChannelInbox
+MOV W0, #0x99a9
+MOVK W0, #0xb75f, LSL #16
+MOV X20, X19
+BL .+0x244a24
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243924
+B .+0x108
+AND X8, X21, #0xffffffffffffff8
+LDP W28, W27, [X8,#16]
+LDRB W21, [X8,#24]
+LDR X25, [X8,#32]
+LDRB W26, [X8,#40]
+LDP W24, W23, [X8,#44]
+LDP W22, W8, [X8,#52]
+STR W8, [SP,#464]
+TBZ W20, #0, .+0x14 (updateReadHistoryInbox)
+MOV W0, #0x4fdf
+MOVK W0, #0x9c97, LSL #16
+MOV X20, X19
+BL .+0x2449dc
+MOV X0, X28
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24385c
+TBZ W28, #0, .+0x18
+TBNZ W21, #0, .+0xbbc
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243844
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X25
+MOV X3, X26
+BL .+0xfffffffffffa9c64
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243820
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243810
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243800
+LDR W0, [SP,#464]
+B .+0x64
+AND X8, X21, #0xffffffffffffff8
+LDR X24, [X8,#16]
+LDRB W25, [X8,#24]
+LDP W23, W22, [X8,#28]
+LDR W21, [X8,#36]
+TBZ W20, #0, .+0x14 (updateReadHistoryOutbox)
+MOV W0, #0x21bf
+MOVK W0, #0x2f2f, LSL #16
+MOV X20, X19
+BL .+0x244940
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X24
+MOV X3, X25
+BL .+0xfffffffffffa9bf0
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2437ac
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24379c
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x243770
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X25, [X8,#24]
+LDP W24, W23, [X8,#32]
+LDR W21, [X8,#40]
+LDRB W26, [X8,#44]
+TBZ W20, #0, .+0x14 (updateReadMessagesContents)
+MOV W0, #0x7181
+MOVK W0, #0xf822, LSL #16
+MOV X20, X19
+BL .+0x2448b4
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243734
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x244894
+MOV X0, X25
+BL .+0xfffffffffffd20ac
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x8e8
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x940
+MOV X20, X19
+BL .+0x24486c
+MOV X0, X25
+BL .+0xffffffffff689f38
+CBZ X0, .+0x44
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x98c
+MOV X0, X25
+BL .+0x2899cc
+MOV X27, #0x0
+ADD X8, X25, X27, LSL #2
+LDR W0, [X8,#32]
+ADD X27, X27, #0x1
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2436c0
+CMP X20, X27
+B NE, .+0xffffffffffffffe4
+MOV X0, X25
+BL .+0x289988
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2436a0
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243690
+TBZ W22, #0, .+0x6f4
+TBZ W26, #0, .+0xfffffffffffffef0
+BRK #0x1
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDRB W23, [X8,#24]
+LDR W21, [X8,#28]
+TBZ W20, #0, .+0x14 (updateReadStories)
+MOV W0, #0x932b
+MOVK W0, #0xf74e, LSL #16
+MOV X20, X19
+BL .+0x2447d0
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+BL .+0xfffffffffffa9a80
+B .+0xfffffffffffffeb0
+AND X8, X21, #0xffffffffffffff8
+LDR W23, [X8,#16]
+LDR X21, [X8,#24]
+LDRB W22, [X8,#32]
+TBZ W20, #0, .+0x14 (updateSavedDialogPinned)
+MOV W0, #0x9e74
+MOVK W0, #0xaeaf, LSL #16
+MOV X20, X19
+BL .+0x244794
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243614
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x211538
+AND X8, X21, #0xffffffffffffff8
+LDR X25, [X8,#16]
+LDRB W26, [X8,#24]
+LDR W24, [X8,#28]
+LDP X21, X22, [X8,#32]
+LDRB W23, [X8,#48]
+TBZ W20, #0, .+0x14 (updateSentStoryReaction)
+MOV W0, #0x7683
+MOVK W0, #0x7d62, LSL #16
+MOV X20, X19
+BL .+0x244728
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X25
+MOV X3, X26
+BL .+0xfffffffffffa99d8
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243594
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+MOV X4, X23
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffffd3424
+AND X8, X21, #0xffffffffffffff8
+LDP W28, W27, [X8,#16]
+LDRB W22, [X8,#24]
+LDP X25, X26, [X8,#32]
+LDP X23, X24, [X8,#48]
+LDP X9, X21, [X8,#64]
+STR X9, [SP,#464]
+TBZ W20, #0, .+0x14 (updateServiceNotification)
+MOV W0, #0x6819
+MOVK W0, #0xebe4, LSL #16
+MOV X20, X19
+BL .+0x2446a0
+MOV X0, X28
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243520
+TBZ W28, #1, .+0x18
+TBNZ W22, #0, .+0x884
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243508
+MOV X0, X25
+MOV X1, X26
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x2435f4
+MOV X0, X23
+MOV X1, X24
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x2435e0
+MOV X0, X19
+MOV W1, #0x1
+LDR X2, [SP,#464]
+BL .+0xfffffffffff91118
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x244630
+MOV X0, X21
+BL .+0xfffffffffffd1e34
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x688
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x6e0
+MOV X20, X19
+BL .+0x244608
+MOV X0, X21
+BL .+0xfffffffffffd1e48
+CBZ X0, .+0x4f4
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x72c
+MOV X24, #0xfffffffffffffffb
+MOVK X24, #0xfff, LSL #48
+MOV X0, X21
+BL .+0x289760
+MOV X25, #0x0
+ADD X8, X21, X25, LSL #3
+LDR X22, [X8,#32]
+ADD X25, X25, #0x1
+AND X23, X22, X24
+MOV X0, X23
+BL .+0x289960
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+BL .+0xfffffffffff90894
+MOV X0, X23
+BL .+0x289930
+CMP X20, X25
+B NE, .+0xffffffffffffffcc
+B .+0x354
+AND X8, X21, #0xffffffffffffff8
+LDR X21, [X8,#16]
+LDRB W22, [X8,#24]
+ADD X0, X8, #0x20
+ADD X1, SP, #0x280
+BL .+0xfffffffffff24cd8
+TBZ W20, #0, .+0x14 (updateStarsRevenueStatus) MUST BE updateSmsJob AND updateStarsBalance
+MOV W0, #0xb019
+MOVK W0, #0xa584, LSL #16
+MOV X20, X19
+BL .+0x244574
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+BL .+0xfffffffffffa9824
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffe6858
+B .+0x444
+AND X8, X21, #0xfffffffffffff8
+LDR W21, [X8,#16]
+TBZ W20, #0, .+0xfffffffffffffc38 (updateStickerSets) MUST BE updateStarsBalance
+MOV W0, #0x4808
+MOVK W0, #0x31c2, LSL #16
+MOV X20, X19
+BL .+0x244530
+B .+0xfffffffffffffc24
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDRB W23, [X8,#24]
+LDR X21, [X8,#32]
+TBZ W20, #0, .+0x14 (updateStory) MUST BE updateStickerSetsOrder AND updateStoriesStealthMode
+MOV W0, #0xb798
+MOVK W0, #0x75b3, LSL #16
+MOV X20, X19
+BL .+0x244508
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+BL .+0xfffffffffffa97b8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0xfffffffffffef178
+AND X8, X21, #0xffffffffffffff8
+LDR W22, [X8,#16]
+LDR X21, [X8,#24]
+TBZ W20, #0, .+0x14 (updateStoryID)
+MOV W0, #0x35b9
+MOVK W0, #0x1bf3, LSL #16
+MOV X20, X19
+BL .+0x2444a8
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243328
+B .+0xc0
+AND X8, X21, #0xffffffffffffff8
+ADD X0, X8, #0x10
+ADD X1, SP, #0x280
+BL .+0xffffffffff69deb8
+TBZ W20, #0, .+0x14 (updateTheme)
+MOV W0, #0xfba3
+MOVK W0, #0x8216, LSL #16
+MOV X20, X19
+BL .+0x244470
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0xfffffffffffefebc
+B .+0x354
+AND X8, X21, #0xffffffffffffff8
+LDR W27, [X8,#16]
+LDR X25, [X8,#24]
+LDRB W26, [X8,#32]
+LDR W24, [X8,#36]
+LDP X23, X21, [X8,#40]
+LDR X22, [X8,#56]
+TBZ W20, #0, .+0x14 (updateTranscribedAudio)
+MOV W0, #0xcd5a
+MOVK W0, #0x84, LSL #16
+MOV X20, X19
+BL .+0x24442c
+MOV X0, X27
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2432ac
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X25
+MOV X3, X26
+BL .+0xfffffffffffa96cc
+MOV X0, X24
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243288
+B .+0x1ec
+AND X8, X21, #0xfffffffffffff8
+LDR X21, [X8,#16]
+TBZ W20, #0, .+0x14 (updateUser)
+MOV W0, #0x9438
+MOVK W0, #0x2052, LSL #16
+MOV X20, X19
+BL .+0x2443d8
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x2432bc
+AND X8, X21, #0xffffffffffffff8
+LDP X23, X21, [X8,#16]
+LDR W22, [X8,#32]
+LDRB W24, [X8,#36]
+TBZ W20, #0, .+0x14 (updateUserEmojiStatus)
+MOV W0, #0x3599
+MOVK W0, #0x2837, LSL #16
+MOV X20, X19
+BL .+0x244388
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243288
+BFI X22, X24, #32, #8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+MOV X3, X22
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x21f194
+AND X8, X21, #0xffffffffffffff8
+LDP X26, X24, [X8,#16]
+LDP X25, X22, [X8,#32]
+LDP X23, X21, [X8,#48]
+TBZ W20, #0, .+0x14 (updateUserName)
+MOV W0, #0x8924
+MOVK W0, #0xa784, LSL #16
+MOV X20, X19
+BL .+0x244320
+MOV X0, X26
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x243220
+MOV X0, X24
+MOV X1, X25
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x24328c
+MOV X0, X22
+MOV X1, X23
+MOV X2, X19
+MOV W3, #0x0
+BL .+0x243278
+MOV W0, #0xc415
+MOVK W0, #0x1cb5, LSL #16
+MOV X20, X19
+BL .+0x2442d8
+MOV X0, X21
+BL .+0xfffffffffffd1ae4
+MOV X8, #0xffffffff80000000
+CMP X0, X8
+B LT, .+0x334
+MOV W8, #0x7fffffff
+CMP X0, X8
+B GT, .+0x38c
+MOV X20, X19
+BL .+0x2442b0
+MOV X0, X21
+BL .+0xfffffffffffd1af4
+CBZ X0, .+0x19c
+MOV X20, X0
+CMP X0, #0x1
+B LT, .+0x3d8
+MOV X0, X21
+BL .+0x289410
+ADD X25, X21, #0x30
+LDUR W22, [X25,#-16]
+LDP X23, X24, [X25,#-8]
+MOV X0, X24
+BL .+0x2893fc
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X22
+MOV X3, X23
+MOV X4, X24
+BL .+0x167b4
+MOV X0, X24
+BL .+0x2893c4
+ADD X25, X25, #0x18
+SUBS X20, X20, #0x1
+B NE, .+0xffffffffffffffc8
+MOV X0, X21
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x289394
+AND X8, X21, #0xffffffffffffff8
+LDP X23, X21, [X8,#16]
+LDR X22, [X8,#32]
+TBZ W20, #0, .+0x14 (updateUserPhone)
+MOV W0, #0x2a13
+MOVK W0, #0x549, LSL #16
+MOV X20, X19
+BL .+0x24420c
+MOV X0, X23
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x24310c
+MOV X0, X21
+MOV X1, X22
+MOV X2, X19
+MOV W3, #0x0
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x24315c
+AND X8, X21, #0xffffffffffffff8
+LDR X22, [X8,#16]
+LDR W21, [X8,#24]
+LDRB W23, [X8,#28]
+TBZ W20, #0, .+0x14 (updateUserStatus)
+MOV W0, #0xf8de
+MOVK W0, #0xe5bd, LSL #16
+MOV X20, X19
+BL .+0x2441a8
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x2430a8
+BFI X21, X23, #32, #8
+MOV X0, X19
+MOV W1, #0x1
+MOV X2, X21
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+B .+0x165c8
+AND X21, X21, #0xffffffffffffff8
+ADD X0, X21, #0x10
+ADD X1, SP, #0x280
+BL .+0xffffffffff690a30
+LDR W22, [X21,#432]
+LDR W21, [X21,#436]
+TBZ W20, #0, .+0x14 (updateWebPage) MUST BE updateUserTyping
+MOV W0, #0x1213
+MOVK W0, #0x7f89, LSL #16
+MOV X20, X19
+BL .+0x24413c
+ADD X20, SP, #0x280
+MOV X0, X19
+MOV W1, #0x1
+BL .+0x17418
+MOV X0, X22
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x242fac
+MOV X0, X21
+MOV X1, X19
+MOV W2, #0x0
+BL .+0x242f9c
+ADD SP, SP, #0x430
+LDP X29, X30, [SP,#80]
+LDP X20, X19, [SP,#64]
+LDP X22, X21, [SP,#48]
+LDP X24, X23, [SP,#32]
+LDP X26, X25, [SP,#16]
+LDP X28, X27, [SP],#96
+RET X30
+TBZ W20, #0, .+0xffffffffffffffe0 (updateAutoSaveSettings) MUST BE updateWebViewResultSent AND updateAttachMenuBots
+MOV W0, #0xb097
+MOVK W0, #0xec05, LSL #16
+B .+0xe0
+TBZ W20, #0, .+0xffffffffffffffd0 (updateConfig)
+MOV W0, #0xdd06
+MOVK W0, #0xa229, LSL #16
+B .+0xd0
+TBZ W20, #0, .+0xffffffffffffffc0 (updateContactsReset)
+MOV W0, #0xa7be
+MOVK W0, #0x7084, LSL #16
+B .+0xc0
+TBZ W20, #0, .+0xffffffffffffffb0 (updateDialogFilters)
+MOV W0, #0x914f
+MOVK W0, #0x3504, LSL #16
+B .+0xb0
+TBZ W20, #0, .+0xffffffffffffffa0 (updateFavedStickers)
+MOV W0, #0x996d
+MOVK W0, #0xe511, LSL #16
+B .+0xa0
+TBZ W20, #0, .+0xffffffffffffff90 (updateLoginToken)
+MOV W0, #0xe691
+MOVK W0, #0x564f, LSL #16
+B .+0x90
+TBZ W20, #0, .+0xffffffffffffff80 (updatePtsChanged)
+MOV W0, #0x678f
+MOVK W0, #0x3354, LSL #16
+B .+0x80
+TBZ W20, #0, .+0xffffffffffffff70 (updateReadFeaturedEmojiStickers)
+MOV W0, #0x496c
+MOVK W0, #0xfb4c, LSL #16
+B .+0x70
+TBZ W20, #0, .+0xffffffffffffff60 (updateReadFeaturedStickers)
+MOV W0, #0x2742
+MOVK W0, #0x571d, LSL #16
+B .+0x60
+TBZ W20, #0, .+0xffffffffffffff50 (updateRecentEmojiStatuses)
+MOV W0, #0x43db
+MOVK W0, #0x30f4, LSL #16
+B .+0x50
+TBZ W20, #0, .+0xffffffffffffff40 (updateRecentReactions)
+MOV W0, #0x63f4
+MOVK W0, #0x6f78, LSL #16
+B .+0x40
+TBZ W20, #0, .+0xffffffffffffff30 (updateRecentStickers)
+MOV W0, #0x2c20
+MOVK W0, #0x9a42, LSL #16
+B .+0x30
+TBZ W20, #0, .+0xffffffffffffff20 (updateSavedGifs)
+MOV W0, #0x341e
+MOVK W0, #0x9375, LSL #16
+B .+0x20
+TBZ W20, #0, .+0xffffffffffffff10 (updateSavedReactionTags)
+MOV W0, #0x7432
+MOVK W0, #0x39c6, LSL #16
+B .+0x10
+TBZ W20, #0, .+0xffffffffffffff00 (updateSavedRingtones)
+MOV W0, #0xbe99
+MOVK W0, #0x74d8, LSL #16
+MOV X20, X19
+BL .+0x243ff8
+B .+0xfffffffffffffeec
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1
+BRK #0x1

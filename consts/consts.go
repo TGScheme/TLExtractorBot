@@ -32,6 +32,7 @@ const (
 	UpdateMessageRate  = time.Second * 3
 	MaxGithubRequests  = 5000 - 100 // 100 is a reserved amount
 	NumSources         = 3
+	IOSMtProtoPath     = "Payload/Telegram.app/Frameworks/TelegramCoreFramework.framework/TelegramCoreFramework"
 )
 
 // Github

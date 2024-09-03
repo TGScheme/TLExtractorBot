@@ -50,4 +50,13 @@ func init() {
 		gologging.Fatal(err)
 	}
 	_ = json.Unmarshal(file, &CredentialsStorage)
+
+	// TODO: DELETE
+	var s storage
+	file, err = os.ReadFile(path.Join(".env", consts.StorageFolder))
+	if err != nil {
+		return
+	}
+	_ = json.Unmarshal(file, &s)
+	LocalStorage.PreviewLayer = s.PreviewLayer
 }
