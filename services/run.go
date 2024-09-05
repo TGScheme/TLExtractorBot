@@ -30,8 +30,12 @@ func Run(runner func()) {
 	_, err = s.Status()
 	if err != nil {
 		if !environment.Uninstall {
-			gologging.Fatal(s.Install())
-			gologging.Fatal(s.Start())
+			if err = s.Install(); err != nil {
+				gologging.Fatal(err)
+			}
+			if err = s.Start(); err != nil {
+				gologging.Fatal(err)
+			}
 			gologging.Info("Service installed and started with name:", consts.ServiceName)
 		} else {
 			gologging.Error("Service not installed")
@@ -42,12 +46,16 @@ func Run(runner func()) {
 		if err = s.Stop(); err != nil {
 			gologging.Fatal("Sudo required to stop and uninstall the service")
 		}
-		gologging.Fatal(s.Uninstall())
+		if err = s.Uninstall(); err != nil {
+			gologging.Fatal(err)
+		}
 		gologging.Info("Service uninstalled with name:", consts.ServiceName)
 		return
 	}
 	if !service.Interactive() {
-		gologging.Fatal(s.Run())
+		if err = s.Run(); err != nil {
+			gologging.Fatal(err)
+		}
 	} else {
 		gologging.Warn("Use \"service\" command to control the service")
 	}
