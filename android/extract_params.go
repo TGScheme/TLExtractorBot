@@ -31,7 +31,11 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileFlagName := regexp.MustCompile(`flags[0-9]*`)
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	compileUnknownVectorType := regexp.MustCompile(`\(\((.*?)\).*get`)
+	dialogResolver := regexp.MustCompile(`DialogObject\..+\(`)
 	for pos, line := range class.Content {
+		if dialogResolver.MatchString(line.Line) {
+			continue
+		}
 		if pos > declarationPos && declarationPos != 0 && line.Nesting >= 2 {
 			if matches := compileFlags.FindAllStringSubmatch(line.Line, -1); len(matches) > 0 {
 				flagNum, err := strconv.Atoi(matches[0][1])
