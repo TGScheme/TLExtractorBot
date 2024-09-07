@@ -33,10 +33,8 @@ const (
 	ServiceDisplayName = "TL Extractor Service"
 	ServiceDescription = "Automatically fetches, decompile and commits new Telegram Android TL schema changes."
 	ServiceName        = "tl-extractor"
-	DebugModeMessage   = "DEBUG MODE ENABLED"
 	UpdateMessageRate  = time.Second * 3
 	CheckInterval      = time.Second * 1
-	MinTermWidth       = 45
 )
 
 // Github
