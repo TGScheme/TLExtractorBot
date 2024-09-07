@@ -5,11 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"fmt"
 	"github.com/Laky-64/gologging"
-	"github.com/charmbracelet/lipgloss"
-	"golang.org/x/term"
-	"math"
 	"os"
 	"path"
 	"path/filepath"
@@ -36,15 +32,6 @@ func init() {
 	Debug = len(tmpPathFolders) > 4 && strings.HasPrefix(tmpPathFolders[len(tmpPathFolders)-4], "go-build")
 	StartTime = time.Now()
 	if Debug {
-		termWidth, _, _ := term.GetSize(int(os.Stdout.Fd()))
-		termWidth = int(math.Max(float64(termWidth)*0.20, consts.MinTermWidth))
-		var debugStyle = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#488b29")).
-			Foreground(lipgloss.Color("#488b29")).
-			Align(lipgloss.Center).
-			Width(termWidth)
-		fmt.Println(debugStyle.Render(consts.DebugModeMessage))
 		EnvFolder = path.Join(EnvFolder, "..", ".env_debug")
 		consts.SchemeRepoName = "Schema-Tests"
 		gologging.SetLevel(gologging.DebugLevel)
