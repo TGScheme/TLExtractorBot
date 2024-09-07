@@ -16,6 +16,7 @@ func getAppInfo() (*types.AppInfo, error) {
 			consts.Developer,
 			consts.AppName,
 			consts.Distribution,
+			fmt.Sprintf("releases/%s", consts.AppCenterAndroidRelease),
 		),
 	)
 	if err != nil {

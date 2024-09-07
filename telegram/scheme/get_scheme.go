@@ -3,6 +3,7 @@ package scheme
 import (
 	"TLExtractor/consts"
 	"TLExtractor/telegram/scheme/types"
+	"fmt"
 	"github.com/Laky-64/http"
 	"regexp"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 )
 
 func GetScheme() (*types.TLRemoteScheme, error) {
-	res, err := http.ExecuteRequest(consts.TDesktopTL)
+	res, err := http.ExecuteRequest(fmt.Sprintf(consts.TDesktopTL, consts.TDesktopBranch))
 	if err != nil {
 		return nil, err
 	}
