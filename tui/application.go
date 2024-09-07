@@ -18,6 +18,7 @@ type application struct {
 	styles                  *types.Styles
 	form                    *huh.Form
 	spinner                 *spinner.Spinner
+	pendingMsg              tea.Msg
 	isBack                  bool
 	checking                bool
 	checkErr, checkFinalErr error

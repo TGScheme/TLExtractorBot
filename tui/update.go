@@ -10,6 +10,16 @@ import (
 	"time"
 )
 
+type lazySkip struct{}
+type cancelSkip struct{}
+type lazyUpdate struct{}
+
+func lazySkipPage() tea.Cmd {
+	return func() tea.Msg {
+		return lazySkip{}
+	}
+}
+
 func (m *application) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -31,7 +41,7 @@ func (m *application) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		done := make(chan bool)
 		page := miniApps[m.currentPage()]
 		timeout := time.After(50 * time.Millisecond)
-		go func() {
+		go func(nextGroupMsg tea.Msg) {
 			m.checkErr = page.check(types.SubmitCheck)
 			if page.parent != 0 {
 				parent := GetParentApp(page)
@@ -41,9 +51,16 @@ func (m *application) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.checking = false
 			m.spinner = nil
-			m.skipPage()
+			if m.checkErr != nil {
+				m.pendingMsg = cancelSkip{}
+			} else {
+				m.pendingMsg = nextGroupMsg
+			}
+			if m.currentPage()+1 == len(miniApps) {
+				m.programContext.Quit()
+			}
 			done <- true
-		}()
+		}(msg)
 		select {
 		case <-done:
 		case <-timeout:
@@ -51,17 +68,41 @@ func (m *application) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.spinner = spinner.New().Type(spinner.MiniDot)
 			cmds = append(cmds, m.spinner.Init())
 		}
+		cmds = append(cmds, lazySkipPage())
 		return m, tea.Batch(cmds...)
 	}
 	var cmds []tea.Cmd
+	var wasLazySkip bool
+	if _, ok := msg.(lazySkip); ok {
+		if m.pendingMsg != nil {
+			msg = m.pendingMsg
+			wasLazySkip = true
+			m.pendingMsg = nil
+		} else {
+			cmds = append(cmds, lazySkipPage())
+		}
+	}
 	if m.spinner != nil {
 		_, cmd := m.spinner.Title(lipgloss.NewStyle().PaddingLeft(1).Render(miniApps[m.currentPage()].loadingMessage)).Update(msg)
 		cmds = append(cmds, cmd)
+	}
+	var wasLazyUpdate bool
+	if _, ok := msg.(lazyUpdate); ok {
+		wasLazyUpdate = true
+		msg = tea.WindowSizeMsg{
+			Width:  m.width + m.styles.Base.GetPaddingLeft(),
+			Height: m.height + m.styles.Base.GetVerticalPadding(),
+		}
 	}
 	form, cmd := m.form.Update(msg)
 	if f, ok := form.(*huh.Form); ok {
 		m.form = f
 		cmds = append(cmds, cmd)
+		if !wasLazyUpdate && wasLazySkip {
+			cmds = append(cmds, func() tea.Msg {
+				return lazyUpdate{}
+			})
+		}
 	}
 	return m, tea.Batch(cmds...)
 }

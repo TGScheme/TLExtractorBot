@@ -7,7 +7,5 @@ import (
 // TODO: This is a temporary fix for the page number retrieving
 // Check the pr at https://github.com/charmbracelet/bubbletea/issues/1078
 func (m *application) currentPage() int {
-	reflectValue := reflect.ValueOf(*m.form)
-	paginatorReflect := reflectValue.FieldByName("selector").Elem()
-	return min(max(0, int(paginatorReflect.FieldByName("index").Int())), len(miniApps)-1)
+	return min(max(0, int(m.getSelector().MethodByName("Index").Call([]reflect.Value{})[0].Int())), len(miniApps)-1)
 }
