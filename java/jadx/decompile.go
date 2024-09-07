@@ -19,6 +19,9 @@ func Decompile(callable func(percentage int64)) error {
 	if err != nil {
 		return err
 	}
+	if err = os.RemoveAll(path.Join(environment.EnvFolder, consts.TempDecompiled)); err != nil && !os.IsExist(err) {
+		return err
+	}
 	if err = os.MkdirAll(path.Join(environment.EnvFolder, consts.TempDecompiled), os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
