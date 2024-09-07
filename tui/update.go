@@ -48,16 +48,14 @@ func (m *application) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case <-done:
 		case <-timeout:
 			m.checking = true
-			m.spinner = spinner.New().
-				Title(lipgloss.NewStyle().PaddingLeft(1).Render(page.loadingMessage)).
-				Type(spinner.MiniDot)
+			m.spinner = spinner.New().Type(spinner.MiniDot)
 			cmds = append(cmds, m.spinner.Init())
 		}
 		return m, tea.Batch(cmds...)
 	}
 	var cmds []tea.Cmd
 	if m.spinner != nil {
-		_, cmd := m.spinner.Update(msg)
+		_, cmd := m.spinner.Title(lipgloss.NewStyle().PaddingLeft(1).Render(miniApps[m.currentPage()].loadingMessage)).Update(msg)
 		cmds = append(cmds, cmd)
 	}
 	form, cmd := m.form.Update(msg)
