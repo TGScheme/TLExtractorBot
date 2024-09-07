@@ -9,7 +9,7 @@ import (
 	"path"
 )
 
-func downloadApk(info *types.AppInfo) error {
+func DownloadApk(info *types.AppInfo) error {
 	res, err := http.ExecuteRequest(
 		info.DownloadURL,
 	)

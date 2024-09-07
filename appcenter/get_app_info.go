@@ -8,7 +8,7 @@ import (
 	"github.com/Laky-64/http"
 )
 
-func getAppInfo() (*types.AppInfo, error) {
+func GetAppInfo() (*types.AppInfo, error) {
 	var appInfo types.AppInfo
 	res, err := http.ExecuteRequest(
 		fmt.Sprintf(

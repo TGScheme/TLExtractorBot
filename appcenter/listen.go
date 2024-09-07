@@ -11,14 +11,14 @@ import (
 func Listen(listener func(update types.UpdateInfo) error) {
 	for {
 		time.Sleep(consts.CheckInterval)
-		info, err := getAppInfo()
+		info, err := GetAppInfo()
 		if err != nil {
 			gologging.Error(err)
 			continue
 		}
 		if info.ID > environment.LocalStorage.LastID && !environment.IsBuilding() || environment.IsPatch() {
 			environment.SetBuildingStatus(true)
-			if err = downloadApk(info); err != nil {
+			if err = DownloadApk(info); err != nil {
 				gologging.Error(err)
 				continue
 			}
