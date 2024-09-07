@@ -5,6 +5,7 @@ import (
 	"TLExtractor/appcenter"
 	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
+	"TLExtractor/debug_menu"
 	"TLExtractor/environment"
 	"TLExtractor/github"
 	"TLExtractor/java/jadx"
@@ -28,6 +29,9 @@ import (
 
 func main() {
 	tui.Run()
+	if environment.Debug && !debug_menu.ReadyToTest {
+		return
+	}
 	package_manager.CheckPackages()
 	services.Run(run)
 }
