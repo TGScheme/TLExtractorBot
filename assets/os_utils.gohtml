@@ -1,0 +1,17 @@
+{% macro osName(osName) -%}
+{%- if osName == "tdesktop" -%}
+Telegram Desktop
+{%- elif osName == "android" -%}
+Telegram for Android
+{%- elif osName == "ios" -%}
+Telegram for iOS
+{%- endif -%}
+{%- endmacro %}
+
+{% macro osVersion(osName, versionName, buildNumber) -%}
+{%- if osName == "tdesktop" -%}
+{{versionName}}
+{%- elif osName == "android" || osName == "ios" -%}
+{{versionName}} ({{buildNumber}})
+{%- endif -%}
+{%- endmacro %}

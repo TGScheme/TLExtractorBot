@@ -79,33 +79,76 @@ func run() {
 			return err
 		}
 		startTime := time.Now()
-		if err := jadx.Decompile(func(percentage int64) {
-			if percentage == 100 {
-				return
+		if update.Source == "android" {
+			if err := jadx.Decompile(func(percentage int64) {
+				if percentage == 100 {
+					return
+				}
+				if err := bot.Client.UpdateStatus(
+					environment.FormatVar(
+						"message",
+						map[string]any{
+							"update":   update,
+							"progress": percentage,
+							"is_patch": environment.IsPatch(),
+						},
+					),
+					false,
+					false,
+					nil,
+				); err != nil {
+					bot.Client.UpdateUptime(false, "panic")
+					gologging.Fatal(err)
+				}
+			}); err != nil {
+				return err
 			}
-			if err := bot.Client.UpdateStatus(
-				environment.FormatVar(
-					"message",
-					map[string]any{
-						"update":   update,
-						"progress": percentage,
-						"is_patch": environment.IsPatch(),
-					},
-				),
-				false,
-				false,
-				nil,
-			); err != nil {
-				bot.Client.UpdateUptime(false, "panic")
-				gologging.Fatal(err)
-			}
-		}); err != nil {
-			return err
 		}
 		elapsedTime := time.Since(startTime)
-		fullScheme, err := android.ExtractScheme()
-		if err != nil {
-			return err
+		var err error
+		var fullScheme *schemeTypes.TLFullScheme
+		if update.Source == "android" {
+			fullScheme, err = android.ExtractScheme()
+			if err != nil {
+				return err
+			}
+		} else {
+			var rawScheme schemeTypes.RawTLScheme
+			remoteScheme, err := scheme.GetScheme()
+			if err != nil {
+				return err
+			}
+			rawScheme.Layer = remoteScheme.Layer
+			rawScheme.Methods = remoteScheme.Methods
+			rawScheme.Constructors = remoteScheme.Constructors
+			rawScheme.IsSync = remoteScheme.Layer == environment.LocalStorage.PreviewLayer.Layer
+			fullScheme, err = scheme.MergeUpstream(&rawScheme, schemeTypes.TDesktopPatch, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
+				var rScheme schemeTypes.TLRemoteScheme
+				var methodsTemp []*schemeTypes.TLMethod
+				var constructorsTemp []*schemeTypes.TLConstructor
+				var layer = environment.LocalStorage.PreviewLayer
+				if isE2E {
+					methodsTemp = layer.E2EApi.Methods
+					constructorsTemp = layer.E2EApi.Constructors
+				} else {
+					methodsTemp = layer.MainApi.Methods
+					constructorsTemp = layer.MainApi.Constructors
+				}
+				for _, method := range methodsTemp {
+					rScheme.Methods = append(rScheme.Methods, &schemeTypes.TLMethod{
+						TLBase: method.TLBase.Clone(),
+						Method: method.Method,
+					})
+				}
+				for _, constructor := range constructorsTemp {
+					rScheme.Constructors = append(rScheme.Constructors, &schemeTypes.TLConstructor{
+						TLBase:    constructor.TLBase.Clone(),
+						Predicate: constructor.Predicate,
+					})
+				}
+				rScheme.Layer = environment.LocalStorage.PreviewLayer.Layer
+				return &rScheme, nil
+			})
 		}
 		if differences := scheme.GetDiffs(environment.LocalStorage.PreviewLayer, fullScheme); differences != nil {
 			stats := scheme.GetStats(differences)

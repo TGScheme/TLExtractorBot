@@ -10,14 +10,13 @@ import (
 
 // Api Links
 const (
-	//TDesktopTL   = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/65f7bdb91411e5f03fb97df7b5f1f5b3adb01069/Telegram/SourceFiles/mtproto/scheme/api.tl"
-	//AppCenterApi = "https://install.appcenter.ms/api/v0.1/apps/%s/%s/distribution_groups/%s/releases/961"
-	TDesktopTL   = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/%s/Telegram/SourceFiles/mtproto/scheme/api.tl"
-	AppCenterApi = "https://install.appcenter.ms/api/v0.1/apps/%s/%s/distribution_groups/%s/%s"
-	E2ETL        = "https://core.telegram.org/schema/end-to-end-json"
-	TelegraphApi = "https://api.telegra.ph"
-	TelegraphUrl = "https://telegra.ph"
-	GithubURL    = "https://github.com"
+	TDesktopSources = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/%s/Telegram/SourceFiles"
+	TDesktopTL      = TDesktopSources + "/mtproto/scheme/api.tl"
+	AppCenterApi    = "https://install.appcenter.ms/api/v0.1/apps/%s/%s/distribution_groups/%s/%s"
+	E2ETL           = "https://core.telegram.org/schema/end-to-end-json"
+	TelegraphApi    = "https://api.telegra.ph"
+	TelegraphUrl    = "https://telegra.ph"
+	GithubURL       = "https://github.com"
 )
 
 var (
@@ -34,7 +33,8 @@ const (
 	ServiceDescription = "Automatically fetches, decompile and commits new Telegram Android TL schema changes."
 	ServiceName        = "tl-extractor"
 	UpdateMessageRate  = time.Second * 3
-	CheckInterval      = time.Second * 1
+	MaxGithubRequests  = 5000 - 100 // 100 is a reserved amount
+	NumSources         = 2
 )
 
 // Github
@@ -71,8 +71,10 @@ var Requirements = []types.RequireInfo{
 
 // Regular Expressions
 var (
-	TLSchemeLineRgx = regexp.MustCompile(`(\S+)#(\w+) *({\S+})? *#* *\[* *([^}=\]]*) *]* = ([^;]+)`)
-	OldLayers       = []*regexp.Regexp{
+	TLSchemeLineRgx     = regexp.MustCompile(`(\S+)#(\w+) *({\S+})? *#* *\[* *([^}=\]]*) *]* = ([^;]+)`)
+	TDeskVersionRgx     = regexp.MustCompile(`AppVersion *?= *?([0-9]+);`)
+	TDeskVersionNameRgx = regexp.MustCompile(`AppVersionStr *?= *?"([0-9.]+)";`)
+	OldLayers           = []*regexp.Regexp{
 		regexp.MustCompile(`Old[0-9]*$`),
 		regexp.MustCompile(`ToBeDeprecated$`),
 		regexp.MustCompile(`^\S+[^0-9p][0-9]$`),

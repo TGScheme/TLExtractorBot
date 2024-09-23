@@ -43,3 +43,15 @@ func (tl *TLBase) SetLayer(layer int) {
 func (tl *TLBase) IsSecret() bool {
 	return tl.ForceSecret
 }
+
+func (tl *TLBase) Clone() TLBase {
+	var tlBase TLBase
+	tlBase.ID = tl.ID
+	for _, param := range tl.Params {
+		tlBase.Params = append(tlBase.Params, param)
+	}
+	tlBase.Type = tl.Type
+	tlBase.Layer = tl.Layer
+	tlBase.ForceSecret = tl.ForceSecret
+	return tlBase
+}

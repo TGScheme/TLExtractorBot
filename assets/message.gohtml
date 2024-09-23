@@ -1,13 +1,18 @@
 import "stats"
+import "os_utils"
 
 {%- if is_patch -%}
-<b>💡 Telegram for Android</b> has received a patch for the <b>TL-schema</b>!
+<b>💡 {{ osName(update.Source) }}</b> has received a patch for the <b>TL-schema</b>!
 {%- else -%}
-<b>💡 Telegram for Android</b> has been updated to version <b>{{update.VersionName}} ({{update.BuildNumber}})</b>!
+<b>💡 {{ osName(update.Source) }}</b> has been updated to version <b>{{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}</b>!
 {%- endif %}
 
 {% if !stats -%}
+{%- if update.Source == "android" -%}
 <i>Decompiling... ({{progress}}%)</i>
+{%- else -%}
+<i>Extracting TL-schema...</i>
+{%- endif -%}
 {%- else -%}
 <b>Update Information:</b>
 • <b>Layer Version:</b> {{layer}}
@@ -17,6 +22,7 @@ import "stats"
 {%- if stats.E2EApi.Total > 0 %}
 • <b>E2E-schema changes:</b> {{ getStats(stats.E2EApi) }}
 {%- endif %}
-
+{%- if update.Source == "android" -%}
 <i>Decompiled in {{time}}</i>
+{%- endif -%}
 {%- endif %}
