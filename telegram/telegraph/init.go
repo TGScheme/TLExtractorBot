@@ -18,6 +18,8 @@ import (
 
 func init() {
 	Client = &context{}
+	// FORCE BANNER
+	environment.LocalStorage.BannerURL = "https://telegra.ph/file/5d6793d8428d3ce93fd95.png"
 	if len(environment.LocalStorage.BannerURL) == 0 {
 		mediaUrl, err := upload(assets.Resources["banner.png"], "image/png")
 		if err != nil {
