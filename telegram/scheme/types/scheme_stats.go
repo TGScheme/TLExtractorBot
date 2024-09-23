@@ -6,4 +6,5 @@ type SchemeStats struct {
 	Total          int
 	TotalAdditions int
 	TotalChanges   int
+	TotalDeletions int
 }

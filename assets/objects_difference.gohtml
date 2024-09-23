@@ -13,8 +13,18 @@
 <h4>Changed {{ name }}</h4>
 <ul>
 {% for obj in objsDiff -%}
-{%- if !obj.IsNew %}
+{%- if !obj.IsNew && !obj.IsDeleted %}
     <li>{{getFieldsDifference(obj) | capfirst | safe}} in {{ objectLinked(obj) }}</li>
+{% endif -%}
+{%- endfor %}
+</ul>
+{%- endif -%}
+{% if schemeStats.Deletions > 0 -%}
+<h4>Deleted {{ name }}</h4>
+<ul>
+{% for obj in objsDiff -%}
+{%- if obj.IsDeleted %}
+    <li>Removed {{ objectLinked(obj) }}</li>
 {% endif -%}
 {%- endfor %}
 </ul>

@@ -2,8 +2,12 @@
 {%- if scheme.TotalAdditions > 0 -%}
 {{scheme.TotalAdditions}} addition{{ scheme.TotalAdditions | pluralize }}
 {%- endif -%}
-{%- if scheme.TotalAdditions > 0 && scheme.TotalChanges > 0 -%}, {% endif %}
 {%- if scheme.TotalChanges > 0 -%}
+{%- if scheme.TotalAdditions > 0 -%}, {% endif -%}
 {{scheme.TotalChanges}} change{{ scheme.TotalChanges | pluralize }}
+{%- endif -%}
+{%- if scheme.TotalDeletions > 0 -%}
+{%- if scheme.TotalAdditions > 0 || scheme.TotalChanges > 0 -%}, {% endif -%}
+{{scheme.TotalDeletions}} deletetion{{ scheme.TotalDeletions | pluralize }}
 {%- endif -%}
 {%- endmacro %}

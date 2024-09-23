@@ -3,6 +3,7 @@ package scheme
 import (
 	"TLExtractor/telegram/scheme/types"
 	"fmt"
+	"slices"
 )
 
 func getObjsDiffs[T types.TLInterface](old, new []T) []types.TLObjDifferences {
@@ -14,11 +15,13 @@ func getObjsDiffs[T types.TLInterface](old, new []T) []types.TLObjDifferences {
 		mappedOldObjects[packageName] = oldInterface
 		reverseNames[oldInterface.Constructor()] = packageName
 	}
+	var foundPackages []string
 	for _, newInterface := range new {
 		packageName := fmt.Sprintf("%s.%d", newInterface.Package(), newInterface.GetLayer())
 		if reversedPackageName, ok := reverseNames[newInterface.Constructor()]; ok {
 			packageName = reversedPackageName
 		}
+		foundPackages = append(foundPackages, packageName)
 		if _, found := mappedOldObjects[packageName]; !found {
 			diff = append(diff, types.TLObjDifferences{
 				Object: newInterface,
@@ -59,6 +62,15 @@ func getObjsDiffs[T types.TLInterface](old, new []T) []types.TLObjDifferences {
 					RemovedFields: removedFields,
 				})
 			}
+		}
+	}
+
+	for packageName, oldInterface := range mappedOldObjects {
+		if !slices.Contains(foundPackages, packageName) {
+			diff = append(diff, types.TLObjDifferences{
+				Object:    oldInterface,
+				IsDeleted: true,
+			})
 		}
 	}
 	return diff

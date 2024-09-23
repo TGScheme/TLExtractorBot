@@ -8,6 +8,9 @@ type TLSchemeDifferences struct {
 func (scheme TLSchemeDifferences) GetConstructors() []TLInterface {
 	var objs []TLInterface
 	for _, diff := range scheme.ConstructorsDifference {
+		if diff.IsDeleted {
+			continue
+		}
 		objs = append(objs, diff.Object)
 	}
 	return objs
@@ -16,6 +19,9 @@ func (scheme TLSchemeDifferences) GetConstructors() []TLInterface {
 func (scheme TLSchemeDifferences) GetMethods() []TLInterface {
 	var objs []TLInterface
 	for _, diff := range scheme.MethodsDifference {
+		if diff.IsDeleted {
+			continue
+		}
 		objs = append(objs, diff.Object)
 	}
 	return objs

@@ -22,7 +22,8 @@ import "os_utils"
 {%- if stats.E2EApi.Total > 0 %}
 • <b>E2E-schema changes:</b> {{ getStats(stats.E2EApi) }}
 {%- endif %}
-{%- if update.Source == "android" -%}
+
+{% if update.Source == "android" -%}
 <i>Decompiled in {{time}}</i>
 {%- endif -%}
 {%- endif %}
