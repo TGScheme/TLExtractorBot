@@ -77,7 +77,7 @@ func init() {
 		Templates[key] = strings.TrimSpace(builtText)
 		_, err := pongo2.FromString(Templates[key])
 		if err != nil {
-			gologging.Fatal(err)
+			gologging.Fatal("Error in template", fmt.Sprintf("\"%s.gohtml\":", key), err)
 		}
 	}
 }
