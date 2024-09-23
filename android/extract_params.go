@@ -158,6 +158,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 					}
 				}
 				parameter.Name = fixParamName(parameter.Name)
+				parameter.Type = fixParamType(parameter.Type)
 				if duplicated := slices.IndexFunc(params, func(oldParameter schemeTypes.Parameter) bool {
 					return oldParameter.Name == parameter.Name
 				}); duplicated != -1 {

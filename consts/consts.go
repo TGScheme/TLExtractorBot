@@ -96,6 +96,9 @@ var (
 		regexp.MustCompile(`^_`):                                        "",
 		regexp.MustCompile(`^doc$`):                                     "id",
 	}
+	BrokenTypes = map[*regexp.Regexp]string{
+		regexp.MustCompile(`^InputChatlistDialogFilter$`): "InputChatList",
+	}
 )
 
 var SupportedBotAliases = []string{
