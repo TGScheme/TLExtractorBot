@@ -41,6 +41,7 @@ func init() {
 	stablePage.SetCheckFunc(func(checkType tuiTypes.CheckType) error {
 		if checkType == tuiTypes.SubmitCheck {
 			environment.LocalStorage.RecentLayers = []int{}
+			environment.LocalStorage.PatchedObjects = make(map[schemeTypes.PatchOS]map[string]*schemeTypes.PatchInfo)
 			environment.LocalStorage.PatchedObjects[schemeTypes.AndroidPatch] = make(map[string]*schemeTypes.PatchInfo)
 			consts.TDesktopBranch = stableTDesk.GetCommitSha()
 			consts.AppCenterAndroidRelease = stableRelease.GetReleaseId()
