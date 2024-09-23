@@ -19,7 +19,7 @@ func getSchemeStats(schemeDifferences *types.TLSchemeDifferences) types.SchemeSt
 		} else if diff.IsDeleted {
 			stats.Methods.Deletions++
 		} else {
-			stats.Constructors.Changes++
+			stats.Methods.Changes++
 		}
 	}
 	stats.TotalAdditions = stats.Constructors.Additions + stats.Methods.Additions
