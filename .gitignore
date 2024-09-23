@@ -1,5 +1,6 @@
 .idea
 .env
+.env_debug
 .DS_Store
 go.sum
 *.tape
