@@ -39,8 +39,10 @@ func init() {
 		var builtLine, builtText, importName string
 		for _, char := range value {
 			if char == '\n' {
-				builtText += builtLine + "\n"
+				builtText += builtLine + "\r\n"
 				builtLine = ""
+			} else if char == '\r' {
+				continue
 			} else if strings.TrimSpace(builtLine) == "import" {
 				foundImport = true
 				builtLine = ""
