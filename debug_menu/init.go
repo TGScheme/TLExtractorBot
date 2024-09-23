@@ -6,6 +6,7 @@ import (
 	schemeTypes "TLExtractor/telegram/scheme/types"
 	"TLExtractor/tui"
 	tuiTypes "TLExtractor/tui/types"
+	"TLExtractor/utils/package_manager"
 	"fmt"
 	"github.com/charmbracelet/huh"
 )
@@ -24,6 +25,7 @@ func init() {
 	)
 	debugApp.SetCheckFunc(func(checkType tuiTypes.CheckType) error {
 		if environment.Debug {
+			package_manager.CheckPackages()
 			return fmt.Errorf("debug mode")
 		}
 		return nil
