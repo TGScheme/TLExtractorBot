@@ -45,6 +45,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 					break
 				}
 				environment.LocalStorage.LastTDeskID = versionCode
+				environment.LocalStorage.Commit()
 				environment.SetBuildingStatus(false)
 			}
 			if info.ID > environment.LocalStorage.LastID || environment.IsPatch() {
