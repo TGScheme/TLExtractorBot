@@ -107,6 +107,7 @@ func run() {
 		elapsedTime := time.Since(startTime)
 		var err error
 		var fullScheme *schemeTypes.TLFullScheme
+		previewLayer := environment.LocalStorage.PreviewLayer.Layer
 		if update.Source == "android" {
 			fullScheme, err = android.ExtractScheme()
 			if err != nil {
@@ -121,7 +122,7 @@ func run() {
 			rawScheme.Layer = remoteScheme.Layer
 			rawScheme.Methods = remoteScheme.Methods
 			rawScheme.Constructors = remoteScheme.Constructors
-			rawScheme.IsSync = remoteScheme.Layer == environment.LocalStorage.PreviewLayer.Layer
+			rawScheme.IsSync = remoteScheme.Layer == previewLayer
 			fullScheme, err = scheme.MergeUpstream(&rawScheme, schemeTypes.TDesktopPatch, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
 				var rScheme schemeTypes.TLRemoteScheme
 				var methodsTemp []*schemeTypes.TLMethod
@@ -146,11 +147,11 @@ func run() {
 						Predicate: constructor.Predicate,
 					})
 				}
-				rScheme.Layer = environment.LocalStorage.PreviewLayer.Layer
+				rScheme.Layer = previewLayer
 				return &rScheme, nil
 			})
 		}
-		if differences := scheme.GetDiffs(environment.LocalStorage.PreviewLayer, fullScheme); differences != nil {
+		if differences := scheme.GetDiffs(environment.LocalStorage.PreviewLayer, fullScheme); differences != nil && fullScheme.Layer >= previewLayer {
 			stats := scheme.GetStats(differences)
 			commitMessage := fmt.Sprintf("Updated to Layer %d", fullScheme.Layer)
 			if environment.IsPatch() {
