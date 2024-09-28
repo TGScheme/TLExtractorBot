@@ -98,6 +98,7 @@ var (
 	}
 	BrokenTypes = map[*regexp.Regexp]string{
 		regexp.MustCompile(`^InputChatlistDialogFilter$`): "InputChatlist",
+		regexp.MustCompile(`PaymentSavedCredentialsCard`): "PaymentSavedCredentials",
 	}
 )
 
