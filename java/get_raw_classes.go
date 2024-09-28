@@ -8,9 +8,11 @@ import (
 	"errors"
 	"os"
 	"path"
+	"slices"
+	"strings"
 )
 
-func GetRawClasses() ([]*types.RawClass, error) {
+func GetRawClasses(isLegacy bool) ([]*types.RawClass, error) {
 	dir, err := io.GetFiles(path.Join(environment.EnvFolder, consts.TempSources))
 	if err != nil {
 		return nil, err
@@ -21,7 +23,18 @@ func GetRawClasses() ([]*types.RawClass, error) {
 	}
 	dir = append(dir, newDir...)
 
-	tempList := make(map[string]*types.RawClass)
+	contentFiles := make(map[string]string)
+	var replaceClasses []string
+	for _, file := range dir {
+		if file.IsDir {
+			continue
+		}
+		className := strings.TrimSuffix(file.Name, ".java")
+		if !isLegacy && (className == "TLRPC" || strings.HasSuffix(file.FullPath, "tl")) {
+			replaceClasses = append(replaceClasses, className)
+		}
+	}
+
 	for _, file := range dir {
 		if file.IsDir {
 			continue
@@ -30,7 +43,20 @@ func GetRawClasses() ([]*types.RawClass, error) {
 		if err != nil {
 			return nil, err
 		}
-		info, err := ParseClass(file.Name, string(readFile))
+		className := strings.TrimSuffix(file.Name, ".java")
+		if slices.Contains(replaceClasses, className) {
+			newFiles := SplitClasses(className, string(readFile), replaceClasses)
+			for name, content := range newFiles {
+				contentFiles[name] = content
+			}
+		} else {
+			contentFiles[file.Name] = string(readFile)
+		}
+	}
+
+	tempList := make(map[string]*types.RawClass)
+	for name, content := range contentFiles {
+		info, err := ParseClass(name, content)
 		if errors.Is(err, consts.NotTLRPC) ||
 			errors.Is(err, consts.OldLayer) {
 			continue
@@ -39,6 +65,7 @@ func GetRawClasses() ([]*types.RawClass, error) {
 		}
 		tempList[info.FullName()] = info
 	}
+
 	var tlList []*types.RawClass
 	for _, tl := range tempList {
 		if extendedData := tempList[tl.ParentClass]; extendedData != nil {
@@ -47,5 +74,6 @@ func GetRawClasses() ([]*types.RawClass, error) {
 		tl.Vars = getDeclaredVars(tl)
 		tlList = append(tlList, tl)
 	}
+
 	return tlList, nil
 }
