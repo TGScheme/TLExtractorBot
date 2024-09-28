@@ -62,7 +62,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 					},
 				)
 				if err != nil {
-					panic(err)
+					gologging.Fatal(err)
 				}
 				if environment.Debug {
 					break
