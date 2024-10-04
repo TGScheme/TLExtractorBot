@@ -230,17 +230,17 @@ func run() {
 			if err = bot.Client.UpdateStatus("", false, false, nil); err != nil {
 				return err
 			}
-		}
-		if !environment.Debug {
-			if !slices.Contains(environment.LocalStorage.RecentLayers, fullScheme.Layer) {
-				environment.LocalStorage.RecentLayers = append(environment.LocalStorage.RecentLayers, fullScheme.Layer)
+			if !environment.Debug {
+				if !slices.Contains(environment.LocalStorage.RecentLayers, fullScheme.Layer) {
+					environment.LocalStorage.RecentLayers = append(environment.LocalStorage.RecentLayers, fullScheme.Layer)
+				}
+				if len(environment.LocalStorage.RecentLayers) > 1 {
+					environment.LocalStorage.RecentLayers = environment.LocalStorage.RecentLayers[1:]
+					environment.LocalStorage.StableLayer = environment.LocalStorage.PreviewLayer
+				}
+				environment.LocalStorage.PreviewLayer = fullScheme
+				environment.LocalStorage.Commit()
 			}
-			if len(environment.LocalStorage.RecentLayers) > 1 {
-				environment.LocalStorage.RecentLayers = environment.LocalStorage.RecentLayers[1:]
-				environment.LocalStorage.StableLayer = environment.LocalStorage.PreviewLayer
-			}
-			environment.LocalStorage.PreviewLayer = fullScheme
-			environment.LocalStorage.Commit()
 		}
 		return nil
 	})
