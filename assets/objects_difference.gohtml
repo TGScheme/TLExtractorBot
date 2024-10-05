@@ -14,7 +14,12 @@
 <ul>
 {% for obj in objsDiff -%}
 {%- if !obj.IsNew && !obj.IsDeleted %}
+    {%- if obj.NewFields | length > 0 || obj.RemovedFields | length > 0 || obj.ChangedFields | length > 0 %}
     <li>{{getFieldsDifference(obj) | capfirst | safe}} in {{ objectLinked(obj) }}</li>
+    {%- endif %}
+    {%- if obj.ChangedResult %}
+    <li>Changed type of {{ objectLinked(obj) }} from <b>{{ obj.ChangedResult.OldType }}</b> to <b>{{ obj.ChangedResult.NewType }}</b></li>
+    {%- endif %}
 {% endif -%}
 {%- endfor %}
 </ul>

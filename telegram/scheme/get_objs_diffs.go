@@ -54,12 +54,20 @@ func getObjsDiffs[T types.TLInterface](old, new []T) []types.TLObjDifferences {
 					removedFields = append(removedFields, field)
 				}
 			}
-			if len(newFields)+len(changedFields)+len(removedFields) > 0 {
+			var changedResult *types.TlDifferentResult
+			if mappedOldObjects[packageName].Result() != newInterface.Result() {
+				changedResult = &types.TlDifferentResult{
+					OldType: mappedOldObjects[packageName].Result(),
+					NewType: newInterface.Result(),
+				}
+			}
+			if (len(newFields)+len(changedFields)+len(removedFields) > 0) || changedResult != nil {
 				diff = append(diff, types.TLObjDifferences{
 					Object:        newInterface,
 					NewFields:     newFields,
 					ChangedFields: changedFields,
 					RemovedFields: removedFields,
+					ChangedResult: changedResult,
 				})
 			}
 		}
