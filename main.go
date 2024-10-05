@@ -226,10 +226,6 @@ func run() {
 			); err != nil {
 				return err
 			}
-		} else {
-			if err = bot.Client.UpdateStatus("", false, false, nil); err != nil {
-				return err
-			}
 			if !environment.Debug {
 				if !slices.Contains(environment.LocalStorage.RecentLayers, fullScheme.Layer) {
 					environment.LocalStorage.RecentLayers = append(environment.LocalStorage.RecentLayers, fullScheme.Layer)
@@ -240,6 +236,10 @@ func run() {
 				}
 				environment.LocalStorage.PreviewLayer = fullScheme
 				environment.LocalStorage.Commit()
+			}
+		} else {
+			if err = bot.Client.UpdateStatus("", false, false, nil); err != nil {
+				return err
 			}
 		}
 		return nil
