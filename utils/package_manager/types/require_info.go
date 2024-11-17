@@ -6,6 +6,7 @@ type RequireInfo struct {
 	Package     string
 	File        string
 	OnlyWindows bool
+	VersionLock string
 }
 
 func (c RequireInfo) data() []string {

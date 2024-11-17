@@ -59,13 +59,15 @@ var (
 
 var Requirements = []types.RequireInfo{
 	{
-		Package: "skylot/jadx",
-		File:    "jadx-[0-9.]+\\.zip",
+		Package:     "skylot/jadx",
+		File:        "jadx-[0-9.]+\\.zip",
+		VersionLock: "v1.5.0",
 	},
 	{
 		Package:     "skylot/jadx/jadx-gui",
 		File:        "jadx-gui-[0-9.]+-with-jre-win\\.zip",
 		OnlyWindows: true,
+		VersionLock: "v1.5.0",
 	},
 }
 

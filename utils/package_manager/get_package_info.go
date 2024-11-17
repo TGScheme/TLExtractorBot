@@ -8,7 +8,7 @@ import (
 )
 
 func getPackageInfo(info types2.RequireInfo) (*types2.PackageInfo, error) {
-	release, err := github.Client.GetLastRelease(info.RepoOwner(), info.RepoName())
+	release, err := github.Client.GetLastRelease(info.RepoOwner(), info.RepoName(), info.VersionLock)
 	if err != nil {
 		return nil, err
 	}

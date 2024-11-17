@@ -68,7 +68,11 @@ func Decompile(callable func(percentage int64)) error {
 	cmd.Stderr = &stdErr
 	cmd.Stdout = pb
 	if err = cmd.Run(); err != nil {
-		return errors.New(stdErr.String())
+		stdErrMess := stdErr.String()
+		if len(stdErrMess) > 0 {
+			return errors.New(stdErrMess)
+		}
+		return err
 	}
 	return nil
 }
