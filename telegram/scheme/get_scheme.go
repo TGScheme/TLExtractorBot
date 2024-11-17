@@ -48,11 +48,11 @@ func GetScheme() (*types.TLRemoteScheme, error) {
 		} else if line == "---types---" {
 			isMethodDeclaration = false
 		} else if versionMatches := compileVersion.FindAllStringSubmatch(line, -1); len(versionMatches) > 0 {
-			atoi, err := strconv.Atoi(versionMatches[0][1])
+			layer, err := strconv.Atoi(versionMatches[0][1])
 			if err != nil {
 				return nil, err
 			}
-			generatedScheme.Layer = atoi
+			generatedScheme.Layer = layer
 		}
 	}
 	return &generatedScheme, nil
