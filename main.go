@@ -166,7 +166,7 @@ func run() {
 				return err
 			}
 			var stableScheme *schemeTypes.TLFullScheme
-			if environment.LocalStorage.StableLayer != nil {
+			if environment.LocalStorage.StableLayer != nil && slices.Contains(environment.LocalStorage.RecentLayers, fullScheme.Layer) {
 				stableScheme = environment.LocalStorage.StableLayer
 			} else {
 				stableScheme = environment.LocalStorage.PreviewLayer
