@@ -11,7 +11,9 @@ import (
 // Api Links
 const (
 	TDesktopSources = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/%s/Telegram/SourceFiles"
+	TDLibSources    = "https://raw.githubusercontent.com/tdlib/td/master/"
 	TDesktopTL      = TDesktopSources + "/mtproto/scheme/api.tl"
+	TDLibTL         = TDLibSources + "td/generate/scheme/telegram_api.tl"
 	AppCenterApi    = "https://install.appcenter.ms/api/v0.1/apps/%s/%s/distribution_groups/%s/%s"
 	E2ETL           = "https://core.telegram.org/schema/end-to-end-json"
 	TelegraphApi    = "https://api.telegra.ph"
@@ -34,7 +36,7 @@ const (
 	ServiceName        = "tl-extractor"
 	UpdateMessageRate  = time.Second * 3
 	MaxGithubRequests  = 5000 - 100 // 100 is a reserved amount
-	NumSources         = 2
+	NumSources         = 3
 )
 
 // Github
@@ -75,6 +77,8 @@ var Requirements = []types.RequireInfo{
 var (
 	TLSchemeLineRgx     = regexp.MustCompile(`(\S+)#(\w+) *({\S+})? *#* *\[* *([^}=\]]*) *]* = ([^;]+)`)
 	TDeskVersionRgx     = regexp.MustCompile(`AppVersion *?= *?([0-9]+);`)
+	TDLibVersionRgx     = regexp.MustCompile(`project\(TDLib\s+VERSION\s+([0-9.]+)`)
+	TDLibLayerRgx       = regexp.MustCompile(`constexpr int32 MTPROTO_LAYER = ([0-9]+);`)
 	TDeskVersionNameRgx = regexp.MustCompile(`AppVersionStr *?= *?"([0-9.]+)";`)
 	OldLayers           = []*regexp.Regexp{
 		regexp.MustCompile(`Old[0-9]*$`),

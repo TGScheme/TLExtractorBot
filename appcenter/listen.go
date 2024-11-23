@@ -4,6 +4,7 @@ import (
 	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
 	"TLExtractor/environment"
+	"TLExtractor/utils"
 	"fmt"
 	"github.com/Laky-64/gologging"
 	"github.com/Laky-64/http"
@@ -26,25 +27,52 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				gologging.Error(err)
 				continue
 			}
-			body := string(request.Body)
-			versionCode, _ := strconv.Atoi(consts.TDeskVersionRgx.FindAllStringSubmatch(body, -1)[0][1])
-			versionName := consts.TDeskVersionNameRgx.FindAllStringSubmatch(body, -1)[0][1]
-			if versionCode > environment.LocalStorage.LastTDeskID {
+			tDeskBody := request.String()
+			tDeskVersionCode, _ := strconv.Atoi(consts.TDeskVersionRgx.FindAllStringSubmatch(tDeskBody, -1)[0][1])
+			tDeskVersionName := consts.TDeskVersionNameRgx.FindAllStringSubmatch(tDeskBody, -1)[0][1]
+			if tDeskVersionCode > environment.LocalStorage.LastTDeskID {
 				environment.SetBuildingStatus(true)
 				err = listener(
 					types.UpdateInfo{
-						VersionName: versionName,
-						BuildNumber: strconv.Itoa(versionCode),
+						VersionName: tDeskVersionName,
+						BuildNumber: strconv.Itoa(tDeskVersionCode),
 						Source:      "tdesktop",
 					},
 				)
 				if err != nil {
-					panic(err)
+					gologging.Fatal(err)
 				}
 				if environment.Debug {
 					break
 				}
-				environment.LocalStorage.LastTDeskID = versionCode
+				environment.LocalStorage.LastTDeskID = tDeskVersionCode
+				environment.LocalStorage.Commit()
+				environment.SetBuildingStatus(false)
+			}
+			request, err = http.ExecuteRequest(consts.TDLibSources + "/CMakeLists.txt")
+			if err != nil {
+				gologging.Error(err)
+				continue
+			}
+			tdLibBody := request.String()
+			tdLibVersionName := consts.TDLibVersionRgx.FindAllStringSubmatch(tdLibBody, -1)[0][1]
+			tdLibVersionCode := utils.VersionToCode(tdLibVersionName)
+			if tdLibVersionCode > environment.LocalStorage.LastTDLibID {
+				environment.SetBuildingStatus(true)
+				err = listener(
+					types.UpdateInfo{
+						VersionName: tdLibVersionName,
+						BuildNumber: strconv.Itoa(tdLibVersionCode),
+						Source:      "tdlib",
+					},
+				)
+				if err != nil {
+					gologging.Fatal(err)
+				}
+				if environment.Debug {
+					break
+				}
+				environment.LocalStorage.LastTDLibID = tdLibVersionCode
 				environment.LocalStorage.Commit()
 				environment.SetBuildingStatus(false)
 			}

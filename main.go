@@ -17,6 +17,7 @@ import (
 	"TLExtractor/tui"
 	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager"
+	"errors"
 	"fmt"
 	"github.com/GoBotApiOfficial/gobotapi"
 	"github.com/GoBotApiOfficial/gobotapi/filters"
@@ -113,9 +114,19 @@ func run() {
 			if err != nil {
 				return err
 			}
-		} else {
+		} else if update.Source == "tdesktop" || update.Source == "tdlib" {
 			var rawScheme schemeTypes.RawTLScheme
-			remoteScheme, err := scheme.GetScheme()
+			var remoteScheme *schemeTypes.TLRemoteScheme
+			var patchScheme schemeTypes.PatchOS
+			if update.Source == "tdesktop" {
+				remoteScheme, err = scheme.GetScheme()
+				patchScheme = schemeTypes.TDesktopPatch
+			} else if update.Source == "tdlib" {
+				remoteScheme, err = scheme.GetTDLibScheme()
+				patchScheme = schemeTypes.TDLibPatch
+			} else {
+				return errors.New("unknown source")
+			}
 			if err != nil {
 				return err
 			}
@@ -123,7 +134,7 @@ func run() {
 			rawScheme.Methods = remoteScheme.Methods
 			rawScheme.Constructors = remoteScheme.Constructors
 			rawScheme.IsSync = remoteScheme.Layer == previewLayer
-			fullScheme, err = scheme.MergeUpstream(&rawScheme, schemeTypes.TDesktopPatch, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
+			fullScheme, err = scheme.MergeUpstream(&rawScheme, patchScheme, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
 				var rScheme schemeTypes.TLRemoteScheme
 				var methodsTemp []*schemeTypes.TLMethod
 				var constructorsTemp []*schemeTypes.TLConstructor
@@ -150,6 +161,8 @@ func run() {
 				rScheme.Layer = previewLayer
 				return &rScheme, nil
 			})
+		} else {
+			return errors.New("unknown source")
 		}
 		if differences := scheme.GetDiffs(environment.LocalStorage.PreviewLayer, fullScheme); differences != nil && fullScheme.Layer >= previewLayer {
 			stats := scheme.GetStats(differences)

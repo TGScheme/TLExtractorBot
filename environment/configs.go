@@ -14,6 +14,7 @@ var CredentialsStorage credentials
 type storage struct {
 	LastID         uint16                                        `json:"last_id"`
 	LastTDeskID    int                                           `json:"last_tdesk_id"`
+	LastTDLibID    int                                           `json:"last_tdlib_id"`
 	ChannelID      int64                                         `json:"channel_id"`
 	LogChatID      int64                                         `json:"log_chat_id"`
 	MessageId      int64                                         `json:"message_id"`

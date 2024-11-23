@@ -5,11 +5,13 @@ Telegram Desktop
 Telegram for Android
 {%- elif osName == "ios" -%}
 Telegram for iOS
+{%- elif osName == "tdlib" -%}
+TDLib
 {%- endif -%}
 {%- endmacro %}
 
 {% macro osVersion(osName, versionName, buildNumber) -%}
-{%- if osName == "tdesktop" -%}
+{%- if osName == "tdesktop" || osName == "tdlib" -%}
 {{versionName}}
 {%- elif osName == "android" || osName == "ios" -%}
 {{versionName}} ({{buildNumber}})
