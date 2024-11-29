@@ -115,7 +115,6 @@ func run() {
 				return err
 			}
 		} else if update.Source == "tdesktop" || update.Source == "tdlib" {
-			var rawScheme schemeTypes.RawTLScheme
 			var remoteScheme *schemeTypes.TLRemoteScheme
 			var patchScheme schemeTypes.PatchOS
 			if update.Source == "tdesktop" {
@@ -127,14 +126,11 @@ func run() {
 			} else {
 				return errors.New("unknown source")
 			}
+			err = scheme.UpdateUpstreamCache(update.Source, remoteScheme)
 			if err != nil {
 				return err
 			}
-			rawScheme.Layer = remoteScheme.Layer
-			rawScheme.Methods = remoteScheme.Methods
-			rawScheme.Constructors = remoteScheme.Constructors
-			rawScheme.IsSync = remoteScheme.Layer == previewLayer
-			fullScheme, err = scheme.MergeUpstream(&rawScheme, patchScheme, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
+			fullScheme, err = scheme.MergeRemote(remoteScheme, patchScheme, remoteScheme.Layer == previewLayer, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
 				var rScheme schemeTypes.TLRemoteScheme
 				var methodsTemp []*schemeTypes.TLMethod
 				var constructorsTemp []*schemeTypes.TLConstructor
