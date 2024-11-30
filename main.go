@@ -157,6 +157,7 @@ func run() {
 				rScheme.Layer = previewLayer
 				return &rScheme, nil
 			})
+			fullScheme.IsSync = true
 		} else {
 			return errors.New("unknown source")
 		}
