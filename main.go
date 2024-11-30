@@ -15,7 +15,6 @@ import (
 	schemeTypes "TLExtractor/telegram/scheme/types"
 	"TLExtractor/telegram/telegraph"
 	"TLExtractor/tui"
-	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager"
 	"errors"
 	"fmt"
@@ -25,7 +24,6 @@ import (
 	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
 	"github.com/Laky-64/gologging"
 	"slices"
-	"time"
 )
 
 func main() {
@@ -79,7 +77,6 @@ func run() {
 		); err != nil {
 			return err
 		}
-		startTime := time.Now()
 		if update.Source == "android" {
 			if err := jadx.Decompile(func(percentage int64) {
 				if percentage == 100 {
@@ -105,7 +102,6 @@ func run() {
 				return err
 			}
 		}
-		elapsedTime := time.Since(startTime)
 		var err error
 		var fullScheme *schemeTypes.TLFullScheme
 		previewLayer := environment.LocalStorage.PreviewLayer.Layer
@@ -210,11 +206,11 @@ func run() {
 				environment.FormatVar(
 					"message",
 					map[string]any{
-						"update":   update,
-						"time":     utils.FormatDuration(elapsedTime),
-						"layer":    fullScheme.Layer,
-						"stats":    stats,
-						"is_patch": environment.IsPatch(),
+						"update":    update,
+						"layer":     fullScheme.Layer,
+						"stats":     stats,
+						"is_stable": fullScheme.IsSync,
+						"is_patch":  environment.IsPatch(),
 					},
 				),
 				true,

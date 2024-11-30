@@ -15,7 +15,7 @@ import "os_utils"
 {%- endif -%}
 {%- else -%}
 <b>Update Information:</b>
-• <b>Layer Version:</b> {{layer}}
+• <b>Layer Version:</b> {{layer}}{%- if !is_stable %} - Preview{%- endif -%}
 {%- if stats.MainApi.Total > 0 %}
 • <b>TL-schema changes:</b> {{ getStats(stats.MainApi) }}
 {%- endif %}
@@ -23,7 +23,5 @@ import "os_utils"
 • <b>E2E-schema changes:</b> {{ getStats(stats.E2EApi) }}
 {%- endif %}
 
-{% if update.Source == "android" -%}
-<i>Decompiled in {{time}}</i>
-{%- endif -%}
+#{{ osShortName(update.Source) }} #{% if is_stable %}Stable{% else %}Preview{% endif %} #Layer{{layer}}{%- if is_patch %} #Patch{% endif %}
 {%- endif %}

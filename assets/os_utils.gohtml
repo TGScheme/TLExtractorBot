@@ -17,3 +17,15 @@ TDLib
 {{versionName}} ({{buildNumber}})
 {%- endif -%}
 {%- endmacro %}
+
+{% macro osShortName(osName) -%}
+{%- if osName == "tdesktop" -%}
+TDesktop
+{%- elif osName == "android" -%}
+Android
+{%- elif osName == "ios" -%}
+iOS
+{%- elif osName == "tdlib" -%}
+TDLib
+{%- endif -%}
+{%- endmacro %}
