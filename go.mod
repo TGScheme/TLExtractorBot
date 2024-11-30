@@ -8,9 +8,9 @@ require (
 	github.com/Laky-64/http v1.0.3
 	github.com/bradleyfalzon/ghinstallation/v2 v2.12.0
 	github.com/charmbracelet/bubbles v0.20.0
-	github.com/charmbracelet/bubbletea v1.2.3
+	github.com/charmbracelet/bubbletea v1.2.4
 	github.com/charmbracelet/huh v0.6.0
-	github.com/charmbracelet/huh/spinner v0.0.0-20241119235641-e7e76ffbce9f
+	github.com/charmbracelet/huh/spinner v0.0.0-20241127125741-aad810dfbce6
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/cheggaaa/pb/v3 v3.1.5
 	github.com/flosch/pongo2/v6 v6.0.0
