@@ -25,6 +25,8 @@ func init() {
 		huh.NewInput().
 			Title("Enter your GroqCloud secret token:").
 			Description("You can find your GroqCloud secret token in the GroqCloud settings.").
+			Placeholder("gsk_aBcDe12FgHiJkLm56NopQrStU78VwXyZ90").
+			EchoMode(huh.EchoModePassword).
 			Validate(tui.Validate("GroqCloud secret token", tuiTypes.NoCheck)).
 			Value(&secretToken),
 	)
