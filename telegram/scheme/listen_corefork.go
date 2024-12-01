@@ -29,7 +29,7 @@ func ListenCoreFork() {
 				fmt.Sprintf("%s/schema", consts.MainReleasedTL),
 			)
 			if err != nil {
-				gologging.Fatal(err)
+				continue
 			}
 			var versionsAvailable []int
 			if rgx := regexp.MustCompile(`<li><a href="\?layer=([0-9]+)">`).FindAllStringSubmatch(res.String(), -1); len(rgx) > 0 {
@@ -167,7 +167,7 @@ func ListenCoreFork() {
 						},
 					)
 					if err != nil {
-						gologging.Fatal(err)
+						continue
 					}
 				}
 			}
