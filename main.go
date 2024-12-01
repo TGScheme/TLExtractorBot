@@ -8,6 +8,7 @@ import (
 	"TLExtractor/debug_menu"
 	"TLExtractor/environment"
 	"TLExtractor/github"
+	"TLExtractor/groq"
 	"TLExtractor/java/jadx"
 	"TLExtractor/services"
 	"TLExtractor/telegram/bot"
@@ -185,17 +186,25 @@ func run() {
 			if !fullScheme.IsSync {
 				pageTitle = fmt.Sprintf("%s Preview", pageTitle)
 			}
+			groqDescriptions := make(map[string]string)
+			if stats.MainApi.TotalAdditions > 0 || stats.E2EApi.TotalAdditions > 0 {
+				groqDescriptions, err = groq.GenerateDescriptions(differences)
+				if err != nil {
+					return err
+				}
+			}
 			url, err := telegraph.Client.CreatePage(
 				pageTitle,
 				environment.FormatVar(
 					"changelogs",
 					map[string]any{
-						"differences": differences,
-						"stats":       stats,
-						"commit_urls": commitInfo.FilesLines,
-						"banner_url":  environment.LocalStorage.BannerURL,
-						"main_scheme": scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
-						"e2e_scheme":  scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
+						"differences":       differences,
+						"stats":             stats,
+						"commit_urls":       commitInfo.FilesLines,
+						"banner_url":        environment.LocalStorage.BannerURL,
+						"main_scheme":       scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
+						"e2e_scheme":        scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
+						"groq_descriptions": groqDescriptions,
 					},
 				),
 			)

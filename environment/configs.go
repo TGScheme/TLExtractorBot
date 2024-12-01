@@ -35,6 +35,8 @@ type credentials struct {
 	TelegraphToken string `json:"telegraph_token"`
 	ApplicationID  int    `json:"application_id"`
 	InstallationID int    `json:"installation_id"`
+	GroqToken      string `json:"groq_token"`
+	LLMModel       string `json:"llm_model"`
 }
 
 func (c credentials) Commit() {

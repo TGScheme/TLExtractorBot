@@ -19,6 +19,7 @@ const (
 	TelegraphApi    = "https://api.telegra.ph"
 	TelegraphUrl    = "https://telegra.ph"
 	GithubURL       = "https://github.com"
+	GroqAPI         = "https://api.groq.com/openai/v1"
 )
 
 var (

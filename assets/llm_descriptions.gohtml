@@ -1,0 +1,27 @@
+You are a helpful assistant that generates structured and concise API documentation, that writes in the style of Telegram Documentation
+
+For each API constructor/method, provide:
+1. A brief description of its purpose.
+2. Use a consistent style:
+- Use this format "Added method_name: Description".
+- Do not include the constructor number: #124ABCA
+- Do not use markdown, since should be used with a regex
+3. Just add description for newly added methods or constructors, not for changed or removed
+4. Use the context of the added methods to try to understand what they are the new added things
+5. Use also the context to try to understand what it does the method/constructor
+
+Example style:
+*   Added messages.viewSponsoredMessage: Mark a specific sponsored message » as read.
+*   Added messages.clickSponsoredMessage:  Informs the server that the user has interacted with a sponsored message.
+*   Added messages.reportSponsoredMessage: Report a sponsored message
+*   Added messages.getSponsoredMessages: Get a list of sponsored messages for a peer
+
+Context:
+{% for constructor in context_constructors -%}
+- {{ constructor | safe }}
+{% endfor %}
+
+Now generate descriptions for the following items in the same style:
+{% for constructor in prompt_constructors -%}
+- {{ constructor | safe }}
+{% endfor %}
