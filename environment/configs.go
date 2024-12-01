@@ -12,18 +12,20 @@ var LocalStorage storage
 var CredentialsStorage credentials
 
 type storage struct {
-	LastID         uint16                                        `json:"last_id"`
-	LastTDeskID    int                                           `json:"last_tdesk_id"`
-	LastTDLibID    int                                           `json:"last_tdlib_id"`
-	ChannelID      int64                                         `json:"channel_id"`
-	LogChatID      int64                                         `json:"log_chat_id"`
-	MessageId      int64                                         `json:"message_id"`
-	StableLayer    *types.TLFullScheme                           `json:"stable_layer,omitempty"`
-	PreviewLayer   *types.TLFullScheme                           `json:"preview_layer,omitempty"`
-	UpstreamLayer  *types.TLFullScheme                           `json:"upstream_layer,omitempty"`
-	PatchedObjects map[types.PatchOS]map[string]*types.PatchInfo `json:"patched_objects"`
-	BannerURL      string                                        `json:"banner_url"`
-	RecentLayers   []int                                         `json:"recent_layers"`
+	LastID            uint16                                        `json:"last_id"`
+	LastTDeskID       int                                           `json:"last_tdesk_id"`
+	LastTDLibID       int                                           `json:"last_tdlib_id"`
+	ChannelID         int64                                         `json:"channel_id"`
+	LogChatID         int64                                         `json:"log_chat_id"`
+	LastCoreForkLayer int                                           `json:"last_corefork_layer"`
+	MessageId         int64                                         `json:"message_id"`
+	StableLayer       *types.TLFullScheme                           `json:"stable_layer,omitempty"`
+	PreviewLayer      *types.TLFullScheme                           `json:"preview_layer,omitempty"`
+	UpstreamLayer     *types.TLFullScheme                           `json:"upstream_layer,omitempty"`
+	PatchedObjects    map[types.PatchOS]map[string]*types.PatchInfo `json:"patched_objects"`
+	BannerURL         string                                        `json:"banner_url"`
+	RecentLayers      []int                                         `json:"recent_layers"`
+	ReleasedLayers    map[int]types.ReleasedLayer                   `json:"released_layers"`
 }
 
 func (c storage) Commit() {

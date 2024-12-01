@@ -32,6 +32,7 @@ func main() {
 	if environment.Debug && !debug_menu.ReadyToTest {
 		return
 	}
+	scheme.ListenCoreFork()
 	package_manager.CheckPackages()
 	services.Run(run)
 }
