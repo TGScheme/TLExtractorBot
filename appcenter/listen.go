@@ -18,7 +18,6 @@ func Listen(listener func(update types.UpdateInfo) error) {
 		time.Sleep(waitTime)
 		info, err := GetAppInfo()
 		if err != nil {
-			gologging.Error(err)
 			continue
 		}
 		if !environment.IsBuilding() {
