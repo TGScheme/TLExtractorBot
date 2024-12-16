@@ -107,7 +107,7 @@ func ListenCoreFork() {
 			}
 			Client.syncDep.Unlock()
 
-			if environment.LocalStorage.LastCoreForkLayer != latestVersion {
+			if environment.LocalStorage.LastCoreForkLayer > latestVersion {
 				environment.LocalStorage.LastCoreForkLayer = latestVersion
 				environment.LocalStorage.Commit()
 				if !forceNoUpdate {
