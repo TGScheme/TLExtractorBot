@@ -6,6 +6,7 @@ import (
 	"TLExtractor/io"
 	"TLExtractor/java/types"
 	"errors"
+	"fmt"
 	"os"
 	"path"
 	"slices"
@@ -63,12 +64,12 @@ func GetRawClasses(isLegacy bool) ([]*types.RawClass, error) {
 		} else if err != nil {
 			return nil, err
 		}
-		tempList[info.FullName()] = info
+		tempList[fmt.Sprintf("%s$%s", info.Prefix, info.FullName())] = info
 	}
 
 	var tlList []*types.RawClass
 	for _, tl := range tempList {
-		if extendedData := tempList[tl.ParentClass]; extendedData != nil {
+		if extendedData := tempList[fmt.Sprintf("%s$%s", tl.Prefix, tl.ParentClass)]; extendedData != nil {
 			tl.ParentLink = extendedData
 		}
 		tl.Vars = getDeclaredVars(tl)

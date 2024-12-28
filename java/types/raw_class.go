@@ -2,6 +2,7 @@ package types
 
 type RawClass struct {
 	Name        string
+	Prefix      string
 	Content     []LineInfo
 	Vars        map[string]string
 	Package     string

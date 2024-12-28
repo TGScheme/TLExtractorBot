@@ -7,7 +7,8 @@ import (
 )
 
 func ParseClass(name, content string) (*types.RawClass, error) {
-	if !strings.HasPrefix(strings.Split(name, "$")[0], "TL") {
+	prefixFile := strings.Split(name, "$")[0]
+	if !strings.HasPrefix(prefixFile, "TL") {
 		return nil, consts.NotTLRPC
 	}
 	name = strings.ReplaceAll(name, ".java", "")
@@ -16,6 +17,7 @@ func ParseClass(name, content string) (*types.RawClass, error) {
 		return nil, err
 	}
 	var tlName types.RawClass
+	tlName.Prefix = prefixFile
 	if data := strings.Split(name, "."); len(data) > 1 {
 		tlName.Name = data[1]
 		tlName.Package = data[0]
