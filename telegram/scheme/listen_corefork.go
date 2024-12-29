@@ -19,8 +19,11 @@ import (
 	"time"
 )
 
-func ListenCoreFork() {
+func init() {
 	Client = &context{}
+}
+
+func ListenCoreFork() {
 	chanWait := make(chan bool)
 	go func() {
 		var isInitialized bool
