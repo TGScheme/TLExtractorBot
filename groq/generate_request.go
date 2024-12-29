@@ -25,8 +25,6 @@ func generateRequest(differences *schemeTypes.TLFullDifferences, llmMessage stri
 			constructorString += constructor.Object.Result() + ";"
 			if constructor.IsNew {
 				promptConstructors = append(promptConstructors, constructorString)
-			} else if !constructor.IsDeleted {
-				contextConstructors = append(contextConstructors, constructorString)
 			}
 		}
 	}
