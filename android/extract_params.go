@@ -24,7 +24,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	flagValue := -1
 	//fastCheck := regexp.MustCompile(`this\.\w+`)
 	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. ]+)( \?|\.\w+Value\(\)|\.add|\.get|\.serialize|\)| !| = (Boolean\.valueOf\(abstractSerializedData|abstractSerializedData|inputSerializedData|i[0-9+]*;|read|TLdeserialize;|Vector\.deserialize|\([^(]|\w+\$\w+\.\w+deserialize))\)?`)
-	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?abstractSerializedData[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
+	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?(abstractSerializedData|inputSerializedData)[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
 	compileFlags := regexp.MustCompile(`[\w =]+[|& ][ (]([0-9]+)`)
@@ -77,7 +77,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				var fromBuffer bool
 				parameter.Name = matches[0][2]
 				if matchedType := compileVarBuffer.FindAllStringSubmatch(line.Line, -1); len(matchedType) > 0 {
-					parameter.Type = java.ParseType(matchedType[0][5])
+					parameter.Type = java.ParseType(matchedType[0][6])
 					fromBuffer = true
 				} else if declaredType, ok := class.Vars[matches[0][2]]; ok {
 					parameter.Type = java.ParseType(declaredType)
