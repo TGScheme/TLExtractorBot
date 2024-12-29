@@ -17,5 +17,11 @@ func GetE2EScheme() (*types.TLRemoteScheme, error) {
 	if err != nil {
 		return nil, err
 	}
+	for i := range generatedScheme.Constructors {
+		generatedScheme.Constructors[i].ForceSecret = true
+	}
+	for i := range generatedScheme.Methods {
+		generatedScheme.Methods[i].ForceSecret = true
+	}
 	return &generatedScheme, nil
 }

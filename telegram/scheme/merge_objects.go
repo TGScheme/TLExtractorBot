@@ -22,7 +22,7 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 		constructor := ParseConstructor(oldInterface.Constructor())
 		objects[constructor] = oldInterface
 		originalObjects[oldInterface.Package()] = constructor
-		if remoteOrder {
+		if remoteOrder || oldInterface.IsSecret() {
 			orderObjects = append(orderObjects, constructor)
 		}
 	}
@@ -59,7 +59,7 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 				),
 			)
 			objects[constructor].SetConstructor(newInterface.Constructor())
-			if !remoteOrder {
+			if !remoteOrder && !slices.Contains(orderObjects, constructor) {
 				orderObjects = append(orderObjects, constructor)
 			}
 		} else {
