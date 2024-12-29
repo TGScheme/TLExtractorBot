@@ -39,7 +39,7 @@ func UpdateUpstreamCache(source string, localScheme *types.TLRemoteScheme) error
 	if err != nil {
 		return err
 	}
-	upstreamScheme, err := MergeRemote(localScheme, patchOs, false, func(isE2E bool) (*types.TLRemoteScheme, error) {
+	upstreamScheme, err := MergeRemote(localScheme, patchOs, false, patchOs == types.TDLibPatch, func(isE2E bool) (*types.TLRemoteScheme, error) {
 		if isE2E {
 			return GetE2EScheme()
 		}

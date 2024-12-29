@@ -6,12 +6,10 @@ import (
 )
 
 func MergeSmartUpstream(rawScheme *types.RawTLScheme, patchOs types.PatchOS) (*types.TLFullScheme, error) {
-	return MergeUpstream(rawScheme, patchOs, func(isE2E bool) (*types.TLRemoteScheme, error) {
-		if environment.LocalStorage.UpstreamLayer == nil {
-			err := UpdateUpstreamCache("android", nil)
-			if err != nil {
-				return nil, err
-			}
+	return MergeUpstream(rawScheme, patchOs, true, func(isE2E bool) (*types.TLRemoteScheme, error) {
+		err := UpdateUpstreamCache("android", nil)
+		if err != nil {
+			return nil, err
 		}
 		if isE2E {
 			return &types.TLRemoteScheme{

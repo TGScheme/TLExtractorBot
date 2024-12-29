@@ -128,7 +128,7 @@ func run() {
 			if err != nil {
 				return err
 			}
-			fullScheme, err = scheme.MergeRemote(remoteScheme, patchScheme, remoteScheme.Layer == previewLayer, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
+			fullScheme, err = scheme.MergeRemote(remoteScheme, patchScheme, remoteScheme.Layer == previewLayer, true, func(isE2E bool) (*schemeTypes.TLRemoteScheme, error) {
 				var rScheme schemeTypes.TLRemoteScheme
 				var methodsTemp []*schemeTypes.TLMethod
 				var constructorsTemp []*schemeTypes.TLConstructor

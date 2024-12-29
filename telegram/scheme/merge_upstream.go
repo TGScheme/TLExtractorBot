@@ -4,13 +4,13 @@ import (
 	"TLExtractor/telegram/scheme/types"
 )
 
-func MergeUpstream(rawScheme *types.RawTLScheme, patchOs types.PatchOS, upstream func(isE2E bool) (*types.TLRemoteScheme, error)) (*types.TLFullScheme, error) {
+func MergeUpstream(rawScheme *types.RawTLScheme, patchOs types.PatchOS, remoteOrder bool, upstream func(isE2E bool) (*types.TLRemoteScheme, error)) (*types.TLFullScheme, error) {
 	mergeUpstream := func(rawScheme *types.RawTLScheme, isE2E bool) (*types.RawTLScheme, error) {
 		scheme, err := upstream(isE2E)
 		if err != nil {
 			return nil, err
 		}
-		return mergeSchemes(scheme, newFromRaw(rawScheme, isE2E), rawScheme.Layer, patchOs), nil
+		return mergeSchemes(scheme, newFromRaw(rawScheme, isE2E), rawScheme.Layer, patchOs, remoteOrder), nil
 	}
 	mainScheme, err := mergeUpstream(rawScheme, false)
 	if err != nil {

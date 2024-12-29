@@ -7,7 +7,7 @@ import (
 	"slices"
 )
 
-func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs types.PatchOS) []T {
+func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs types.PatchOS, remoteOrder bool) []T {
 	var orderObjects []string
 	objects := make(map[string]T)
 	correctNames := make(map[string]string)
@@ -22,7 +22,9 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 		constructor := ParseConstructor(oldInterface.Constructor())
 		objects[constructor] = oldInterface
 		originalObjects[oldInterface.Package()] = constructor
-		orderObjects = append(orderObjects, constructor)
+		if remoteOrder {
+			orderObjects = append(orderObjects, constructor)
+		}
 	}
 	for _, newInterface := range new {
 		constructor := ParseConstructor(newInterface.Constructor())
@@ -57,12 +59,17 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 				),
 			)
 			objects[constructor].SetConstructor(newInterface.Constructor())
+			if !remoteOrder {
+				orderObjects = append(orderObjects, constructor)
+			}
 		} else {
 			objects[constructor] = newInterface
 			orderObjects = append(orderObjects, constructor)
 		}
 	}
-	slices.Sort(orderObjects[len(old):])
+	if remoteOrder {
+		slices.Sort(orderObjects[len(old):])
+	}
 	for _, constructor := range objects {
 		if newName, ok := correctNames[constructor.Result()]; ok {
 			constructor.SetResult(newName)
