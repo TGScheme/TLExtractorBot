@@ -3,8 +3,10 @@ package services
 import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
+	"fmt"
 	"github.com/Laky-64/gologging"
 	"github.com/kardianos/service"
+	"os"
 )
 
 func Run(runner func()) {
@@ -18,6 +20,9 @@ func Run(runner func()) {
 		Arguments: []string{
 			"-C",
 			environment.EnvFolder,
+		},
+		EnvVars: map[string]string{
+			"PATH": fmt.Sprintf("/opt/sdkman/candidates/java/current/bin:%s", os.Getenv("PATH")),
 		},
 	}
 	c := &context{
