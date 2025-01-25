@@ -108,6 +108,12 @@ var (
 		regexp.MustCompile(`^InputChatlistDialogFilter$`): "InputChatlist",
 		regexp.MustCompile(`PaymentSavedCredentialsCard`): "PaymentSavedCredentials",
 	}
+	UnusedTypes = []string{
+		"ipPortSecret",
+		"ipPort",
+		"accessPointRule",
+		"help.configSimple",
+	}
 )
 
 var SupportedBotAliases = []string{
