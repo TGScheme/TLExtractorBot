@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 	"github.com/charmbracelet/huh"
-	"github.com/google/go-github/v62/github"
+	"github.com/google/go-github/v69/github"
 )
 
 type TDeskSelect struct {

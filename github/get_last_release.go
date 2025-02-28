@@ -1,6 +1,6 @@
 package github
 
-import "github.com/google/go-github/v62/github"
+import "github.com/google/go-github/v69/github"
 
 func (ctx *clientContext) GetLastRelease(repoOwner, repoName, versionLock string) (*github.RepositoryRelease, error) {
 	if len(versionLock) > 0 {
