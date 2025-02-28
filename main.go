@@ -7,8 +7,8 @@ import (
 	"TLExtractor/consts"
 	"TLExtractor/debug_menu"
 	"TLExtractor/environment"
+	"TLExtractor/gemini"
 	"TLExtractor/github"
-	"TLExtractor/groq"
 	"TLExtractor/java/jadx"
 	"TLExtractor/services"
 	"TLExtractor/telegram/bot"
@@ -189,7 +189,7 @@ func run() {
 			}
 			groqDescriptions := make(map[string]string)
 			if stats.MainApi.TotalAdditions > 0 || stats.E2EApi.TotalAdditions > 0 {
-				groqDescriptions, err = groq.GenerateDescriptions(differences)
+				groqDescriptions, err = gemini.Client.GenerateDescriptions(differences)
 				if err != nil {
 					return err
 				}

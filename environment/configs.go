@@ -37,7 +37,7 @@ type credentials struct {
 	TelegraphToken string `json:"telegraph_token"`
 	ApplicationID  int    `json:"application_id"`
 	InstallationID int    `json:"installation_id"`
-	GroqToken      string `json:"groq_token"`
+	GeminiToken    string `json:"gemini_token"`
 	LLMModel       string `json:"llm_model"`
 }
 
