@@ -187,9 +187,9 @@ func run() {
 			if !fullScheme.IsSync {
 				pageTitle = fmt.Sprintf("%s Preview", pageTitle)
 			}
-			groqDescriptions := make(map[string]string)
+			geminiDescriptions := make(map[string]string)
 			if stats.MainApi.TotalAdditions > 0 || stats.E2EApi.TotalAdditions > 0 {
-				groqDescriptions, err = gemini.Client.GenerateDescriptions(differences)
+				geminiDescriptions, err = gemini.Client.GenerateDescriptions(differences)
 				if err != nil {
 					return err
 				}
@@ -199,13 +199,13 @@ func run() {
 				environment.FormatVar(
 					"changelogs",
 					map[string]any{
-						"differences":       differences,
-						"stats":             stats,
-						"commit_urls":       commitInfo.FilesLines,
-						"banner_url":        environment.LocalStorage.BannerURL,
-						"main_scheme":       scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
-						"e2e_scheme":        scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
-						"groq_descriptions": groqDescriptions,
+						"differences":         differences,
+						"stats":               stats,
+						"commit_urls":         commitInfo.FilesLines,
+						"banner_url":          environment.LocalStorage.BannerURL,
+						"main_scheme":         scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
+						"e2e_scheme":          scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
+						"gemini_descriptions": geminiDescriptions,
 					},
 				),
 			)

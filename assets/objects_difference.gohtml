@@ -4,7 +4,7 @@
 <ul>
 {% for obj in objsDiff -%}
 {%- if obj.IsNew %}
-    <li>Added {{ objectLinked(obj) }} - {{ groq_descriptions[obj.Object.Package] }}</li>
+    <li>Added {{ objectLinked(obj) }} - {{ geminiDescriptions[obj.Object.Package] }}</li>
 {% endif -%}
 {%- endfor %}
 </ul>
