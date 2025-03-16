@@ -2,8 +2,6 @@ package main
 
 import (
 	"TLExtractor/android"
-	"TLExtractor/appcenter"
-	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
 	"TLExtractor/debug_menu"
 	"TLExtractor/environment"
@@ -11,6 +9,8 @@ import (
 	"TLExtractor/github"
 	"TLExtractor/java/jadx"
 	"TLExtractor/services"
+	"TLExtractor/store_api"
+	"TLExtractor/store_api/types"
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme"
 	schemeTypes "TLExtractor/telegram/scheme/types"
@@ -63,7 +63,7 @@ func run() {
 			ParseMode: "HTML",
 		})
 	}, filters.And(filters.Command("patch", consts.SupportedBotAliases...), filters.ChatID(environment.LocalStorage.LogChatID))))
-	appcenter.Listen(func(update types.UpdateInfo) error {
+	store_api.Listen(func(update types.UpdateInfo) error {
 		if err := bot.Client.UpdateStatus(
 			environment.FormatVar(
 				"message",

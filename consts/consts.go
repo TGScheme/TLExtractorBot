@@ -10,28 +10,22 @@ import (
 
 // Api Links
 const (
-	TDesktopSources = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/%s/Telegram/SourceFiles"
-	TDLibSources    = "https://raw.githubusercontent.com/tdlib/td/master/"
-	TDesktopTL      = TDesktopSources + "/mtproto/scheme/api.tl"
-	TDLibTL         = TDLibSources + "td/generate/scheme/telegram_api.tl"
-	AppCenterApi    = "https://install.appcenter.ms/api/v0.1/apps/%s/%s/distribution_groups/%s/%s"
-	E2ETL           = "https://core.telegram.org/schema/end-to-end-json"
-	TelegraphApi    = "https://api.telegra.ph"
-	TelegraphUrl    = "https://telegra.ph"
-	GithubURL       = "https://github.com"
-	MainReleasedTL  = "https://corefork.telegram.org"
+	TDesktopSources  = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/%s/Telegram/SourceFiles"
+	TDLibSources     = "https://raw.githubusercontent.com/tdlib/td/master/"
+	TDesktopTL       = TDesktopSources + "/mtproto/scheme/api.tl"
+	TDLibTL          = TDLibSources + "td/generate/scheme/telegram_api.tl"
+	TDAndroidBetaAPI = "https://telegram.org/dl/android/apk-public-beta.json"
+	E2ETL            = "https://core.telegram.org/schema/end-to-end-json"
+	TelegraphApi     = "https://api.telegra.ph"
+	TelegraphUrl     = "https://telegra.ph"
+	GithubURL        = "https://github.com"
+	MainReleasedTL   = "https://corefork.telegram.org"
 )
 
-var (
-	TDesktopBranch          = "dev"
-	AppCenterAndroidRelease = "latest"
-)
+var TDesktopBranch = "dev"
 
 // Constants
 const (
-	Developer          = "drklo-2kb-ghpo"
-	AppName            = "telegram-beta-2"
-	Distribution       = "all-users-of-telegram-beta-2"
 	ServiceDisplayName = "TL Extractor Service"
 	ServiceDescription = "Automatically fetches, decompile and commits new Telegram Android TL schema changes."
 	ServiceName        = "tl-extractor"

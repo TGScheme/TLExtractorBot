@@ -1,8 +1,8 @@
 package debug_menu
 
 import (
-	"TLExtractor/appcenter"
 	"TLExtractor/debug_menu/types"
+	"TLExtractor/store_api"
 	"fmt"
 	"github.com/Laky-64/gologging"
 	"github.com/charmbracelet/huh"
@@ -14,7 +14,7 @@ func newReleaseSelect(typeName string) *types.ReleaseSelect {
 		Title(fmt.Sprintf("Select %s Telegram Version:", typeName)).
 		Value(&selector.Value).
 		OptionsFunc(func() []huh.Option[string] {
-			releases, err := appcenter.GetReleases()
+			releases, err := store_api.GetReleases()
 			if err != nil {
 				gologging.Fatal(err)
 			}

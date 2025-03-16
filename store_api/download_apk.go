@@ -1,18 +1,16 @@
-package appcenter
+package store_api
 
 import (
-	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
 	"TLExtractor/environment"
+	"TLExtractor/store_api/types"
 	"github.com/Laky-64/http"
 	"os"
 	"path"
 )
 
 func DownloadApk(info *types.AppInfo) error {
-	res, err := http.ExecuteRequest(
-		info.DownloadURL,
-	)
+	res, err := http.ExecuteRequest(info.FileURL)
 	if err != nil {
 		return err
 	}

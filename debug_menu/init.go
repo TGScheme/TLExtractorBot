@@ -46,7 +46,6 @@ func init() {
 			environment.LocalStorage.PatchedObjects = make(map[schemeTypes.PatchOS]map[string]*schemeTypes.PatchInfo)
 			environment.LocalStorage.PatchedObjects[schemeTypes.AndroidPatch] = make(map[string]*schemeTypes.PatchInfo)
 			consts.TDesktopBranch = stableTDesk.GetCommitSha()
-			consts.AppCenterAndroidRelease = stableRelease.GetReleaseId()
 			scheme, err := extractScheme(stablePage, "stable")
 			if err != nil {
 				return err
@@ -76,7 +75,6 @@ func init() {
 	)
 	previewPage.SetCheckFunc(func(checkType tuiTypes.CheckType) error {
 		consts.TDesktopBranch = previewTDesk.GetCommitSha()
-		consts.AppCenterAndroidRelease = previewRelease.GetReleaseId()
 		scheme, err := extractScheme(previewPage, "preview")
 		if err != nil {
 			return err
@@ -94,7 +92,6 @@ func init() {
 	)
 	latestPage.SetCheckFunc(func(checkType tuiTypes.CheckType) error {
 		consts.TDesktopBranch = latestTDesk.GetCommitSha()
-		consts.AppCenterAndroidRelease = latestRelease.GetReleaseId()
 		ReadyToTest = true
 		return nil
 	}, tuiTypes.SubmitCheck)

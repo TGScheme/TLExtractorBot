@@ -1,9 +1,9 @@
-package appcenter
+package store_api
 
 import (
-	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
 	"TLExtractor/environment"
+	"TLExtractor/store_api/types"
 	"TLExtractor/utils"
 	"fmt"
 	"github.com/Laky-64/gologging"
@@ -34,7 +34,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				err = listener(
 					types.UpdateInfo{
 						VersionName: tDeskVersionName,
-						BuildNumber: strconv.Itoa(tDeskVersionCode),
+						BuildNumber: uint32(tDeskVersionCode),
 						Source:      "tdesktop",
 					},
 				)
@@ -61,7 +61,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				err = listener(
 					types.UpdateInfo{
 						VersionName: tdLibVersionName,
-						BuildNumber: strconv.Itoa(tdLibVersionCode),
+						BuildNumber: uint32(tdLibVersionCode),
 						Source:      "tdlib",
 					},
 				)
@@ -75,7 +75,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				environment.LocalStorage.Commit()
 				environment.SetBuildingStatus(false)
 			}
-			if info.ID > environment.LocalStorage.LastID || environment.IsPatch() {
+			if info.VersionCode > environment.LocalStorage.LastVersionCode || environment.IsPatch() {
 				environment.SetBuildingStatus(true)
 				if err = DownloadApk(info); err != nil {
 					gologging.Error(err)
@@ -83,8 +83,8 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				}
 				err = listener(
 					types.UpdateInfo{
-						VersionName: info.VersionName,
-						BuildNumber: info.BuildNumber[:4],
+						VersionName: info.Version,
+						BuildNumber: info.VersionCode / 10,
 						Source:      "android",
 					},
 				)
@@ -94,7 +94,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				if environment.Debug {
 					break
 				}
-				environment.LocalStorage.LastID = info.ID
+				environment.LocalStorage.LastVersionCode = info.VersionCode
 				environment.LocalStorage.Commit()
 				environment.SetPatchStatus(false)
 				environment.SetBuildingStatus(false)

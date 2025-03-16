@@ -2,8 +2,8 @@ package debug_menu
 
 import (
 	"TLExtractor/android"
-	"TLExtractor/appcenter"
 	"TLExtractor/java/jadx"
+	"TLExtractor/store_api"
 	schemeTypes "TLExtractor/telegram/scheme/types"
 	"TLExtractor/tui"
 	"fmt"
@@ -11,11 +11,11 @@ import (
 
 func extractScheme(miniApp *tui.MiniApp, typeName string) (*schemeTypes.TLFullScheme, error) {
 	miniApp.SetLoadingMessage(fmt.Sprintf("Downloading %s apk...", typeName))
-	info, err := appcenter.GetAppInfo()
+	info, err := store_api.GetAppInfo()
 	if err != nil {
 		return nil, err
 	}
-	err = appcenter.DownloadApk(info)
+	err = store_api.DownloadApk(info)
 	if err != nil {
 		return nil, err
 	}

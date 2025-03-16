@@ -1,24 +1,15 @@
-package appcenter
+package store_api
 
 import (
-	"TLExtractor/appcenter/types"
 	"TLExtractor/consts"
+	"TLExtractor/store_api/types"
 	"encoding/json"
-	"fmt"
 	"github.com/Laky-64/http"
 )
 
 func GetAppInfo() (*types.AppInfo, error) {
 	var appInfo types.AppInfo
-	res, err := http.ExecuteRequest(
-		fmt.Sprintf(
-			consts.AppCenterApi,
-			consts.Developer,
-			consts.AppName,
-			consts.Distribution,
-			fmt.Sprintf("releases/%s", consts.AppCenterAndroidRelease),
-		),
-	)
+	res, err := http.ExecuteRequest(consts.TDAndroidBetaAPI)
 	if err != nil {
 		return nil, err
 	}

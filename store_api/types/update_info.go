@@ -2,6 +2,6 @@ package types
 
 type UpdateInfo struct {
 	VersionName string
-	BuildNumber string
+	BuildNumber uint32
 	Source      string
 }

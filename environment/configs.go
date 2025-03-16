@@ -12,7 +12,7 @@ var LocalStorage storage
 var CredentialsStorage credentials
 
 type storage struct {
-	LastID            uint16                                        `json:"last_id"`
+	LastVersionCode   uint32                                        `json:"last_version_code"`
 	LastTDeskID       int                                           `json:"last_tdesk_id"`
 	LastTDLibID       int                                           `json:"last_tdlib_id"`
 	ChannelID         int64                                         `json:"channel_id"`
