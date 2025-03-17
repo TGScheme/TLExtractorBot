@@ -84,7 +84,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				err = listener(
 					types.UpdateInfo{
 						VersionName: info.Version,
-						BuildNumber: info.VersionCode / 10,
+						BuildNumber: info.VersionCode,
 						Source:      "android",
 					},
 				)

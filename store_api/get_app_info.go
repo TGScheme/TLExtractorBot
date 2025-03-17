@@ -16,5 +16,6 @@ func GetAppInfo() (*types.AppInfo, error) {
 	if err = json.Unmarshal(res.Body, &appInfo); err != nil {
 		return nil, err
 	}
+	appInfo.VersionCode = appInfo.VersionCode / 10
 	return &appInfo, nil
 }

@@ -13,5 +13,5 @@ type ReleaseSelect struct {
 }
 
 func (r *ReleaseSelect) NameFormat(release types.Release) string {
-	return fmt.Sprintf("%s (%d)", release.Version, release.VersionCode/10)
+	return fmt.Sprintf("%s (%d)", release.Version, release.VersionCode)
 }
