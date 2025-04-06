@@ -8,6 +8,6 @@
 {%- endif -%}
 {%- if scheme.TotalDeletions > 0 -%}
 {%- if scheme.TotalAdditions > 0 || scheme.TotalChanges > 0 -%}, {% endif -%}
-{{scheme.TotalDeletions}} deletetion{{ scheme.TotalDeletions | pluralize }}
+{{scheme.TotalDeletions}} deletion{{ scheme.TotalDeletions | pluralize }}
 {%- endif -%}
 {%- endmacro %}
