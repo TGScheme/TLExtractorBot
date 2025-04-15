@@ -76,11 +76,11 @@ func Listen(listener func(update types.UpdateInfo) error) {
 				environment.SetBuildingStatus(false)
 			}
 			if info.VersionCode > environment.LocalStorage.LastVersionCode || environment.IsPatch() {
-				environment.SetBuildingStatus(true)
 				if err = DownloadApk(info); err != nil {
 					gologging.Error(err)
 					continue
 				}
+				environment.SetBuildingStatus(true)
 				err = listener(
 					types.UpdateInfo{
 						VersionName: info.Version,
