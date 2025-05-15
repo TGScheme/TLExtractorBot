@@ -2,7 +2,7 @@ package github
 
 import (
 	"TLExtractor/consts"
-	"github.com/google/go-github/v69/github"
+	"github.com/google/go-github/v72/github"
 )
 
 func (ctx *clientContext) commitsFiles(files map[string]string, commitMessage string) (map[string]string, error) {

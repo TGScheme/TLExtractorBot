@@ -2,7 +2,7 @@ package github
 
 import (
 	"context"
-	"github.com/google/go-github/v69/github"
+	"github.com/google/go-github/v72/github"
 )
 
 var Client *clientContext

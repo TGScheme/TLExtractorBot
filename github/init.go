@@ -8,7 +8,7 @@ import (
 	"context"
 	"github.com/bradleyfalzon/ghinstallation/v2"
 	"github.com/charmbracelet/huh"
-	"github.com/google/go-github/v69/github"
+	"github.com/google/go-github/v72/github"
 	"net/http"
 	"os"
 	"path"

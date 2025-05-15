@@ -1,6 +1,6 @@
 package github
 
-import "github.com/google/go-github/v69/github"
+import "github.com/google/go-github/v72/github"
 
 func (ctx *clientContext) GetCommits(repoOwner, repoName, path string) ([]*github.RepositoryCommit, error) {
 	commits, resp, err := ctx.client.Repositories.ListCommits(ctx.ctx, repoOwner, repoName, &github.CommitsListOptions{

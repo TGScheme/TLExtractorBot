@@ -47,7 +47,7 @@ func Run() {
 	instance.form = huh.NewForm(groups...).WithShowErrors(false).WithShowHelp(false)
 	defaultKeyMap := huh.NewDefaultKeyMap()
 	defaultKeyMap.FilePicker.Next = key.Binding{}
-	defaultKeyMap.FilePicker.GoToTop.Keys()
+	defaultKeyMap.FilePicker.GotoTop.Keys()
 	instance.form.WithKeyMap(defaultKeyMap)
 	instance.programContext = tea.NewProgram(instance, tea.WithAltScreen())
 	_, err := instance.programContext.Run()
