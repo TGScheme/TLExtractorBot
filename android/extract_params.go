@@ -29,6 +29,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
 	compileFlags := regexp.MustCompile(`[\w =]+[|& ][ (]([0-9]+)`)
 	compileFlagName := regexp.MustCompile(`flags[0-9]*`)
+	compileIntegerFlagName := regexp.MustCompile(`i([0-9]*)[^a-zA-Z0-9_]`)
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	compileUnknownVectorType := regexp.MustCompile(`\(\((.*?)\).*get`)
 	dialogResolver := regexp.MustCompile(`DialogObject\..+\(`)
@@ -45,12 +46,27 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				flagValue = int(math.Log2(float64(flagNum)))
 				openedFlags = true
 				flagNesting = line.Nesting
-				if name := compileFlagName.FindAllString(line.Line, -1); name != nil {
-					flagName = name[0]
-				} else if name = compileFlagName.FindAllString(class.Content[pos+1].Line, -1); name != nil {
-					flagName = name[0]
-				} else if name = compileFlagName.FindAllString(class.Content[pos-1].Line, -1); name != nil {
-					flagName = name[0]
+
+				linesToCheck := []string{
+					line.Line,
+					class.Content[pos+1].Line,
+					class.Content[pos-1].Line,
+				}
+
+				for _, l := range linesToCheck {
+					if names := compileFlagName.FindAllString(l, -1); names != nil {
+						flagName = names[0]
+						break
+					}
+				}
+
+				if len(flagName) == 0 {
+					for _, l := range linesToCheck {
+						if rawNums := compileIntegerFlagName.FindAllStringSubmatch(l, -1); len(rawNums) > 0 {
+							flagName = fmt.Sprintf("flags%s", rawNums[0][1])
+							break
+						}
+					}
 				}
 				if fromIf = strings.HasPrefix(line.Line, "if"); fromIf {
 					flagNesting--
