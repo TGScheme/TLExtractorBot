@@ -16,7 +16,7 @@ import (
 
 func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes.Parameter, error) {
 	var params []schemeTypes.Parameter
-	var openedFlags, fromIf, fromLoop bool
+	var openedFlags, fromIf, fromLoop, fromSmartFlag bool
 	var flagNesting, forNesting int
 	var addedFlags []string
 	pendingFlags := make(map[string]types.FlagInfo)
@@ -27,7 +27,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?(abstractSerializedData|inputSerializedData)[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
-	compileFlags := regexp.MustCompile(`[\w =]+[|& ][ (]([0-9]+)`)
+	compileFlags := regexp.MustCompile(`([\w =]+[|& ][ (]|TLRPC\$(setFlag|hasFlag)\((.*?),\s*)([0-9]+)`)
 	compileFlagName := regexp.MustCompile(`flags[0-9]*`)
 	compileIntegerFlagName := regexp.MustCompile(`i([0-9]*)[^a-zA-Z0-9_]`)
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
@@ -39,7 +39,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 		}
 		if pos > declarationPos && declarationPos != 0 && line.Nesting >= 2 {
 			if matches := compileFlags.FindAllStringSubmatch(line.Line, -1); len(matches) > 0 {
-				flagNum, err := strconv.Atoi(matches[0][1])
+				flagNum, err := strconv.Atoi(matches[0][4])
 				if err != nil {
 					return nil, err
 				}
@@ -68,6 +68,16 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 						}
 					}
 				}
+				fromSmartFlag = strings.HasPrefix(matches[0][1], "TLRPC$setFlag")
+
+				if len(flagName) == 0 {
+					if fromSmartFlag {
+						if _, err = strconv.Atoi(matches[0][3]); err == nil {
+							flagName = fmt.Sprintf("flags")
+						}
+					}
+				}
+
 				if fromIf = strings.HasPrefix(line.Line, "if"); fromIf {
 					flagNesting--
 					continue
@@ -151,7 +161,8 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 					if !fromBuffer && parameter.Type == "Bool" {
 						parameter.Type = "true"
 					}
-					if !fromIf && !slices.Contains([]string{"true", "#"}, parameter.Type) {
+
+					if !fromIf && !fromSmartFlag && !slices.Contains([]string{"true", "#"}, parameter.Type) {
 						pendingFlags[parameter.Name] = types.FlagInfo{
 							Name:  flagName,
 							Value: flagValue,
