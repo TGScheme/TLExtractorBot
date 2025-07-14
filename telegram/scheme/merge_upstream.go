@@ -21,7 +21,9 @@ func MergeUpstream(rawScheme *types.RawTLScheme, patchOs types.PatchOS, remoteOr
 		return nil, err
 	}
 	return &types.TLFullScheme{
-		MainApi: Client.fixDeprecations(mainScheme).TLScheme,
+		// TODO: Fix somehow with another sourcce of TLScheme
+		// This is a workaround to avoid removing all methods and constructors during Telegram Drugs
+		MainApi: mainScheme.TLScheme,
 		E2EApi:  e2eScheme.TLScheme,
 		Layer:   mainScheme.Layer,
 		IsSync:  mainScheme.IsSync,
