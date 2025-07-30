@@ -27,8 +27,8 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?(abstractSerializedData|inputSerializedData)[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
-	compileFlags := regexp.MustCompile(`([\w =]+[|& ][ (]|TLRPC\$(setFlag|hasFlag)\((.*?),\s*)([0-9]+)`)
-	compileFlagName := regexp.MustCompile(`flags[0-9]*`)
+	compileFlags := regexp.MustCompile(`([\w =]+[|& ][ (]|(TLRPC\$|TLObject\.)(setFlag|hasFlag)\((.*?),\s*)([0-9]+)`)
+	compileFlagName := regexp.MustCompile(`flags?([0-9])*`)
 	compileIntegerFlagName := regexp.MustCompile(`i([0-9]*)[^a-zA-Z0-9_]`)
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	compileUnknownVectorType := regexp.MustCompile(`\(\((.*?)\).*get`)
@@ -39,7 +39,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 		}
 		if pos > declarationPos && declarationPos != 0 && line.Nesting >= 2 {
 			if matches := compileFlags.FindAllStringSubmatch(line.Line, -1); len(matches) > 0 {
-				flagNum, err := strconv.Atoi(matches[0][4])
+				flagNum, err := strconv.Atoi(matches[0][5])
 				if err != nil {
 					return nil, err
 				}
@@ -54,8 +54,8 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				}
 
 				for _, l := range linesToCheck {
-					if names := compileFlagName.FindAllString(l, -1); names != nil {
-						flagName = names[0]
+					if names := compileFlagName.FindAllStringSubmatch(l, -1); names != nil {
+						flagName = fmt.Sprintf("flags%s", names[0][1])
 						break
 					}
 				}
@@ -68,11 +68,11 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 						}
 					}
 				}
-				fromSmartFlag = strings.HasPrefix(matches[0][1], "TLRPC$setFlag")
+				fromSmartFlag = matches[0][3] == "setFlag" || matches[0][3] == "hasFlag"
 
 				if len(flagName) == 0 {
 					if fromSmartFlag {
-						if _, err = strconv.Atoi(matches[0][3]); err == nil {
+						if _, err = strconv.Atoi(matches[0][4]); err == nil {
 							flagName = fmt.Sprintf("flags")
 						}
 					}
