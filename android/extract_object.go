@@ -24,7 +24,7 @@ func extractObject(class *javaTypes.RawClass) (types.TLInterface, error) {
 			if res.Name == "constructor" {
 				tl.ID = res.Value
 			}
-		} else if java.CheckMethodDec(line, "deserializeResponse") {
+		} else if java.CheckMethodDec(line, "deserializeResponse") || java.CheckMethodDec(line, "deserializeResponseT") {
 			deserializedPos = pos
 			deserializeNesting = line.Nesting
 			isMethod = true
