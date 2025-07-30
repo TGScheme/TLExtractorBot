@@ -8,6 +8,10 @@ import (
 )
 
 func FormatType(name string, clearTLName bool) (string, error) {
+	compileMethodExtend := regexp.MustCompile(`(?i)^TLMethod<(.*)>`)
+	if matches := compileMethodExtend.FindAllStringSubmatch(name, -1); len(matches) > 0 {
+		name = matches[0][1]
+	}
 	compile := regexp.MustCompile(`ArrayList<(.*)>`)
 	if matches := compile.FindAllStringSubmatch(name, -1); len(matches) > 0 {
 		formatted, err := FormatType(matches[0][1], clearTLName)
@@ -19,7 +23,9 @@ func FormatType(name string, clearTLName bool) (string, error) {
 	fileName := strings.Split(name, "$")
 	name = fileName[len(fileName)-1]
 	if clearTLName {
-		name = strings.TrimPrefix(strings.TrimPrefix(name, "TL"), "_")
+		for _, prefix := range []string{"TL", "Tl", "_"} {
+			name = strings.TrimPrefix(name, prefix)
+		}
 	}
 	switch strings.ToLower(name) {
 	case "bool", "boolean":
