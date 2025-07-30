@@ -72,11 +72,10 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 
 				if len(flagName) == 0 {
 					if fromSmartFlag {
-						if _, err = strconv.Atoi(matches[0][4]); err == nil {
-							flagName = "flags"
-						} else if matches[0][3] == "hasFlag" {
-							flagName = "flags"
-						}
+						//if _, err = strconv.Atoi(matches[0][4]); err == nil {
+						//	flagName = "flags"
+						//}
+						flagName = "flags"
 					}
 				}
 
