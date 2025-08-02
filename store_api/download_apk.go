@@ -4,13 +4,15 @@ import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
 	"TLExtractor/store_api/types"
+	"fmt"
 	"github.com/Laky-64/http"
 	"os"
 	"path"
+	"time"
 )
 
 func DownloadApk(info *types.AppInfo) error {
-	res, err := http.ExecuteRequest(info.FileURL)
+	res, err := http.ExecuteRequest(fmt.Sprintf("%s&version=%d", info.FileURL, time.Now().Second()))
 	if err != nil {
 		return err
 	}
