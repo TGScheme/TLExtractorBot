@@ -86,6 +86,7 @@ var (
 		regexp.MustCompile(`^TL_message\.Secret$`),
 		regexp.MustCompile(`^secret$`),
 		regexp.MustCompile(`Layer[0-9]+$`),
+		regexp.MustCompile(`^TL_messages\.SendEncryptedMultiMedia$`),
 	}
 	BrokenNames = map[*regexp.Regexp]string{
 		regexp.MustCompile(`^((?P<first>is_admin)|is_(?P<second>.*))$`): "$first$second",
