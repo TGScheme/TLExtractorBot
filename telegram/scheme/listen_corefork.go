@@ -82,23 +82,29 @@ func ListenCoreFork() {
 			Client.syncDep.Lock()
 			Client.removedConstructors = make([]string, 0)
 			checkRemovedConstructors := func(old, new []types.ReleasedConstructor, layer int) {
-				var oldConstructors, newConstructors []string
+				oldSet := make(map[string]int, len(old))
+				newSet := make(map[string]int, len(new))
+
 				for _, v := range old {
-					oldConstructors = append(oldConstructors, ParseConstructor(v.ID))
+					oldSet[ParseConstructor(v.ID)] = 1
 				}
 				for _, v := range new {
-					newConstructors = append(newConstructors, ParseConstructor(v.ID))
+					newSet[ParseConstructor(v.ID)] = 1
 				}
-				for _, v := range oldConstructors {
-					if !slices.Contains(newConstructors, v) {
+
+				for v := range oldSet {
+					if _, ok := newSet[v]; !ok {
 						Client.removedConstructors = append(Client.removedConstructors, v)
 					}
 				}
-				for i, v := range Client.removedConstructors {
-					if slices.Contains(newConstructors, v) {
-						Client.removedConstructors = append(Client.removedConstructors[:i], Client.removedConstructors[i+1:]...)
+
+				tmp := Client.removedConstructors[:0]
+				for _, v := range Client.removedConstructors {
+					if _, ok := newSet[v]; !ok {
+						tmp = append(tmp, v)
 					}
 				}
+				Client.removedConstructors = tmp
 			}
 			layers := slices.Collect(maps.Keys(environment.LocalStorage.ReleasedLayers))
 			slices.Sort(layers)
@@ -178,7 +184,7 @@ func ListenCoreFork() {
 				isInitialized = true
 				chanWait <- true
 			}
-			time.Sleep(1 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
 	}()
 	<-chanWait
