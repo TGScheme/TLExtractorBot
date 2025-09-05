@@ -116,7 +116,7 @@ func ListenCoreFork() {
 			}
 			Client.syncDep.Unlock()
 
-			if environment.LocalStorage.LastCoreForkLayer > latestVersion {
+			if latestVersion > environment.LocalStorage.LastCoreForkLayer {
 				environment.LocalStorage.LastCoreForkLayer = latestVersion
 				environment.LocalStorage.Commit()
 				if !forceNoUpdate {
@@ -130,7 +130,7 @@ func ListenCoreFork() {
 					var descriptionText string
 					for _, x := range devRules.Children() {
 						if x.NodeValue == "h3" && strings.Contains(x.FullText(), strconv.Itoa(latestVersion)) {
-							for y := x.Pointer.NextSibling; y != nil && y.Data != "h3"; y = y.NextSibling {
+							for y := x.Pointer.NextSibling; y != nil && y.Data != "h3" && y.Data != "h5"; y = y.NextSibling {
 								if y.Data == "ul" {
 									rootNode := soup.Root{
 										Pointer:   y,
