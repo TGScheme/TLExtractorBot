@@ -10,10 +10,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
+
 	"github.com/Laky-64/gologging"
 	"github.com/Laky-64/http"
 	"github.com/charmbracelet/huh"
-	"net/url"
 )
 
 func init() {

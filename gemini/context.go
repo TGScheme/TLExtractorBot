@@ -2,13 +2,14 @@ package gemini
 
 import (
 	"context"
-	"github.com/google/generative-ai-go/genai"
+
+	"google.golang.org/genai"
 )
 
 var Client *clientContext
 
 type clientContext struct {
 	ctx             context.Context
-	generativeModel *genai.GenerativeModel
+	generativeModel *genai.Model
 	apiClient       *genai.Client
 }

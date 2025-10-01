@@ -2,6 +2,7 @@ package tui
 
 import (
 	"TLExtractor/tui/types"
+
 	"github.com/charmbracelet/lipgloss"
 )
 

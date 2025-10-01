@@ -3,8 +3,9 @@ package scheme
 import (
 	"TLExtractor/consts"
 	"TLExtractor/telegram/scheme/types"
-	"github.com/Laky-64/http"
 	"strconv"
+
+	"github.com/Laky-64/http"
 )
 
 func GetTDLibScheme() (*types.TLRemoteScheme, error) {

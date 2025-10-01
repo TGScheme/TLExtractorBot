@@ -6,13 +6,14 @@ import (
 	"TLExtractor/tui"
 	"TLExtractor/tui/types"
 	"context"
-	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/charmbracelet/huh"
-	"github.com/google/go-github/v72/github"
 	"net/http"
 	"os"
 	"path"
 	"strconv"
+
+	"github.com/bradleyfalzon/ghinstallation/v2"
+	"github.com/charmbracelet/huh"
+	"github.com/google/go-github/v72/github"
 )
 
 func init() {

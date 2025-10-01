@@ -5,10 +5,11 @@ import (
 	"TLExtractor/environment"
 	"TLExtractor/store_api/types"
 	"fmt"
-	"github.com/Laky-64/http"
 	"os"
 	"path"
 	"time"
+
+	"github.com/Laky-64/http"
 )
 
 func DownloadApk(info *types.AppInfo) error {

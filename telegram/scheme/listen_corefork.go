@@ -7,16 +7,17 @@ import (
 	"TLExtractor/telegram/scheme/types"
 	"encoding/json"
 	"fmt"
-	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
-	"github.com/Laky-64/gologging"
-	"github.com/Laky-64/http"
-	"github.com/anaskhan96/soup"
 	"maps"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
+
+	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
+	"github.com/Laky-64/gologging"
+	"github.com/Laky-64/http"
+	"github.com/anaskhan96/soup"
 )
 
 func init() {

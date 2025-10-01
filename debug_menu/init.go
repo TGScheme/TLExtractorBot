@@ -8,6 +8,7 @@ import (
 	tuiTypes "TLExtractor/tui/types"
 	"TLExtractor/utils/package_manager"
 	"fmt"
+
 	"github.com/charmbracelet/huh"
 )
 

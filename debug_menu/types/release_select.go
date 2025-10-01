@@ -3,6 +3,7 @@ package types
 import (
 	"TLExtractor/store_api/types"
 	"fmt"
+
 	"github.com/charmbracelet/huh"
 )
 

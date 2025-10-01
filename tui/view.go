@@ -1,9 +1,10 @@
 package tui
 
 import (
+	"strings"
+
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
-	"strings"
 )
 
 func (m *application) View() string {

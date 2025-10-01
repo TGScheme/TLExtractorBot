@@ -2,8 +2,9 @@ package environment
 
 import (
 	"TLExtractor/assets"
-	"github.com/flosch/pongo2/v6"
 	"strings"
+
+	"github.com/flosch/pongo2/v6"
 )
 
 func FormatVar(varName string, args map[string]any) string {

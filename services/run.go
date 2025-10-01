@@ -4,9 +4,10 @@ import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
 	"fmt"
+	"os"
+
 	"github.com/Laky-64/gologging"
 	"github.com/kardianos/service"
-	"os"
 )
 
 func Run(runner func()) {

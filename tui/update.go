@@ -2,12 +2,13 @@ package tui
 
 import (
 	"TLExtractor/tui/types"
+	"reflect"
+	"time"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
 	"github.com/charmbracelet/lipgloss"
-	"reflect"
-	"time"
 )
 
 type lazySkip struct{}

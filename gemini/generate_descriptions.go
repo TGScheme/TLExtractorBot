@@ -1,13 +1,15 @@
 package gemini
 
 import (
+	"TLExtractor/assets"
 	"TLExtractor/environment"
 	"TLExtractor/telegram/scheme"
 	schemeTypes "TLExtractor/telegram/scheme/types"
 	"fmt"
-	"github.com/google/generative-ai-go/genai"
 	"regexp"
 	"strings"
+
+	"google.golang.org/genai"
 )
 
 func (ctx *clientContext) GenerateDescriptions(differences *schemeTypes.TLFullDifferences) (map[string]string, error) {
@@ -39,19 +41,40 @@ func (ctx *clientContext) GenerateDescriptions(differences *schemeTypes.TLFullDi
 		appendMethods(differences.E2EApi.MethodsDifference)
 		appendMethods(differences.E2EApi.ConstructorsDifference)
 	}
-	session := ctx.generativeModel.StartChat()
-	session.History = []*genai.Content{}
+	session, err := ctx.apiClient.Chats.Create(
+		ctx.ctx,
+		environment.CredentialsStorage.LLMModel,
+		&genai.GenerateContentConfig{
+			Temperature:      genai.Ptr(float32(0)),
+			TopK:             genai.Ptr(float32(64)),
+			TopP:             genai.Ptr(float32(0.95)),
+			MaxOutputTokens:  65536,
+			ResponseMIMEType: "text/plain",
+			SystemInstruction: &genai.Content{
+				Role: genai.RoleUser,
+				Parts: []*genai.Part{
+					{
+						Text: assets.Templates["llm_descriptions_prompt"],
+					},
+				},
+			},
+		},
+		[]*genai.Content{},
+	)
+	if err != nil {
+		return nil, err
+	}
 	resp, err := session.SendMessage(
 		ctx.ctx,
-		genai.Text(
-			environment.FormatVar(
+		genai.Part{
+			Text: environment.FormatVar(
 				"llm_descriptions",
 				map[string]interface{}{
 					"prompt_constructors":  promptConstructors,
 					"context_constructors": contextConstructors,
 				},
 			),
-		),
+		},
 	)
 	if err != nil {
 		return nil, err
@@ -66,7 +89,7 @@ func (ctx *clientContext) GenerateDescriptions(differences *schemeTypes.TLFullDi
 		return nil, fmt.Errorf("too many parts")
 	}
 
-	generatedResponse := strings.Split(string(resp.Candidates[0].Content.Parts[0].(genai.Text)), "\n")
+	generatedResponse := strings.Split(resp.Candidates[0].Content.Parts[0].Text, "\n")
 	generatedDescriptions := make(map[string]string)
 	for _, response := range generatedResponse {
 		if descInfo := regexp.MustCompile(`Added\s(.+?):\s(.+)`).FindStringSubmatch(response); len(descInfo) == 3 {

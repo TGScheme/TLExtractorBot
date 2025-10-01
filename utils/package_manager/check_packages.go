@@ -5,11 +5,12 @@ import (
 	"TLExtractor/environment"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
-	"github.com/Laky-64/gologging"
 	"os"
 	"path"
 	"runtime"
 	"strings"
+
+	"github.com/Laky-64/gologging"
 )
 
 func CheckPackages() {

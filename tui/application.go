@@ -2,6 +2,7 @@ package tui
 
 import (
 	"TLExtractor/tui/types"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"

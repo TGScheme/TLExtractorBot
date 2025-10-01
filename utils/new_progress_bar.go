@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/cheggaaa/pb/v3"
 )

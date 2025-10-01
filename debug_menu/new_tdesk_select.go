@@ -4,6 +4,7 @@ import (
 	"TLExtractor/debug_menu/types"
 	"TLExtractor/github"
 	"fmt"
+
 	"github.com/Laky-64/gologging"
 	"github.com/charmbracelet/huh"
 )

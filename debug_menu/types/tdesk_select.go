@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	"github.com/charmbracelet/huh"
 	"github.com/google/go-github/v72/github"
 )

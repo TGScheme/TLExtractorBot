@@ -2,6 +2,7 @@ package github
 
 import (
 	"TLExtractor/consts"
+
 	"github.com/google/go-github/v72/github"
 )
 

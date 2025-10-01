@@ -3,13 +3,14 @@ package tui
 import (
 	"TLExtractor/tui/types"
 	"fmt"
+	"slices"
+
 	"github.com/Laky-64/gologging"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kardianos/service"
-	"slices"
 )
 
 func Run() {

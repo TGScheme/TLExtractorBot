@@ -6,13 +6,14 @@ import (
 	"TLExtractor/tui"
 	tuiTypes "TLExtractor/tui/types"
 	"errors"
+	"strconv"
+	"strings"
+
 	"github.com/GoBotApiOfficial/gobotapi"
 	"github.com/GoBotApiOfficial/gobotapi/logger"
 	"github.com/GoBotApiOfficial/gobotapi/methods"
 	"github.com/GoBotApiOfficial/gobotapi/types"
 	"github.com/charmbracelet/huh"
-	"strconv"
-	"strings"
 )
 
 func init() {

@@ -6,10 +6,11 @@ import (
 	"TLExtractor/utils"
 	"TLExtractor/utils/package_manager/types"
 	"fmt"
-	"github.com/Laky-64/http"
 	"io"
 	"os"
 	"path"
+
+	"github.com/Laky-64/http"
 )
 
 func download(info types.PackageInfo) error {

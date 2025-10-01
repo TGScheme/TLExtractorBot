@@ -1,20 +1,18 @@
 package gemini
 
 import (
-	"TLExtractor/assets"
 	"TLExtractor/environment"
 	"TLExtractor/tui"
 	tuiTypes "TLExtractor/tui/types"
 	"context"
 	"errors"
 	"fmt"
-	"github.com/charmbracelet/huh"
-	"github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	"maps"
 	"slices"
 	"strings"
+
+	"github.com/charmbracelet/huh"
+	"google.golang.org/genai"
 )
 
 func init() {
@@ -24,19 +22,6 @@ func init() {
 	llmModel := environment.CredentialsStorage.LLMModel
 	Client = &clientContext{
 		ctx: context.Background(),
-	}
-	loadModel := func() {
-		Client.generativeModel = Client.apiClient.GenerativeModel(llmModel)
-		Client.generativeModel.SetTemperature(0)
-		Client.generativeModel.SetTopK(64)
-		Client.generativeModel.SetTopP(0.95)
-		Client.generativeModel.SetMaxOutputTokens(65536)
-		Client.generativeModel.ResponseMIMEType = "text/plain"
-		Client.generativeModel.SystemInstruction = &genai.Content{
-			Parts: []genai.Part{
-				genai.Text(assets.Templates["llm_descriptions_prompt"]),
-			},
-		}
 	}
 	foundModels := make(map[string]string)
 	geminiApp.SetFields(
@@ -54,17 +39,16 @@ func init() {
 				return errors.New("secret token and LLM model must be set")
 			}
 		}
-		client, errLogin := genai.NewClient(Client.ctx, option.WithAPIKey(secretToken))
+		client, errLogin := genai.NewClient(Client.ctx, &genai.ClientConfig{
+			APIKey: secretToken,
+		})
 		if errLogin != nil {
 			return errLogin
 		}
-		models := client.ListModels(Client.ctx)
+		models := client.Models.All(Client.ctx)
 		foundCurrentModel := false
-		for {
-			model, err := models.Next()
-			if errors.Is(err, iterator.Done) {
-				break
-			} else if err != nil {
+		for model, err := range models {
+			if err != nil {
 				secretToken = ""
 				environment.CredentialsStorage.GeminiToken = ""
 				environment.CredentialsStorage.Commit()
@@ -87,9 +71,6 @@ func init() {
 		Client.apiClient = client
 		environment.CredentialsStorage.GeminiToken = secretToken
 		environment.CredentialsStorage.Commit()
-		if checkType == tuiTypes.InitCheck && len(llmModel) > 0 {
-			loadModel()
-		}
 		return nil
 	}, tuiTypes.InitCheck, tuiTypes.SubmitCheck)
 
@@ -110,7 +91,6 @@ func init() {
 		llmModel = foundModels[selectedModel]
 		environment.CredentialsStorage.LLMModel = llmModel
 		environment.CredentialsStorage.Commit()
-		loadModel()
 		return nil
 	}, tuiTypes.SubmitCheck)
 }

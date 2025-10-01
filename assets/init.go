@@ -3,10 +3,11 @@ package assets
 import (
 	"embed"
 	"fmt"
-	"github.com/Laky-64/gologging"
-	"github.com/flosch/pongo2/v6"
 	"path/filepath"
 	"strings"
+
+	"github.com/Laky-64/gologging"
+	"github.com/flosch/pongo2/v6"
 )
 
 var (

@@ -6,10 +6,11 @@ import (
 	"TLExtractor/store_api/types"
 	"TLExtractor/utils"
 	"fmt"
-	"github.com/Laky-64/gologging"
-	"github.com/Laky-64/http"
 	"strconv"
 	"time"
+
+	"github.com/Laky-64/gologging"
+	"github.com/Laky-64/http"
 )
 
 func Listen(listener func(update types.UpdateInfo) error) {
@@ -29,7 +30,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 			tDeskBody := request.String()
 			tDeskVersionCode, _ := strconv.Atoi(consts.TDeskVersionRgx.FindAllStringSubmatch(tDeskBody, -1)[0][1])
 			tDeskVersionName := consts.TDeskVersionNameRgx.FindAllStringSubmatch(tDeskBody, -1)[0][1]
-			if tDeskVersionCode > environment.LocalStorage.LastTDeskID {
+			if tDeskVersionCode > environment.LocalStorage.LastTDeskID && environment.LocalStorage.PreviewLayer != nil {
 				environment.SetBuildingStatus(true)
 				err = listener(
 					types.UpdateInfo{
@@ -56,7 +57,7 @@ func Listen(listener func(update types.UpdateInfo) error) {
 			tdLibBody := request.String()
 			tdLibVersionName := consts.TDLibVersionRgx.FindAllStringSubmatch(tdLibBody, -1)[0][1]
 			tdLibVersionCode := utils.VersionToCode(tdLibVersionName)
-			if tdLibVersionCode > environment.LocalStorage.LastTDLibID {
+			if tdLibVersionCode > environment.LocalStorage.LastTDLibID && environment.LocalStorage.PreviewLayer != nil {
 				environment.SetBuildingStatus(true)
 				err = listener(
 					types.UpdateInfo{

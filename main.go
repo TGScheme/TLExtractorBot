@@ -19,12 +19,13 @@ import (
 	"TLExtractor/utils/package_manager"
 	"errors"
 	"fmt"
+	"slices"
+
 	"github.com/GoBotApiOfficial/gobotapi"
 	"github.com/GoBotApiOfficial/gobotapi/filters"
 	"github.com/GoBotApiOfficial/gobotapi/methods"
 	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
 	"github.com/Laky-64/gologging"
-	"slices"
 )
 
 func main() {
@@ -106,7 +107,10 @@ func run() {
 		}
 		var err error
 		var fullScheme *schemeTypes.TLFullScheme
-		previewLayer := environment.LocalStorage.PreviewLayer.Layer
+		var previewLayer int
+		if environment.LocalStorage.PreviewLayer != nil {
+			previewLayer = environment.LocalStorage.PreviewLayer.Layer
+		}
 		if update.Source == "android" {
 			fullScheme, err = android.ExtractScheme()
 			if err != nil {
