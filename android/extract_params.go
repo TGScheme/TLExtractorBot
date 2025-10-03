@@ -27,7 +27,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?(abstractSerializedData|inputSerializedData)[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
-	compileFlags := regexp.MustCompile(`([\w =]+[|& ][ (]|(TLRPC\$|TLObject\.)(setFlag|hasFlag)\((.*?),\s*)([0-9]+)`)
+	compileFlags := regexp.MustCompile(`([\w =]+[|& ][ (]|(TLRPC\$|TLObject\.|BitwiseUtils\.)(setFlag|hasFlag)\((.*?),\s*)([0-9]+)`)
 	compileFlagName := regexp.MustCompile(`flags[0-9]*`)
 	compileIntegerFlagName := regexp.MustCompile(`i([0-9]*)[^a-zA-Z0-9_]`)
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
