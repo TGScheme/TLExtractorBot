@@ -45,9 +45,9 @@ func (ctx *clientContext) GenerateDescriptions(differences *schemeTypes.TLFullDi
 		ctx.ctx,
 		environment.CredentialsStorage.LLMModel,
 		&genai.GenerateContentConfig{
-			Temperature:      genai.Ptr(float32(0)),
-			TopK:             genai.Ptr(float32(64)),
-			TopP:             genai.Ptr(float32(0.95)),
+			Temperature:      new(float32(0)),
+			TopK:             new(float32(64)),
+			TopP:             new(float32(0.95)),
 			MaxOutputTokens:  65536,
 			ResponseMIMEType: "text/plain",
 			SystemInstruction: &genai.Content{
