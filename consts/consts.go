@@ -78,7 +78,7 @@ var (
 	OldLayers           = []*regexp.Regexp{
 		regexp.MustCompile(`Old[0-9]*$`),
 		regexp.MustCompile(`ToBeDeprecated$`),
-		regexp.MustCompile(`^\S+[^0-9p][0-9]$`),
+		regexp.MustCompile(`^\S+[^0-9p][0-9]+$`),
 		regexp.MustCompile(`^TL\.FileEncryptedLocation$`),
 		regexp.MustCompile(`^TL\.DocumentEncrypted$`),
 		regexp.MustCompile(`ToDelete$`),
