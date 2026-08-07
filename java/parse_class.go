@@ -31,6 +31,11 @@ func ParseClass(name, content string) (*types.RawClass, error) {
 			if err != nil {
 				return nil, err
 			}
+			if parentData := strings.Split(className, "$"); len(parentData) > 1 {
+				tlName.ParentPrefix = parentData[0]
+			} else {
+				tlName.ParentPrefix = ""
+			}
 		}
 	}
 	return &tlName, nil

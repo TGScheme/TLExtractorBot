@@ -67,11 +67,20 @@ func GetRawClasses(isLegacy bool) ([]*types.RawClass, error) {
 		tempList[fmt.Sprintf("%s$%s", info.Prefix, info.FullName())] = info
 	}
 
-	var tlList []*types.RawClass
 	for _, tl := range tempList {
-		if extendedData := tempList[fmt.Sprintf("%s$%s", tl.Prefix, tl.ParentClass)]; extendedData != nil {
+		parentPrefix := tl.ParentPrefix
+		if len(parentPrefix) == 0 {
+			parentPrefix = tl.Prefix
+		}
+		if extendedData := tempList[fmt.Sprintf("%s$%s", parentPrefix, tl.ParentClass)]; extendedData != nil && extendedData != tl {
+			tl.ParentLink = extendedData
+		} else if extendedData = tempList[fmt.Sprintf("%s$%s", tl.Prefix, tl.ParentClass)]; extendedData != nil && extendedData != tl {
 			tl.ParentLink = extendedData
 		}
+	}
+
+	var tlList []*types.RawClass
+	for _, tl := range tempList {
 		tl.Vars = getDeclaredVars(tl)
 		tlList = append(tlList, tl)
 	}

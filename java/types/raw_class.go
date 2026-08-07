@@ -1,13 +1,14 @@
 package types
 
 type RawClass struct {
-	Name        string
-	Prefix      string
-	Content     []LineInfo
-	Vars        map[string]string
-	Package     string
-	ParentClass string
-	ParentLink  *RawClass
+	Name         string
+	Prefix       string
+	Content      []LineInfo
+	Vars         map[string]string
+	Package      string
+	ParentClass  string
+	ParentPrefix string
+	ParentLink   *RawClass
 }
 
 func (class *RawClass) FullName() string {
