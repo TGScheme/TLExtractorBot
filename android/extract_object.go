@@ -64,6 +64,12 @@ func extractObject(class *javaTypes.RawClass) (types.TLInterface, error) {
 			}
 		}
 	}
+	if !isMethod {
+		if inheritedMethod, inheritedResult := findInheritedMethodResult(class.ParentLink); inheritedMethod {
+			isMethod = true
+			methodResult = inheritedResult
+		}
+	}
 	var deserializedParams, serializedParams []types.Parameter
 	if serializePos != 0 {
 		params, err := extractParams(class, serializePos)
@@ -150,4 +156,29 @@ func methodNamespaceFromPrefix(prefix string) string {
 		return ""
 	}
 	return strings.ToLower(trimmed)
+}
+
+func findInheritedMethodResult(class *javaTypes.RawClass) (bool, string) {
+	if class == nil {
+		return false, ""
+	}
+	if class.Prefix == "TLObject" || class.Prefix == "TLMethod" {
+		return false, ""
+	}
+	compileResult := regexp.MustCompile(`(return|=) *(.*?)\.TLdeserialize`)
+	for _, line := range class.Content {
+		if java.CheckMethodDec(line, "deserializeResponse") || java.CheckMethodDec(line, "deserializeResponseT") {
+			for _, resultLine := range class.Content {
+				if matches := compileResult.FindAllStringSubmatch(resultLine.Line, -1); len(matches) > 0 {
+					formattedType, err := java.FormatType(matches[0][2], true)
+					if err != nil {
+						return true, ""
+					}
+					return true, formattedType
+				}
+			}
+			return true, ""
+		}
+	}
+	return findInheritedMethodResult(class.ParentLink)
 }
