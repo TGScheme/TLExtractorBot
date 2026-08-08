@@ -33,7 +33,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	compileUnknownVectorType := regexp.MustCompile(`\(\((.*?)\).*get`)
 	dialogResolver := regexp.MustCompile(`DialogObject\..+\(`)
-	compileWireUsage := regexp.MustCompile(`(outputSerializedData\.write\w*\([^)]*\bthis\.(\w+)\b|inputSerializedData\.read\w*\([^)]*\)[^;]*\bthis\.(\w+)\s*=|this\.(\w+)\s*=\s*inputSerializedData\.read\w*\([^)]*\)|this\.(\w+)\.serializeToStream\(|this\.(\w+)\s*=\s*[^;]*\.TLdeserialize\(|Vector\.(?:de)?serialize\w*\([^)]*\bthis\.(\w+)\b|this\.(\w+)\s*=\s*(?:TLObject\.)?hasFlag\(|(?:TLObject\.)?setFlag\([^)]*\bthis\.(\w+)\b)`)
+	compileWireUsage := regexp.MustCompile(`(outputSerializedData\.write\w*\([^)]*\bthis\.(\w+)\b|inputSerializedData\.read\w*\([^)]*\)[^;]*\bthis\.(\w+)\s*=|this\.(\w+)\s*=\s*inputSerializedData\.read\w*\([^)]*\)|this\.(\w+)\.serializeToStream\(|this\.(\w+)\s*=\s*[^;]*\.TLdeserialize\(|Vector\.(?:de)?serialize\w*\([^;]*?\bthis\.(\w+)\s*\)\s*;|this\.(\w+)\s*=\s*Vector\.(?:de)?serialize\w*\(|this\.(\w+)\s*=\s*(?:TLObject\.)?hasFlag\(|(?:TLObject\.)?setFlag\([^)]*\bthis\.(\w+)\b)`)
 	for pos, line := range class.Content {
 		if dialogResolver.MatchString(line.Line) {
 			continue
