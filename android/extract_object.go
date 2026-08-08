@@ -97,7 +97,11 @@ func extractObject(class *javaTypes.RawClass) (types.TLInterface, error) {
 	}
 	if len(packageName) == 0 {
 		if isMethod {
-			packageName = "messages"
+			if containerNamespace := methodNamespaceFromPrefix(class.Prefix); len(containerNamespace) > 0 {
+				packageName = containerNamespace
+			} else {
+				packageName = "messages"
+			}
 		}
 	} else {
 		packageName = strings.ToLower(packageName)
@@ -135,4 +139,15 @@ func extractObject(class *javaTypes.RawClass) (types.TLInterface, error) {
 			Predicate: packageName + fixedName,
 		}, nil
 	}
+}
+
+func methodNamespaceFromPrefix(prefix string) string {
+	if prefix == "TLRPC" || prefix == "TL" {
+		return ""
+	}
+	trimmed := strings.TrimPrefix(prefix, "TL_")
+	if trimmed == prefix || len(trimmed) == 0 {
+		return ""
+	}
+	return strings.ToLower(trimmed)
 }

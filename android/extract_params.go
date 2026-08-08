@@ -33,6 +33,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	compileUnknownVectorType := regexp.MustCompile(`\(\((.*?)\).*get`)
 	dialogResolver := regexp.MustCompile(`DialogObject\..+\(`)
+	compileWireUsage := regexp.MustCompile(`(outputSerializedData\.write\w*\([^)]*\bthis\.(\w+)\b|inputSerializedData\.read\w*\([^)]*\)[^;]*\bthis\.(\w+)\s*=|this\.(\w+)\s*=\s*inputSerializedData\.read\w*\([^)]*\)|this\.(\w+)\.serializeToStream\(|this\.(\w+)\s*=\s*[^;]*\.TLdeserialize\(|Vector\.(?:de)?serialize\w*\([^)]*\bthis\.(\w+)\b|this\.(\w+)\s*=\s*(?:TLObject\.)?hasFlag\(|(?:TLObject\.)?setFlag\([^)]*\bthis\.(\w+)\b)`)
 	for pos, line := range class.Content {
 		if dialogResolver.MatchString(line.Line) {
 			continue
@@ -103,7 +104,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				var parameter schemeTypes.Parameter
 				var fromBuffer bool
 				parameter.Name = matches[0][2]
-				if matchedType := compileVarBuffer.FindAllStringSubmatch(line.Line, -1); len(matchedType) > 0 {
+				if matchedType := compileVarBuffer.FindAllStringSubmatch(line.Line, -1); len(matchedType) > 0 && !compileFlags.MatchString(line.Line) {
 					parameter.Type = java.ParseType(matchedType[0][6])
 					fromBuffer = true
 				} else if declaredType, ok := class.Vars[matches[0][2]]; ok {
@@ -111,7 +112,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				} else if compileVarFlag.MatchString(line.Line) {
 					parameter.Type = "int"
 				} else if compileVarBool.MatchString(line.Line) {
-					parameter.Type = "bool"
+					parameter.Type = "Bool"
 				} else if strings.HasPrefix(matches[0][1], "tLRPC") {
 					escapedVar := regexp.QuoteMeta(matches[0][1])
 					compileReverseName := regexp.MustCompile(fmt.Sprintf("(%s =|this\\.)(\\w+)(;| = %s)", escapedVar, escapedVar))
@@ -159,7 +160,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 					if flagValue == -1 {
 						return nil, consts.FlagNotFound
 					}
-					if !fromBuffer && parameter.Type == "Bool" {
+					if !fromBuffer && strings.EqualFold(parameter.Type, "Bool") {
 						parameter.Type = "true"
 					}
 
@@ -199,5 +200,32 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 			break
 		}
 	}
-	return params, nil
+	return filterNonWireParams(params, class.Content, declarationPos, compileWireUsage), nil
+}
+
+func filterNonWireParams(params []schemeTypes.Parameter, content []javaTypes.LineInfo, declarationPos int, wireUsage *regexp.Regexp) []schemeTypes.Parameter {
+	confirmed := make(map[string]bool)
+	for pos, line := range content {
+		if pos <= declarationPos {
+			continue
+		}
+		if pos > declarationPos && line.Nesting == 1 {
+			break
+		}
+		for _, match := range wireUsage.FindAllStringSubmatch(line.Line, -1) {
+			for _, name := range match[1:] {
+				if len(name) > 0 {
+					confirmed[fixParamName(name)] = true
+				}
+			}
+		}
+	}
+	var filtered []schemeTypes.Parameter
+	flagNameRe := regexp.MustCompile(`^flags[0-9]*$`)
+	for _, p := range params {
+		if flagNameRe.MatchString(p.Name) || confirmed[p.Name] {
+			filtered = append(filtered, p)
+		}
+	}
+	return filtered
 }
