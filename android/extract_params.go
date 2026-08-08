@@ -33,7 +33,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	compileUnknownVectorType := regexp.MustCompile(`\(\((.*?)\).*get`)
 	dialogResolver := regexp.MustCompile(`DialogObject\..+\(`)
-	compileWireUsage := regexp.MustCompile(`(outputSerializedData\.write\w*\([^)]*\bthis\.(\w+)\b|inputSerializedData\.read\w*\([^)]*\)[^;]*\bthis\.(\w+)\s*=|this\.(\w+)\s*=\s*inputSerializedData\.read\w*\([^)]*\)|this\.(\w+)\.serializeToStream\(|this\.(\w+)\s*=\s*[^;]*\.TLdeserialize\(|Vector\.(?:de)?serialize\w*\([^;]*?\bthis\.(\w+)\s*\)\s*;|this\.(\w+)\s*=\s*Vector\.(?:de)?serialize\w*\(|this\.(\w+)\s*=\s*(?:TLObject\.)?hasFlag\(|(?:TLObject\.)?setFlag\([^)]*\bthis\.(\w+)\b)`)
+	compileWireUsage := regexp.MustCompile(`(outputSerializedData\.write\w*\(this\.\w+\.(\w+)\)|outputSerializedData\.write\w*\([^)]*\bthis\.(\w+)\b|inputSerializedData\.read\w*\([^)]*\)[^;]*\bthis\.(\w+)\s*=|this\.(\w+)\s*=\s*inputSerializedData\.read\w*\([^)]*\)|this\.(\w+)\.serializeToStream\(|this\.(\w+)\s*=\s*[^;]*\.TLdeserialize\(|Vector\.(?:de)?serialize\w*\([^;]*?\bthis\.(\w+)\s*\)\s*;|this\.(\w+)\s*=\s*Vector\.(?:de)?serialize\w*\(|this\.(\w+)\s*=\s*(?:TLObject\.)?hasFlag\(|(?:TLObject\.)?setFlag\([^)]*\bthis\.(\w+)\b)`)
 	for pos, line := range class.Content {
 		if dialogResolver.MatchString(line.Line) {
 			continue
@@ -200,7 +200,39 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 			break
 		}
 	}
+	params = append(params, findTwoLevelWireFields(params, class.Content, declarationPos)...)
 	return filterNonWireParams(params, class.Content, declarationPos, compileWireUsage), nil
+}
+
+func findTwoLevelWireFields(params []schemeTypes.Parameter, content []javaTypes.LineInfo, declarationPos int) []schemeTypes.Parameter {
+	existing := make(map[string]bool)
+	for _, p := range params {
+		existing[p.Name] = true
+	}
+	compileTwoLevelWrite := regexp.MustCompile(`outputSerializedData\.write(Int32|Int64|Bool|String|ByteArray|Double)\(this\.\w+\.(\w+)\)`)
+	writeTypeToTL := map[string]string{
+		"Int32": "int", "Int64": "long", "Bool": "Bool", "String": "string", "ByteArray": "bytes", "Double": "double",
+	}
+	var found []schemeTypes.Parameter
+	seen := make(map[string]bool)
+	for pos, line := range content {
+		if pos <= declarationPos {
+			continue
+		}
+		if pos > declarationPos && line.Nesting == 1 {
+			break
+		}
+		matches := compileTwoLevelWrite.FindAllStringSubmatch(line.Line, -1)
+		for _, m := range matches {
+			name := fixParamName(m[2])
+			if existing[name] || seen[name] {
+				continue
+			}
+			seen[name] = true
+			found = append(found, schemeTypes.Parameter{Name: name, Type: writeTypeToTL[m[1]]})
+		}
+	}
+	return found
 }
 
 func filterNonWireParams(params []schemeTypes.Parameter, content []javaTypes.LineInfo, declarationPos int, wireUsage *regexp.Regexp) []schemeTypes.Parameter {
