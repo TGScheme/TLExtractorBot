@@ -23,7 +23,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	var flagName string
 	flagValue := -1
 	//fastCheck := regexp.MustCompile(`this\.\w+`)
-	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. )]+)( \?|\.\w+Value\(\)|\.add|\.get|\.serialize|\)| !| = (Boolean\.valueOf\(abstractSerializedData|abstractSerializedData|inputSerializedData|i[0-9+]*;|read|TLdeserialize;|Vector\.deserialize|\([^(]|\w+\$\w+\.\w+deserialize))\)?`)
+	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. )]+)( \?|\.\w+Value\(\)|\.add|\.get|\.serialize|\)| !| = (Boolean\.valueOf\(abstractSerializedData|abstractSerializedData|inputSerializedData|i[0-9+]*;|read|TLdeserialize;|Vector\.deserialize|\([^(]|\w+(\$\w+)?\.\w+deserialize))\)?`)
 	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?(abstractSerializedData|inputSerializedData)[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
@@ -33,7 +33,6 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	compileUnVector := regexp.MustCompile(`Vector<(.*?)>`)
 	compileUnknownVectorType := regexp.MustCompile(`\(\((.*?)\).*get`)
 	dialogResolver := regexp.MustCompile(`DialogObject\..+\(`)
-	compileWireUsage := regexp.MustCompile(`(outputSerializedData\.write\w*\(this\.\w+\.(\w+)\)|outputSerializedData\.write\w*\([^)]*\bthis\.(\w+)\b|inputSerializedData\.read\w*\([^)]*\)[^;]*\bthis\.(\w+)\s*=|this\.(\w+)\s*=\s*inputSerializedData\.read\w*\([^)]*\)|this\.(\w+)\.serializeToStream\(|this\.(\w+)\s*=\s*[^;]*\.TLdeserialize\(|Vector\.(?:de)?serialize\w*\([^;]*?\bthis\.(\w+)\s*\)\s*;|this\.(\w+)\s*=\s*Vector\.(?:de)?serialize\w*\(|this\.(\w+)\s*=\s*(?:TLObject\.)?hasFlag\(|(?:TLObject\.)?setFlag\([^)]*\bthis\.(\w+)\b)`)
 	for pos, line := range class.Content {
 		if dialogResolver.MatchString(line.Line) {
 			continue
@@ -101,6 +100,15 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				forNesting = line.Nesting - 1
 			}
 			if matches := compileVars.FindAllStringSubmatch(line.Line, -1); len(matches) > 0 {
+				// Skip matches where the captured field name is a method call (e.g. "serializeToStream(...)")
+				fieldName := matches[0][2]
+				if strings.Contains(fieldName, "(") || strings.Contains(fieldName, "$") {
+					continue
+				}
+				// Skip comparison matches ("this.X != ...") unless inside a flag context
+				if strings.HasPrefix(matches[0][3], " !") && !openedFlags {
+					continue
+				}
 				var parameter schemeTypes.Parameter
 				var fromBuffer bool
 				parameter.Name = matches[0][2]
@@ -200,64 +208,5 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 			break
 		}
 	}
-	params = append(params, findTwoLevelWireFields(params, class.Content, declarationPos)...)
-	return filterNonWireParams(params, class.Content, declarationPos, compileWireUsage), nil
-}
-
-func findTwoLevelWireFields(params []schemeTypes.Parameter, content []javaTypes.LineInfo, declarationPos int) []schemeTypes.Parameter {
-	existing := make(map[string]bool)
-	for _, p := range params {
-		existing[p.Name] = true
-	}
-	compileTwoLevelWrite := regexp.MustCompile(`outputSerializedData\.write(Int32|Int64|Bool|String|ByteArray|Double)\(this\.\w+\.(\w+)\)`)
-	writeTypeToTL := map[string]string{
-		"Int32": "int", "Int64": "long", "Bool": "Bool", "String": "string", "ByteArray": "bytes", "Double": "double",
-	}
-	var found []schemeTypes.Parameter
-	seen := make(map[string]bool)
-	for pos, line := range content {
-		if pos <= declarationPos {
-			continue
-		}
-		if pos > declarationPos && line.Nesting == 1 {
-			break
-		}
-		matches := compileTwoLevelWrite.FindAllStringSubmatch(line.Line, -1)
-		for _, m := range matches {
-			name := fixParamName(m[2])
-			if existing[name] || seen[name] {
-				continue
-			}
-			seen[name] = true
-			found = append(found, schemeTypes.Parameter{Name: name, Type: writeTypeToTL[m[1]]})
-		}
-	}
-	return found
-}
-
-func filterNonWireParams(params []schemeTypes.Parameter, content []javaTypes.LineInfo, declarationPos int, wireUsage *regexp.Regexp) []schemeTypes.Parameter {
-	confirmed := make(map[string]bool)
-	for pos, line := range content {
-		if pos <= declarationPos {
-			continue
-		}
-		if pos > declarationPos && line.Nesting == 1 {
-			break
-		}
-		for _, match := range wireUsage.FindAllStringSubmatch(line.Line, -1) {
-			for _, name := range match[1:] {
-				if len(name) > 0 {
-					confirmed[fixParamName(name)] = true
-				}
-			}
-		}
-	}
-	var filtered []schemeTypes.Parameter
-	flagNameRe := regexp.MustCompile(`^flags[0-9]*$`)
-	for _, p := range params {
-		if flagNameRe.MatchString(p.Name) || confirmed[p.Name] {
-			filtered = append(filtered, p)
-		}
-	}
-	return filtered
+	return params, nil
 }
