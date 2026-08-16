@@ -40,6 +40,8 @@ func SplitClasses(className, content string, replaceClasses []string) map[string
 		classNames = append(classNames, strings.Split(name, "$")[1])
 	}
 	namesJoined := regexp.MustCompile(fmt.Sprintf(`(\b)(%s)(\b)`, strings.Join(classNames, "|")))
+	thisFieldAccess := regexp.MustCompile(`this\.\w+$`)
+	fieldDeclaration := regexp.MustCompile(`^public [\w<>.\[\]$]+ (\w+)( =.*)?;$`)
 	var dynamicRegex *regexp.Regexp
 	replaceNames := make(map[string]string)
 	appendName := func(base, name string) {
@@ -51,8 +53,29 @@ func SplitClasses(className, content string, replaceClasses []string) map[string
 		replaceNames = make(map[string]string)
 		for i, line := range classLines {
 			line = compileParentClasses.ReplaceAllString(line, `$1$$$2`)
-			if namesJoined.MatchString(line) {
-				line = namesJoined.ReplaceAllString(line, fmt.Sprintf("${1}%s$$$2$3", className))
+			declaredFieldName := ""
+			if declMatches := fieldDeclaration.FindStringSubmatch(strings.TrimSpace(line)); declMatches != nil {
+				declaredFieldName = declMatches[1]
+			}
+			if idxs := namesJoined.FindAllStringSubmatchIndex(line, -1); len(idxs) > 0 {
+				var b strings.Builder
+				lastEnd := 0
+				for _, idx := range idxs {
+					matchStart, matchEnd := idx[0], idx[1]
+					matchedName := line[idx[4]:idx[5]]
+					if thisFieldAccess.MatchString(line[:matchEnd]) || matchedName == declaredFieldName {
+						continue
+					}
+					b.WriteString(line[lastEnd:matchStart])
+					b.WriteString(line[idx[2]:idx[3]])
+					b.WriteString(className)
+					b.WriteString("$")
+					b.WriteString(line[idx[4]:idx[5]])
+					b.WriteString(line[idx[6]:idx[7]])
+					lastEnd = matchEnd
+				}
+				b.WriteString(line[lastEnd:])
+				line = b.String()
 			}
 			if matches := compileClassInitializer2.FindAllStringSubmatch(line, -1); len(matches) > 0 {
 				appendName(matches[0][1], matches[0][2])

@@ -27,15 +27,20 @@ func ParseClass(name, content string) (*types.RawClass, error) {
 	tlName.Content = parseLines(content)
 	for _, line := range tlName.Content {
 		if className := GetParentClass(line); len(className) > 0 {
-			tlName.ParentClass, err = FormatType(className, false)
+			parentPrefix := ""
+			parentName := className
+			if parentData := strings.Split(className, "$"); len(parentData) > 1 {
+				parentPrefix = parentData[0]
+				parentName = parentData[1]
+			} else if parentData := strings.Split(className, "."); len(parentData) > 1 {
+				parentPrefix = parentData[0]
+				parentName = parentData[len(parentData)-1]
+			}
+			tlName.ParentClass, err = FormatType(parentName, false)
 			if err != nil {
 				return nil, err
 			}
-			if parentData := strings.Split(className, "$"); len(parentData) > 1 {
-				tlName.ParentPrefix = parentData[0]
-			} else {
-				tlName.ParentPrefix = ""
-			}
+			tlName.ParentPrefix = parentPrefix
 		}
 	}
 	return &tlName, nil

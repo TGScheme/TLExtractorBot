@@ -23,7 +23,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 	var flagName string
 	flagValue := -1
 	//fastCheck := regexp.MustCompile(`this\.\w+`)
-	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. )]+)( \?|\.\w+Value\(\)|\.add|\.get|\.serialize|\)| !| = (Boolean\.valueOf\(abstractSerializedData|abstractSerializedData|inputSerializedData|i[0-9+]*;|read|TLdeserialize;|Vector\.deserialize|\([^(]|\w+\$\w+\.\w+deserialize))\)?`)
+	compileVars := regexp.MustCompile(`\(?(this|tLRPC[^.]+)\.([^. )]+)( \?|\.\w+Value\(\)|\.add|\.get|\.serialize|\)| !| = (Boolean\.valueOf\(abstractSerializedData|abstractSerializedData|inputSerializedData|i[0-9+]*;|read|TLdeserialize;|Vector\.deserialize|\([^(]|\w+(\$\w+)?\.\w+deserialize))\)?`)
 	compileVarBuffer := regexp.MustCompile(`^(this|tLRPC\$[^.]+)*\.*\w* *=* *((Boolean\.valueOf\()?(abstractSerializedData|inputSerializedData)[0-9]*|)?(\.write|\.read|TLRPC\$)([^(.]+).*?\);`)
 	compileVarFlag := regexp.MustCompile(`this\.flags[0-9]* = readInt[0-9]+;`)
 	compileVarBool := regexp.MustCompile(`this\.\w+ = \([^)]*readInt32[0-9]*[^)]*\)`)
@@ -100,10 +100,19 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				forNesting = line.Nesting - 1
 			}
 			if matches := compileVars.FindAllStringSubmatch(line.Line, -1); len(matches) > 0 {
+				// Skip matches where the captured field name is a method call (e.g. "serializeToStream(...)")
+				fieldName := matches[0][2]
+				if strings.Contains(fieldName, "(") || strings.Contains(fieldName, "$") {
+					continue
+				}
+				// Skip comparison matches ("this.X != ...") unless inside a flag context
+				if strings.HasPrefix(matches[0][3], " !") && !openedFlags {
+					continue
+				}
 				var parameter schemeTypes.Parameter
 				var fromBuffer bool
 				parameter.Name = matches[0][2]
-				if matchedType := compileVarBuffer.FindAllStringSubmatch(line.Line, -1); len(matchedType) > 0 {
+				if matchedType := compileVarBuffer.FindAllStringSubmatch(line.Line, -1); len(matchedType) > 0 && !compileFlags.MatchString(line.Line) {
 					parameter.Type = java.ParseType(matchedType[0][6])
 					fromBuffer = true
 				} else if declaredType, ok := class.Vars[matches[0][2]]; ok {
@@ -111,7 +120,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 				} else if compileVarFlag.MatchString(line.Line) {
 					parameter.Type = "int"
 				} else if compileVarBool.MatchString(line.Line) {
-					parameter.Type = "bool"
+					parameter.Type = "Bool"
 				} else if strings.HasPrefix(matches[0][1], "tLRPC") {
 					escapedVar := regexp.QuoteMeta(matches[0][1])
 					compileReverseName := regexp.MustCompile(fmt.Sprintf("(%s =|this\\.)(\\w+)(;| = %s)", escapedVar, escapedVar))
@@ -159,7 +168,7 @@ func extractParams(class *javaTypes.RawClass, declarationPos int) ([]schemeTypes
 					if flagValue == -1 {
 						return nil, consts.FlagNotFound
 					}
-					if !fromBuffer && parameter.Type == "Bool" {
+					if !fromBuffer && strings.EqualFold(parameter.Type, "Bool") {
 						parameter.Type = "true"
 					}
 

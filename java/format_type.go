@@ -22,6 +22,13 @@ func FormatType(name string, clearTLName bool) (string, error) {
 	}
 	fileName := strings.Split(name, "$")
 	name = fileName[len(fileName)-1]
+	if !strings.ContainsAny(name, "<>") {
+		if dotParts := strings.SplitN(name, ".", 2); len(dotParts) > 1 && len(dotParts[0]) > 0 {
+			if first := dotParts[0][0]; first >= 'A' && first <= 'Z' {
+				name = dotParts[1]
+			}
+		}
+	}
 	if clearTLName {
 		for _, prefix := range []string{"TL", "Tl", "_"} {
 			name = strings.TrimPrefix(name, prefix)
