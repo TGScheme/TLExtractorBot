@@ -3,6 +3,7 @@ package android
 import (
 	"TLExtractor/consts"
 	"TLExtractor/environment"
+	"TLExtractor/java"
 	"os"
 	"path"
 	"regexp"
@@ -11,7 +12,7 @@ import (
 
 func extractLayer() (int, error) {
 	var fileName string
-	if isLegacyScheme() {
+	if !java.IsUnified() {
 		fileName = "TLRPC$Message.java"
 	} else {
 		fileName = "TLRPC.java"

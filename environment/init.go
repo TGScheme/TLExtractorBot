@@ -51,4 +51,5 @@ func init() {
 		gologging.Fatal(err)
 	}
 	_ = json.Unmarshal(file, &CredentialsStorage)
+	LocalStorage.UpstreamLayer = nil
 }

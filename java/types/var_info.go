@@ -1,7 +1,8 @@
 package types
 
-type VarInfo struct {
-	Name  string
-	Value string
-	Type  string
+type AstVar struct {
+	Type         string
+	ArrayNesting int
+	Source       string
+	Value        string
 }

@@ -8,8 +8,8 @@ import (
 )
 
 func MergeParameters(old, new []types.Parameter, isSameConstructor bool) []types.Parameter {
-	if len(old) == len(new) && isSameConstructor {
-		return old
+	if isSameConstructor {
+		return SortFlagBools(appendUnknownFlagBools(old, new))
 	}
 	var mergedList []types.Parameter
 	var keys, addableKeys, availableFlags []string
@@ -57,4 +57,33 @@ func MergeParameters(old, new []types.Parameter, isSameConstructor bool) []types
 		}
 	}
 	return mergedList
+}
+
+func appendUnknownFlagBools(old, new []types.Parameter) []types.Parameter {
+	known := make(map[string]bool, len(old))
+	declaredFlags := make(map[string]bool)
+	usedBits := make(map[string]bool)
+	for _, p := range old {
+		known[p.Name] = true
+		if p.Type == "#" {
+			declaredFlags[p.Name] = true
+		}
+		if match := flagUseRgx.FindStringSubmatch(p.Type); match != nil {
+			usedBits[match[1]+"."+match[2]] = true
+		}
+	}
+	merged := slices.Clone(old)
+	for _, p := range new {
+		match := flagBoolRgx.FindStringSubmatch(p.Type)
+		if match == nil || known[p.Name] || !declaredFlags[match[1]] {
+			continue
+		}
+
+		if usedBits[match[1]+"."+match[2]] {
+			continue
+		}
+		known[p.Name] = true
+		merged = append(merged, p)
+	}
+	return merged
 }

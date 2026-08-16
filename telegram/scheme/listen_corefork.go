@@ -6,6 +6,7 @@ import (
 	"TLExtractor/telegram/bot"
 	"TLExtractor/telegram/scheme/types"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"maps"
 	"regexp"
@@ -29,92 +30,12 @@ func ListenCoreFork() {
 	go func() {
 		var isInitialized bool
 		for {
-			res, err := http.ExecuteRequest(
-				fmt.Sprintf("%s/schema", consts.MainReleasedTL),
-			)
+			latestVersion, forceNoUpdate, err := Client.refreshReleasedLayers()
 			if err != nil {
 				continue
 			}
-			var versionsAvailable []int
-			if rgx := regexp.MustCompile(`<li><a href="\?layer=([0-9]+)">`).FindAllStringSubmatch(res.String(), -1); len(rgx) > 0 {
-				for _, v := range rgx {
-					parsedLayer, _ := strconv.Atoi(v[1])
-					versionsAvailable = append(versionsAvailable, parsedLayer)
-				}
-			}
-			versionsAvailable = versionsAvailable[1:]
-			startLayer := versionsAvailable[0]
-			if len(versionsAvailable) == 0 {
-				gologging.Fatal("Failed to get the latest version of the TL scheme")
-			}
-			latestVersion := versionsAvailable[len(versionsAvailable)-1]
-			var forceNoUpdate bool
-			if environment.LocalStorage.ReleasedLayers == nil {
-				environment.LocalStorage.ReleasedLayers = make(map[int]types.ReleasedLayer)
-				forceNoUpdate = true
-			} else {
-				layers := slices.Collect(maps.Keys(environment.LocalStorage.ReleasedLayers))
-				slices.Sort(layers)
-				startLayer = layers[len(layers)-1]
-			}
-			if startLayer < latestVersion {
-				for _, layer := range versionsAvailable {
-					if layer < startLayer {
-						continue
-					}
-					tlRes, err := http.ExecuteRequest(
-						fmt.Sprintf("%s/schema/json", consts.MainReleasedTL),
-						http.Cookies(map[string]string{
-							"stel_dev_layer": strconv.Itoa(layer),
-						}),
-					)
-					if err != nil {
-						gologging.Fatal(err)
-					}
-					var releasedLayer types.ReleasedLayer
-					err = json.Unmarshal(tlRes.Body, &releasedLayer)
-					if err != nil {
-						gologging.Fatal(err)
-					}
-					environment.LocalStorage.ReleasedLayers[layer] = releasedLayer
-				}
-			}
-			environment.LocalStorage.Commit()
 			Client.syncDep.Lock()
-			Client.removedConstructors = make([]string, 0)
-			checkRemovedConstructors := func(old, new []types.ReleasedConstructor, layer int) {
-				oldSet := make(map[string]int, len(old))
-				newSet := make(map[string]int, len(new))
-
-				for _, v := range old {
-					oldSet[ParseConstructor(v.ID)] = 1
-				}
-				for _, v := range new {
-					newSet[ParseConstructor(v.ID)] = 1
-				}
-
-				for v := range oldSet {
-					if _, ok := newSet[v]; !ok {
-						Client.removedConstructors = append(Client.removedConstructors, v)
-					}
-				}
-
-				tmp := Client.removedConstructors[:0]
-				for _, v := range Client.removedConstructors {
-					if _, ok := newSet[v]; !ok {
-						tmp = append(tmp, v)
-					}
-				}
-				Client.removedConstructors = tmp
-			}
-			layers := slices.Collect(maps.Keys(environment.LocalStorage.ReleasedLayers))
-			slices.Sort(layers)
-			for i := 1; i < len(layers); i++ {
-				previousLayer := environment.LocalStorage.ReleasedLayers[layers[i-1]]
-				currentLayer := environment.LocalStorage.ReleasedLayers[layers[i]]
-				checkRemovedConstructors(previousLayer.Constructors, currentLayer.Constructors, i)
-				checkRemovedConstructors(previousLayer.Methods, currentLayer.Methods, i)
-			}
+			Client.computeRemovedConstructors()
 			Client.syncDep.Unlock()
 
 			if latestVersion > environment.LocalStorage.LastCoreForkLayer {
@@ -122,7 +43,7 @@ func ListenCoreFork() {
 				environment.LocalStorage.Commit()
 				if !forceNoUpdate {
 					changelogPage := fmt.Sprintf("%s/api/layers", consts.MainReleasedTL)
-					res, err = http.ExecuteRequest(changelogPage)
+					res, err := http.ExecuteRequest(changelogPage)
 					if err != nil {
 						gologging.Fatal(err)
 					}
@@ -153,7 +74,7 @@ func ListenCoreFork() {
 					if len(descriptionText) == 0 {
 						descriptionText = "• No changelog provided by Telegram MTProto developers."
 					}
-					err := bot.Client.DirectMessage(
+					err = bot.Client.DirectMessage(
 						environment.FormatVar(
 							"corefork_update",
 							map[string]any{
@@ -189,4 +110,55 @@ func ListenCoreFork() {
 		}
 	}()
 	<-chanWait
+}
+
+func (ctx *context) refreshReleasedLayers() (latestVersion int, forceNoUpdate bool, err error) {
+	res, err := http.ExecuteRequest(fmt.Sprintf("%s/schema", consts.MainReleasedTL))
+	if err != nil {
+		return 0, false, err
+	}
+	var versionsAvailable []int
+	if rgx := regexp.MustCompile(`<li><a href="\?layer=([0-9]+)">`).FindAllStringSubmatch(res.String(), -1); len(rgx) > 0 {
+		for _, v := range rgx {
+			parsedLayer, _ := strconv.Atoi(v[1])
+			versionsAvailable = append(versionsAvailable, parsedLayer)
+		}
+	}
+	if len(versionsAvailable) == 0 {
+		return 0, false, errors.New("failed to get the latest version of the TL scheme")
+	}
+	versionsAvailable = versionsAvailable[1:]
+	startLayer := versionsAvailable[0]
+	if environment.LocalStorage.ReleasedLayers == nil {
+		environment.LocalStorage.ReleasedLayers = make(map[int]types.ReleasedLayer)
+		forceNoUpdate = true
+	} else {
+		layers := slices.Collect(maps.Keys(environment.LocalStorage.ReleasedLayers))
+		slices.Sort(layers)
+		startLayer = layers[len(layers)-1]
+	}
+	latestVersion = versionsAvailable[len(versionsAvailable)-1]
+	if startLayer < latestVersion {
+		for _, layer := range versionsAvailable {
+			if layer < startLayer {
+				continue
+			}
+			tlRes, reqErr := http.ExecuteRequest(
+				fmt.Sprintf("%s/schema/json", consts.MainReleasedTL),
+				http.Cookies(map[string]string{
+					"stel_dev_layer": strconv.Itoa(layer),
+				}),
+			)
+			if reqErr != nil {
+				return 0, false, reqErr
+			}
+			var releasedLayer types.ReleasedLayer
+			if reqErr = json.Unmarshal(tlRes.Body, &releasedLayer); reqErr != nil {
+				return 0, false, reqErr
+			}
+			environment.LocalStorage.ReleasedLayers[layer] = releasedLayer
+		}
+	}
+	environment.LocalStorage.Commit()
+	return latestVersion, forceNoUpdate, nil
 }

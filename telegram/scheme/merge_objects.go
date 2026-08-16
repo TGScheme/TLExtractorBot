@@ -5,9 +5,26 @@ import (
 	"TLExtractor/telegram/scheme/types"
 	"TLExtractor/utils"
 	"slices"
+	"strings"
 )
 
-func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs types.PatchOS, remoteOrder bool) []T {
+func resultLeaf(s string) string {
+	if i := strings.LastIndex(s, "."); i >= 0 {
+		s = s[i+1:]
+	}
+	return s
+}
+
+func normalizeResult(s string) string {
+	return strings.ToLower(resultLeaf(s))
+}
+
+func isAbstractResult(s string) bool {
+	leaf := resultLeaf(s)
+	return leaf != "" && leaf[0] >= 'A' && leaf[0] <= 'Z'
+}
+
+func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs types.PatchOS, remoteOrder bool, removed map[string]bool) []T {
 	var orderObjects []string
 	objects := make(map[string]T)
 	correctNames := make(map[string]string)
@@ -50,6 +67,9 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 					PatchedConstructor: oldInterface.Constructor(),
 				}
 				continue
+			} else if oldInterface.Constructor() != newInterface.Constructor() &&
+				removed[ParseConstructor(newInterface.Constructor())] {
+				continue
 			}
 			objects[constructor].SetParameters(
 				utils.MergeParameters(
@@ -59,6 +79,12 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 				),
 			)
 			objects[constructor].SetConstructor(newInterface.Constructor())
+
+			if newResult := newInterface.Result(); newResult != "" && newInterface.IsMethod() &&
+				isAbstractResult(newResult) && normalizeResult(newResult) != "updates" &&
+				normalizeResult(newResult) != normalizeResult(oldInterface.Result()) {
+				objects[constructor].SetResult(newResult)
+			}
 			if !remoteOrder && !slices.Contains(orderObjects, constructor) {
 				orderObjects = append(orderObjects, constructor)
 			}
@@ -74,11 +100,13 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patchOs t
 		if newName, ok := correctNames[constructor.Result()]; ok {
 			constructor.SetResult(newName)
 		}
-		for _, parameter := range constructor.Parameters() {
-			if newName, ok := correctNames[parameter.Type]; ok {
-				parameter.Type = newName
+		params := constructor.Parameters()
+		for i := range params {
+			if newName, ok := correctNames[params[i].Type]; ok {
+				params[i].Type = newName
 			}
 		}
+		constructor.SetParameters(params)
 	}
 	var orderedObjects []T
 	for _, constructor := range orderObjects {

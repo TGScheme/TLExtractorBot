@@ -1,4 +1,4 @@
-package android
+package java
 
 import (
 	"TLExtractor/consts"
@@ -7,8 +7,8 @@ import (
 	"path"
 )
 
-func isLegacyScheme() bool {
+func IsUnified() bool {
 	tlrpcFile := path.Join(environment.EnvFolder, consts.TempSources, "TLRPC.java")
 	_, err := os.Stat(tlrpcFile)
-	return err != nil
+	return err == nil
 }

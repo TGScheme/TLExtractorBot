@@ -75,18 +75,14 @@ var (
 	TDLibVersionRgx     = regexp.MustCompile(`project\(TDLib\s+VERSION\s+([0-9.]+)`)
 	TDLibLayerRgx       = regexp.MustCompile(`constexpr int32 MTPROTO_LAYER = ([0-9]+);`)
 	TDeskVersionNameRgx = regexp.MustCompile(`AppVersionStr *?= *?"([0-9.]+)";`)
+	DigitVersionRgx     = regexp.MustCompile(`^\S+[^0-9p][0-9]+$`)
 	OldLayers           = []*regexp.Regexp{
 		regexp.MustCompile(`Old[0-9]*$`),
 		regexp.MustCompile(`ToBeDeprecated$`),
-		regexp.MustCompile(`^\S+[^0-9p][0-9]+$`),
-		regexp.MustCompile(`^TL\.FileEncryptedLocation$`),
-		regexp.MustCompile(`^TL\.DocumentEncrypted$`),
-		regexp.MustCompile(`ToDelete$`),
-		regexp.MustCompile(`^TL\.MessageEncryptedAction$`),
-		regexp.MustCompile(`^TL_message\.Secret$`),
-		regexp.MustCompile(`^secret$`),
+		regexp.MustCompile(`(?i)ToDelete$`),
 		regexp.MustCompile(`Layer[0-9]+$`),
-		regexp.MustCompile(`^TL_messages\.SendEncryptedMultiMedia$`),
+		regexp.MustCompile(`(?i)_legacy$`),
+		regexp.MustCompile(`(?i)^TL_contactLink`),
 	}
 	BrokenNames = map[*regexp.Regexp]string{
 		regexp.MustCompile(`^((?P<first>is_admin)|is_(?P<second>.*))$`): "$first$second",
@@ -97,10 +93,6 @@ var (
 		regexp.MustCompile(`^via_invite$`):                              "via_request",
 		regexp.MustCompile(`^_`):                                        "",
 		regexp.MustCompile(`^doc$`):                                     "id",
-	}
-	BrokenTypes = map[*regexp.Regexp]string{
-		regexp.MustCompile(`^InputChatlistDialogFilter$`): "InputChatlist",
-		regexp.MustCompile(`PaymentSavedCredentialsCard`): "PaymentSavedCredentials",
 	}
 	UnusedTypes = []string{
 		"ipPortSecret",
@@ -116,18 +108,62 @@ var SupportedBotAliases = []string{
 	"!",
 }
 
-// MtProto Errors
-var (
-	ConstructorNotFound = errors.New("constructor not found")
-	NotTLRPC            = errors.New("not TLRPC")
-	OldLayer            = errors.New("old layer")
-	UnknownType         = errors.New("unknown type")
-	FlagNotFound        = errors.New("flag not found")
-)
-
 // Generic Errors
 var (
 	PackageNotFound = errors.New("package not found")
 	JadxNotFound    = errors.New("jadx not found")
 	InvalidToken    = errors.New("invalid token")
+)
+
+// Ast Queries
+const (
+	JavaClassQuery = `
+		(class_declaration
+			(identifier)
+			(superclass
+				[
+					(type_identifier)
+					(scoped_type_identifier)
+				]
+			)
+		) @class_declaration
+	`
+	JavaClassWithNameQuery = `
+		(class_declaration
+			((identifier) @class_name)
+	    	(superclass
+				[
+					(type_identifier)
+					(scoped_type_identifier)
+					(generic_type)
+				] @class_extends
+			)
+	    ) @class_declaration
+	`
+	ExtractJavaVars = `
+		(field_declaration
+        	([
+				(array_type)
+                (integral_type)
+				(floating_point_type)
+				(boolean_type)
+				(generic_type)
+				(type_identifier)
+				(scoped_type_identifier)
+			] @var_type)
+            (variable_declarator
+				((identifier) @var_name)
+                ([
+					(decimal_integer_literal)
+                    (unary_expression)
+				] @var_value)?
+            )
+        )
+	`
+	ExtractJavaFunctions = `
+		(method_declaration
+			((identifier) @function_name)
+            ((block) @function_body)
+		) @function_declaration
+	`
 )
