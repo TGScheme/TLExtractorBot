@@ -17,6 +17,7 @@ type Client struct {
 	startedAt time.Time
 
 	statusMessageID int64
+	statusText      string
 }
 
 func New(cfg *config.Config) (*Client, error) {

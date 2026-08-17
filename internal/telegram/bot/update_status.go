@@ -17,8 +17,12 @@ func (ctx *Client) UpdateStatus(text string, withNotification, isFinal bool, key
 			return err
 		}
 		ctx.statusMessageID = 0
+		ctx.statusText = ""
 	} else {
 		if ctx.statusMessageID != 0 {
+			if !isFinal && text == ctx.statusText {
+				return nil
+			}
 			if isFinal {
 				_, err := ctx.client.Invoke(
 					&methods.DeleteMessage{
@@ -40,6 +44,7 @@ func (ctx *Client) UpdateStatus(text string, withNotification, isFinal bool, key
 					},
 				)
 				if err == nil {
+					ctx.statusText = text
 					return nil
 				}
 			}
@@ -61,6 +66,9 @@ func (ctx *Client) UpdateStatus(text string, withNotification, isFinal bool, key
 		}
 		if !isFinal {
 			ctx.statusMessageID = res.Result.(types.Message).MessageID
+			ctx.statusText = text
+		} else {
+			ctx.statusText = ""
 		}
 	}
 	return nil
