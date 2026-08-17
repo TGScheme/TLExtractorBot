@@ -1,0 +1,16 @@
+root = "."
+tmp_dir = ".docker_build"
+
+[build]
+pre_cmd = ["go run ./cmd/sqlgen/"]
+cmd = "go build -o .docker_build/bot ./cmd/bot"
+bin = "bot"
+full_bin = ".docker_build/bot"
+include_ext = ["go", "sql", "tpl", "gohtml"]
+exclude_regex = ["_gen\\.go", "sqlc\\.json"]
+
+[log]
+time = true
+
+[run]
+cmd = ".docker_build/bot"

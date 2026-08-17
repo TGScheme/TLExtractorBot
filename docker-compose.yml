@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: tlextractor-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  valkey:
+    image: valkey/valkey:9-alpine
+    container_name: tlextractor-valkey
+    restart: unless-stopped
+    volumes:
+      - valkey_data:/data
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tlextractor-bot
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      valkey:
+        condition: service_started
+    volumes:
+      - work_data:/var/lib/tlextractor
+      - ./secrets/github.pem:/run/secrets/github.pem:ro
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      BOT_TOKEN: ${BOT_TOKEN}
+      CHANNEL_ID: ${CHANNEL_ID}
+      LOG_CHAT_ID: ${LOG_CHAT_ID}
+      BACKUP_CHAT_ID: ${BACKUP_CHAT_ID}
+      TELEGRAPH_TOKEN: ${TELEGRAPH_TOKEN}
+      GITHUB_APP_ID: ${GITHUB_APP_ID}
+      GITHUB_INSTALLATION_ID: ${GITHUB_INSTALLATION_ID}
+      GEMINI_TOKEN: ${GEMINI_TOKEN}
+      SCHEME_REPO_OWNER: ${SCHEME_REPO_OWNER}
+      SCHEME_REPO_NAME: ${SCHEME_REPO_NAME}
+
+volumes:
+  pg_data:
+  valkey_data:
+  work_data:

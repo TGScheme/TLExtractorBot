@@ -1,0 +1,34 @@
+package config
+
+type Config struct {
+	Debug bool
+
+	BotToken       string
+	ChannelID      int64
+	LogChatID      int64
+	BackupChatID   int64
+	TelegraphToken string
+
+	GitHubAppID          int64
+	GitHubInstallationID int64
+	GitHubPrivateKeyPath string
+
+	GeminiToken string
+
+	SchemeRepoOwner string
+	SchemeRepoName  string
+
+	BannerURL string
+
+	WorkDir string
+	JadxJar string
+	JavaBin string
+
+	DBHost     string
+	DBPort     int
+	DBUser     string
+	DBPassword string
+	DBName     string
+
+	ValkeyAddr string
+}

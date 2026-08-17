@@ -1,0 +1,10 @@
+FROM golang:1.26-alpine
+RUN apk add --no-cache git gcc musl-dev openjdk21-jre-headless postgresql-client curl unzip \
+ && go install github.com/air-verse/air@latest \
+ && go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest \
+ && curl -sSL -o /tmp/jadx.zip https://github.com/skylot/jadx/releases/download/v1.5.0/jadx-1.5.0.zip \
+ && mkdir -p /opt/jadx \
+ && unzip -q /tmp/jadx.zip -d /opt/jadx \
+ && rm /tmp/jadx.zip
+WORKDIR /app
+CMD ["air"]

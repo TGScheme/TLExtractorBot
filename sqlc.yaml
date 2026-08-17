@@ -1,0 +1,9 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema: "internal/db/schema"
+    queries: "internal/db/query"
+    gen:
+      json:
+        out: cmd/sqlgen/
+        filename: "sqlc.json"

@@ -1,0 +1,19 @@
+services:
+  db:
+    ports:
+      - "${DB_HOST_PORT:-5433}:5432"
+
+  valkey:
+    ports:
+      - "${VALKEY_HOST_PORT:-6380}:6379"
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    volumes:
+      - .:/app
+      - work_data:/var/lib/tlextractor
+      - ./secrets/github.pem:/run/secrets/github.pem:ro
+    environment:
+      SCHEME_REPO_NAME: ${SCHEME_REPO_NAME_DEV}

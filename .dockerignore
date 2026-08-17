@@ -1,13 +1,10 @@
+.git
 .idea
 .claude
 .env
 .env_debug
 .docker_build
-.DS_Store
-go.sum
+secrets
 *.tape
 *.mp4
-*_gen.go
-sqlc.json
-secrets/
-TLExtractor
+.env.sample
