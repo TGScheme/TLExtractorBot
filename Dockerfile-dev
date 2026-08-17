@@ -7,4 +7,4 @@ RUN apk add --no-cache git gcc musl-dev openjdk21-jre-headless postgresql-client
  && unzip -q /tmp/jadx.zip -d /opt/jadx \
  && rm /tmp/jadx.zip
 WORKDIR /app
-CMD ["air"]
+CMD ["sh", "-c", "go get ./cmd/sqlgen ./cmd/bot && air"]

@@ -3,8 +3,10 @@ WORKDIR /app
 RUN apk add --no-cache git gcc musl-dev
 RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 COPY . .
-RUN go run ./cmd/sqlgen
-RUN go build -o /out/bot ./cmd/bot \
+RUN go get ./cmd/sqlgen \
+ && go run ./cmd/sqlgen
+RUN go get ./cmd/bot ./cmd/importjson \
+ && go build -o /out/bot ./cmd/bot \
  && go build -o /out/importjson ./cmd/importjson
 
 FROM alpine:latest
