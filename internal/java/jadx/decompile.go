@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/Laky-64/gologging"
 	"os"
 	"os/exec"
 	"path"
@@ -28,10 +29,12 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 	if err := os.MkdirAll(outDir, os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
-	cmd := exec.Command(
-		cfg.JavaBin,
-		"-Xms256M",
-		"-XX:MaxRAMPercentage=70.0",
+	threads := cfg.JadxThreads
+	if threads < 1 {
+		threads = runtime.GOMAXPROCS(0)
+	}
+	args := append(
+		strings.Fields(cfg.JadxJVMOpts),
 		"-Djdk.util.zip.disableZip64ExtraFieldValidation=true",
 		"-cp", cfg.JadxJar,
 		"jadx.cli.JadxCLI",
@@ -39,10 +42,12 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		"--no-replace-consts",
 		"--no-res",
 		"--no-inline-anonymous",
-		"-j", strconv.Itoa(runtime.GOMAXPROCS(0)),
+		"-j", strconv.Itoa(threads),
 		"--output-dir", outDir,
 		path.Join(cfg.WorkDir, consts.TempApk),
 	)
+	gologging.Info(fmt.Sprintf("jadx: %d threads, jvm opts %q", threads, cfg.JadxJVMOpts))
+	cmd := exec.Command(cfg.JavaBin, args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return err

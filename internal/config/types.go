@@ -24,6 +24,9 @@ type Config struct {
 	JadxJar string
 	JavaBin string
 
+	JadxThreads int
+	JadxJVMOpts string
+
 	DBHost     string
 	DBPort     int
 	DBUser     string

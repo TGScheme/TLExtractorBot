@@ -50,6 +50,8 @@ services:
       GEMINI_TOKEN: ${GEMINI_TOKEN}
       SCHEME_REPO_OWNER: ${SCHEME_REPO_OWNER}
       SCHEME_REPO_NAME: ${SCHEME_REPO_NAME}
+      JADX_THREADS: ${JADX_THREADS:-0}
+      JADX_JVM_OPTS: ${JADX_JVM_OPTS:--Xms256M -XX:MaxRAMPercentage=70.0}
 
 volumes:
   pg_data:

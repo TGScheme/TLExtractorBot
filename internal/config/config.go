@@ -31,6 +31,9 @@ func Load() (*Config, error) {
 		JadxJar: getEnvString("JADX_JAR", "/opt/jadx/lib/jadx-1.5.0-all.jar"),
 		JavaBin: getEnvString("JAVA_BIN", "java"),
 
+		JadxThreads: int(getEnvInt64("JADX_THREADS", 0)),
+		JadxJVMOpts: getEnvString("JADX_JVM_OPTS", "-Xms256M -XX:MaxRAMPercentage=70.0"),
+
 		DBHost:     getEnvString("DB_HOST", "db"),
 		DBPort:     int(getEnvInt64("DB_PORT", 5432)),
 		DBUser:     os.Getenv("DB_USER"),
