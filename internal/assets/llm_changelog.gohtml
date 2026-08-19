@@ -1,0 +1,29 @@
+import "os_utils"
+
+Layer {{ layer }}, extracted from {{ osName(source) }}{% if version_name %} {{ version_name }}{% endif %}{% if build_number %} ({{ build_number }}){% endif %}.
+{% if is_patch %}This is a patch of a layer that was already published, so the changes below are corrections, not a new layer.
+{% endif %}
+{% if added|length > 0 %}
+# Added ({{ added|length }})
+{% for line in added -%}
+- {{ line | safe }}
+{% endfor %}
+{% endif %}
+{% if changed|length > 0 %}
+# Changed ({{ changed|length }})
+{% for line in changed -%}
+- {{ line | safe }}
+{% endfor %}
+{% endif %}
+{% if removed|length > 0 %}
+# Removed ({{ removed|length }})
+{% for line in removed -%}
+- {{ line | safe }}
+{% endfor %}
+{% endif %}
+{% if context|length > 0 %}
+# Context, existing definitions of the referenced types, do not document them
+{% for line in context -%}
+- {{ line | safe }}
+{% endfor %}
+{% endif %}

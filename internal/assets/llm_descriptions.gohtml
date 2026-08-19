@@ -1,9 +1,0 @@
-Context:
-{% for constructor in context_constructors -%}
-- {{ constructor | safe }}
-{% endfor %}
-
-Now generate descriptions for the following items in the same style:
-{% for constructor in prompt_constructors -%}
-- {{ constructor | safe }}
-{% endfor %}

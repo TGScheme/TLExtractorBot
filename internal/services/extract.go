@@ -6,10 +6,12 @@ import (
 	"slices"
 
 	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
+	"github.com/Laky-64/gologging"
 	"github.com/TGScheme/TLExtractorBot/internal/android"
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
 	"github.com/TGScheme/TLExtractorBot/internal/db"
 	"github.com/TGScheme/TLExtractorBot/internal/db/models"
+	"github.com/TGScheme/TLExtractorBot/internal/gemini"
 	"github.com/TGScheme/TLExtractorBot/internal/java/jadx"
 	storeTypes "github.com/TGScheme/TLExtractorBot/internal/storeapi/types"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
@@ -150,21 +152,32 @@ func (s *Service) publish(
 	if !fullScheme.IsSync {
 		pageTitle += " Preview"
 	}
-	descriptions := make(map[string]string)
-	if stats.MainApi.TotalAdditions > 0 || stats.E2EApi.TotalAdditions > 0 {
-		if descriptions, err = s.gemini.GenerateDescriptions(differences); err != nil {
-			return err
-		}
-	}
-	url, err := s.telegraph.CreatePage(pageTitle, assets.Render("changelogs", map[string]any{
+	pageArgs := map[string]any{
 		"differences":         differences,
 		"stats":               stats,
 		"commit_urls":         commitInfo.FilesLines,
 		"banner_url":          s.cfg.BannerURL,
 		"main_scheme":         scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
 		"e2e_scheme":          scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
-		"gemini_descriptions": descriptions,
-	}))
+		"gemini_descriptions": map[string]string{},
+	}
+	changelog, err := s.gemini.GenerateChangelog(gemini.ChangelogRequest{
+		Layer:       fullScheme.Layer,
+		Source:      update.Source,
+		VersionName: update.VersionName,
+		BuildNumber: update.BuildNumber,
+		IsPatch:     isPatch,
+		Scheme:      fullScheme,
+		Differences: differences,
+	})
+	if err != nil {
+		gologging.Error("gemini: unable to generate the changelog:", err)
+	} else if changelog != nil {
+		pageArgs["story"] = changelog
+		pageArgs["gemini_descriptions"] = changelog.Descriptions
+	}
+
+	url, err := s.telegraph.CreatePage(pageTitle, assets.Render("changelogs", pageArgs))
 	if err != nil {
 		return err
 	}

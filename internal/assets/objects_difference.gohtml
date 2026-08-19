@@ -4,7 +4,7 @@
 <ul>
 {% for obj in objsDiff -%}
 {%- if obj.IsNew %}
-    <li>Added {{ objectLinked(obj) }} - {{ gemini_descriptions[obj.Object.Package] | safe }}</li>
+    <li>Added {{ objectLinked(obj) }}{% if gemini_descriptions[obj.Object.Package] %} — {{ gemini_descriptions[obj.Object.Package] | safe }}{% endif %}</li>
 {% endif -%}
 {%- endfor %}
 </ul>

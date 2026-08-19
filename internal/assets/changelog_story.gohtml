@@ -1,0 +1,18 @@
+{% macro getChangelogStory(story) -%}
+{%- if story.Lead %}
+<p><b>{{ story.Lead | safe }}</b></p>
+{%- endif %}
+{%- for section in story.Sections %}
+<h3>{{ section.Title | safe }}</h3>
+{%- for paragraph in section.Paragraphs %}
+<p>{{ paragraph | safe }}</p>
+{%- endfor %}
+{%- if section.Highlights|length > 0 %}
+<ul>
+{%- for highlight in section.Highlights %}
+    <li>{{ highlight | safe }}</li>
+{%- endfor %}
+</ul>
+{%- endif %}
+{%- endfor %}
+{%- endmacro %}

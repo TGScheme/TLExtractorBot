@@ -1,9 +1,14 @@
+import "changelog_story"
 import "scheme_changes"
 import "objects_difference"
 import "fields_difference"
 import "object_linked"
 
 <figure><img src="{{banner_url}}"></figure>
+{%- if story %}
+{{ getChangelogStory(story) }}
+<hr>
+{% endif -%}
 {%- if stats.MainApi.Total > 0 -%}
 {{ getSchemeChanges(differences.MainApi, stats.MainApi, true) }}
 <h4>Schema</h4>
