@@ -16,6 +16,7 @@ import (
 	storeTypes "github.com/TGScheme/TLExtractorBot/internal/storeapi/types"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
+	telegraphTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/telegraph/types"
 )
 
 func (s *Service) extract(update storeTypes.UpdateInfo) error {
@@ -147,19 +148,28 @@ func (s *Service) publish(
 		return err
 	}
 	stableDiffs := scheme.GetDiffs(stableScheme, fullScheme)
+	if stableDiffs == nil {
+		stableDiffs = differences
+	}
+	stableStats := scheme.GetStats(stableDiffs)
 
 	pageTitle := fmt.Sprintf("Layer %d", fullScheme.Layer)
 	if !fullScheme.IsSync {
 		pageTitle += " Preview"
 	}
 	pageArgs := map[string]any{
-		"differences":         differences,
-		"stats":               stats,
+		"differences":         stableDiffs,
+		"stats":               stableStats,
 		"commit_urls":         commitInfo.FilesLines,
 		"banner_url":          s.cfg.BannerURL,
 		"main_scheme":         scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
 		"e2e_scheme":          scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
 		"gemini_descriptions": map[string]string{},
+	}
+	if preview != nil && preview.Layer == fullScheme.Layer {
+		pageArgs["latest"] = differences
+		pageArgs["latest_stats"] = stats
+		pageArgs["latest_source"] = update
 	}
 	changelog, err := s.gemini.GenerateChangelog(gemini.ChangelogRequest{
 		Layer:       fullScheme.Layer,
@@ -168,7 +178,7 @@ func (s *Service) publish(
 		BuildNumber: update.BuildNumber,
 		IsPatch:     isPatch,
 		Scheme:      fullScheme,
-		Differences: differences,
+		Differences: stableDiffs,
 	})
 	if err != nil {
 		gologging.Error("gemini: unable to generate the changelog:", err)
@@ -177,7 +187,7 @@ func (s *Service) publish(
 		pageArgs["gemini_descriptions"] = changelog.Descriptions
 	}
 
-	url, err := s.telegraph.CreatePage(pageTitle, assets.Render("changelogs", pageArgs))
+	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))
 	if err != nil {
 		return err
 	}
@@ -193,6 +203,29 @@ func (s *Service) publish(
 		return err
 	}
 	return s.promote(fullScheme, preview)
+}
+
+func (s *Service) publishPage(layer int, title, html string) (string, error) {
+	storedPath, err := s.db.PagesStore.GetLayerPagePath(int64(layer))
+	if err != nil {
+		return "", err
+	}
+	var page telegraphTypes.PageInfo
+	if storedPath != "" {
+		if page, err = s.telegraph.EditPage(storedPath, title, html); err != nil {
+			gologging.Error("telegraph: unable to edit the page, creating a new one:", err)
+			storedPath = ""
+		}
+	}
+	if storedPath == "" {
+		if page, err = s.telegraph.CreatePage(title, html); err != nil {
+			return "", err
+		}
+	}
+	if err = s.db.PagesStore.SetLayerPagePath(int64(layer), page.Path); err != nil {
+		return "", err
+	}
+	return page.URL, nil
 }
 
 func (s *Service) stableBaseline(preview *schemeTypes.TLFullScheme, layer int) (*schemeTypes.TLFullScheme, error) {

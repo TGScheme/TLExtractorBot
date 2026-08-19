@@ -3,10 +3,26 @@ import "scheme_changes"
 import "objects_difference"
 import "fields_difference"
 import "object_linked"
+import "os_utils"
 
 <figure><img src="{{banner_url}}"></figure>
 {%- if story %}
 {{ getChangelogStory(story) }}
+<hr>
+{% endif -%}
+{%- if latest %}
+<h3>New in this build</h3>
+{%- if latest_source %}
+<p><i>{{ osName(latest_source.Source) }} {{ osVersion(latest_source.Source, latest_source.VersionName, latest_source.BuildNumber) }}</i></p>
+{%- endif %}
+{%- if latest_stats.MainApi.Total > 0 %}
+{{ getObjectsDifference("Methods", latest_stats.MainApi.Methods, latest.MainApi.MethodsDifference) }}
+{{ getObjectsDifference("Constructors", latest_stats.MainApi.Constructors, latest.MainApi.ConstructorsDifference) }}
+{%- endif %}
+{%- if latest_stats.E2EApi.Total > 0 %}
+{{ getObjectsDifference("End-to-end Methods", latest_stats.E2EApi.Methods, latest.E2EApi.MethodsDifference) }}
+{{ getObjectsDifference("End-to-end Constructors", latest_stats.E2EApi.Constructors, latest.E2EApi.ConstructorsDifference) }}
+{%- endif %}
 <hr>
 {% endif -%}
 {%- if stats.MainApi.Total > 0 -%}
