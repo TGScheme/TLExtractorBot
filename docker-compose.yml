@@ -26,6 +26,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: tlextractor-bot:prod
     container_name: tlextractor-bot
     restart: unless-stopped
     depends_on:

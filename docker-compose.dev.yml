@@ -11,6 +11,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-dev
+    image: tlextractor-bot:dev
     volumes:
       - .:/app
       - work_data:/var/lib/tlextractor
