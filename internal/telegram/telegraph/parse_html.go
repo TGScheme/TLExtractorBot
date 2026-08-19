@@ -8,6 +8,7 @@ import (
 )
 
 func parseHtml(html string) ([]types.Node, error) {
+	chars := []rune(html)
 	var dom []types.Node
 	var rawNodes []types.RawNode
 	var buildTag, closingTag, buildAttrName, findValue, buildSpecialChar, buildAttrValue bool
@@ -16,25 +17,25 @@ func parseHtml(html string) ([]types.Node, error) {
 	var varName, varValue, specialChar string
 	var tag string
 	var line int
-	for i := 0; i < len(html); i++ {
-		if html[i] == '\n' {
+	for i := 0; i < len(chars); i++ {
+		if chars[i] == '\n' {
 			line++
 		}
-		if html[i] == '"' && findValue {
+		if chars[i] == '"' && findValue {
 			buildAttrValue = !buildAttrValue
 			findValue = buildAttrValue
 			if !buildAttrValue {
 				attributes[varName] = varValue
 			}
 		} else if buildAttrValue {
-			varValue += string(html[i])
-		} else if html[i] == '<' {
+			varValue += string(chars[i])
+		} else if chars[i] == '<' {
 			if buildTag {
 				return nil, fmt.Errorf("unexpected < at line %d", line)
 			}
 			buildTag = true
-		} else if html[i] == '>' {
-			if closingTag && html[i-1] != '/' {
+		} else if chars[i] == '>' {
+			if closingTag && chars[i-1] != '/' {
 				if len(openedTags) == 0 {
 					return nil, fmt.Errorf("unexpected closing tag at line %d", line)
 				}
@@ -83,22 +84,22 @@ func parseHtml(html string) ([]types.Node, error) {
 			}
 			tag = ""
 			buildTag = false
-		} else if html[i] == '/' && buildTag && !closingTag {
+		} else if chars[i] == '/' && buildTag && !closingTag {
 			closingTag = true
-		} else if html[i] == ' ' && buildTag && !closingTag {
+		} else if chars[i] == ' ' && buildTag && !closingTag {
 			buildAttrName = true
 			varName = ""
 			varValue = ""
-		} else if html[i] == '=' && buildTag && !closingTag {
+		} else if chars[i] == '=' && buildTag && !closingTag {
 			if len(varName) == 0 {
 				return nil, fmt.Errorf("unexpected = at line %d", line)
 			}
 			buildAttrName = false
 			findValue = true
 		} else if buildAttrName {
-			varName += string(html[i])
+			varName += string(chars[i])
 		} else if buildTag {
-			tag += string(html[i])
+			tag += string(chars[i])
 		} else {
 			if len(rawNodes) == 0 || rawNodes[len(rawNodes)-1].Tag != "text" || rawNodes[len(rawNodes)-1].Nesting != len(openedTags) {
 				rawNodes = append(rawNodes, types.RawNode{
@@ -107,19 +108,19 @@ func parseHtml(html string) ([]types.Node, error) {
 					Attrs:   map[string]string{"value": ""},
 				})
 			}
-			rawNodes[len(rawNodes)-1].Attrs["value"] += string(html[i])
-			if html[i] == '&' {
+			rawNodes[len(rawNodes)-1].Attrs["value"] += string(chars[i])
+			if chars[i] == '&' {
 				buildSpecialChar = true
 				specialChar = ""
 			} else if buildSpecialChar {
-				if html[i] == ';' {
+				if chars[i] == ';' {
 					buildSpecialChar = false
 					if sChar, ok := consts.SpecialChars[specialChar]; ok {
 						content := rawNodes[len(rawNodes)-1].Attrs["value"]
 						rawNodes[len(rawNodes)-1].Attrs["value"] = content[:len(content)-len(specialChar)-2] + sChar
 					}
 				} else {
-					specialChar += string(html[i])
+					specialChar += string(chars[i])
 				}
 			}
 		}
