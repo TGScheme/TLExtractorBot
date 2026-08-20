@@ -1,0 +1,21 @@
+import "os_utils"
+
+{% if blocking -%}
+<b>❗️ Layer {{ layer }} Was Not Published</b>
+
+The extracted schema is not valid, so nothing was committed and no changelog was sent. The build is marked as seen: to try it again, run a patch.
+{%- else -%}
+<b>⚠️ Layer {{ layer }} Published With Warnings</b>
+
+The schema was committed, but these lines look suspicious and are worth a manual check.
+{%- endif %}
+
+<b>• Source:</b> <code>{{ osShortName(source) }}</code>
+<b>• Problems:</b> <code>{{ total }}</code>
+{% for problem in problems %}
+<b>•</b> <code>{{ problem.File }}:{{ problem.Line }}</code>
+{{ problem.Reason }}
+{% endfor %}
+{%- if truncated > 0 %}
+<i>And {{ truncated }} more.</i>
+{%- endif -%}

@@ -19,6 +19,8 @@ import (
 	telegraphTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/telegraph/types"
 )
 
+const maxReportedProblems = 10
+
 func (s *Service) extract(update storeTypes.UpdateInfo) error {
 	isPatch := s.patch.Load()
 	if err := s.bot.UpdateStatus(assets.Render("message", map[string]any{
@@ -133,6 +135,16 @@ func (s *Service) publish(
 	differences *schemeTypes.TLFullDifferences,
 	isPatch bool,
 ) error {
+	problems := scheme.Validate(fullScheme)
+	if fatal := scheme.FatalProblems(problems); len(fatal) > 0 {
+		return s.reportProblems(update, fullScheme.Layer, fatal, true)
+	}
+	if len(problems) > 0 {
+		if err := s.reportProblems(update, fullScheme.Layer, problems, false); err != nil {
+			gologging.Error("scheme: unable to report the validation warnings:", err)
+		}
+	}
+
 	stats := scheme.GetStats(differences)
 	commitMessage := fmt.Sprintf("Updated to Layer %d", fullScheme.Layer)
 	if isPatch {
@@ -204,6 +216,30 @@ func (s *Service) publish(
 		return err
 	}
 	return s.promote(fullScheme, preview)
+}
+
+func (s *Service) reportProblems(update storeTypes.UpdateInfo, layer int, problems []scheme.Problem, blocking bool) error {
+	for _, problem := range problems {
+		gologging.Error("scheme:", problem)
+	}
+	shown, truncated := problems, 0
+	if len(shown) > maxReportedProblems {
+		truncated = len(shown) - maxReportedProblems
+		shown = shown[:maxReportedProblems]
+	}
+	if blocking {
+		if err := s.bot.UpdateStatus("", false, false, nil); err != nil {
+			return err
+		}
+	}
+	return s.bot.LogMessage(assets.Render("scheme_problems", map[string]any{
+		"layer":     layer,
+		"source":    update.Source,
+		"total":     len(problems),
+		"problems":  shown,
+		"truncated": truncated,
+		"blocking":  blocking,
+	}))
 }
 
 func (s *Service) publishPage(layer int, title, html string) (string, error) {
