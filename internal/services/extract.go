@@ -50,6 +50,9 @@ func (s *Service) extract(update storeTypes.UpdateInfo) error {
 	if fixed := scheme.FixNamespaces(fullScheme); fixed > 0 {
 		gologging.Info(fmt.Sprintf("scheme: fixed the namespace of %d objects", fixed))
 	}
+	if applied := scheme.ApplyOverrides(fullScheme); applied > 0 {
+		gologging.Info(fmt.Sprintf("scheme: applied %d overrides", applied))
+	}
 
 	differences := scheme.GetDiffs(preview, fullScheme)
 	if differences == nil || fullScheme.Layer < previewLayer {
