@@ -53,6 +53,12 @@ var (
 	tlLayerSuffixRe = regexp.MustCompile(`^(.+?)\d+$`)
 )
 
+var knownMismatchedIDs = map[uint32]bool{
+	0x6c50051c: true,
+	0x24b524c5: true,
+	0x6abd9782: true,
+}
+
 var tlBuiltinTypes = map[string]bool{
 	"Type": true, "Object": true, "Vector": true, "True": true,
 }
@@ -228,7 +234,7 @@ func checkObjects(objects []tlObject) []Problem {
 
 func (object tlObject) matchesInferredID() bool {
 	declared, err := strconv.ParseUint(object.id, 16, 32)
-	if err != nil {
+	if err != nil || knownMismatchedIDs[uint32(declared)] {
 		return true
 	}
 	body := strings.TrimSpace(strings.TrimSuffix(object.source, ";"))
