@@ -185,6 +185,7 @@ func (s *Service) publish(
 	} else if changelog != nil {
 		pageArgs["story"] = changelog
 		pageArgs["gemini_descriptions"] = changelog.Descriptions
+		pageArgs["ai_model"] = s.gemini.Model()
 	}
 
 	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))
