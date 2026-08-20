@@ -47,6 +47,10 @@ func (s *Service) extract(update storeTypes.UpdateInfo) error {
 		return err
 	}
 
+	if fixed := scheme.FixNamespaces(fullScheme); fixed > 0 {
+		gologging.Info(fmt.Sprintf("scheme: fixed the namespace of %d objects", fixed))
+	}
+
 	differences := scheme.GetDiffs(preview, fullScheme)
 	if differences == nil || fullScheme.Layer < previewLayer {
 		return s.bot.UpdateStatus("", false, false, nil)

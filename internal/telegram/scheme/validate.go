@@ -249,7 +249,10 @@ func (object tlObject) matchesInferredID() bool {
 }
 
 func inferID(name, params string) uint32 {
-	representation := strings.TrimRight(name+" "+params, " ")
+	return inferIDFromText(strings.TrimRight(name+" "+params, " "))
+}
+
+func inferIDFromText(representation string) uint32 {
 	representation = strings.ReplaceAll(representation, ":bytes ", ":string ")
 	representation = strings.ReplaceAll(representation, "?bytes ", "?string ")
 	representation = strings.ReplaceAll(representation, "<", " ")
