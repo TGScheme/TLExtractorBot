@@ -139,10 +139,18 @@ func GetClasses(workDir string) (map[string]map[string]*types.AstClass, *sitter.
 				ExtendsName:    classInfo.ExtendsName,
 			}
 
-			extendedVars := appendAllExtends(parent, className, allClassesReturn, classInfo.ExtendsPackage, classInfo.ExtendsName)
+			extendedVars, extendedFunctions := appendAllExtends(
+				parent, className, allClassesReturn,
+				classInfo.ExtendsPackage, classInfo.ExtendsName,
+			)
 			for varName, varInfo := range extendedVars {
 				if _, okVar := classesReturn[parent][className].Vars[varName]; !okVar {
 					classesReturn[parent][className].Vars[varName] = varInfo
+				}
+			}
+			for functionName, body := range extendedFunctions {
+				if _, okFunction := classesReturn[parent][className].Functions[functionName]; !okFunction {
+					classesReturn[parent][className].Functions[functionName] = body
 				}
 			}
 		}
