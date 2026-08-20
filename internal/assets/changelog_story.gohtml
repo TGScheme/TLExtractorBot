@@ -1,6 +1,6 @@
 {% macro getChangelogStory(story) -%}
 {%- if story.Lead %}
-<p><b>{{ story.Lead | safe }}</b></p>
+<p>{{ story.Lead | safe }}</p>
 {%- endif %}
 {%- for section in story.Sections %}
 <h3>{{ section.Title | safe }}</h3>
