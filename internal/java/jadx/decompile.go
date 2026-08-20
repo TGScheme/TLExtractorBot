@@ -31,7 +31,7 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 	}
 	threads := cfg.JadxThreads
 	if threads < 1 {
-		threads = runtime.GOMAXPROCS(0)
+		threads = runtime.NumCPU()
 	}
 	args := append(
 		strings.Fields(cfg.JadxJVMOpts),
