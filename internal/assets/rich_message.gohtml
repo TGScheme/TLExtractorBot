@@ -1,34 +1,16 @@
 import "fields_difference"
 import "object_linked"
 import "os_utils"
+import "rich_changes"
 
-{%- if is_incremental %}
+{%- if is_patch %}
+<h3>Layer {{ layer }} Patched</h3>
+<p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
+{{ getRichChanges(changes, "correction", "", true) }}
+{%- elif is_incremental %}
 <h3>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}</h3>
 <p><i>Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
-<details{% if changes | length <= 10 %} open{% endif %}>
-<summary>{{ changes | length }} change{{ changes | length | pluralize }} in this build</summary>
-<ul>
-{%- for change in changes %}
-{%- if forloop.Counter <= 15 %}
-<li>
-{%- if change.Object.IsNew -%}
-Added {{ objectLinked(change.Object) }}
-{%- elif change.Object.IsDeleted -%}
-Removed {{ objectLinked(change.Object) }}
-{%- elif change.Object.ChangedResult -%}
-Changed type of {{ objectLinked(change.Object) }} from <b>{{ change.Object.ChangedResult.OldType }}</b> to <b>{{ change.Object.ChangedResult.NewType }}</b>
-{%- else -%}
-{{ getFieldsDifference(change.Object) | capfirst | safe }} in {{ objectLinked(change.Object) }}
-{%- endif %}
-{%- if change.IsE2E %} <i>(secret chats)</i>{% endif -%}
-</li>
-{%- endif %}
-{%- endfor %}
-</ul>
-{%- if changes | length > 15 %}
-<p>And {{ (changes | length) - 15 }} more in the full changelog.</p>
-{%- endif %}
-</details>
+{{ getRichChanges(changes, "change", " in this build", false) }}
 {%- else %}
 <h3>{% if title %}{{ title }}{% else %}{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}{% endif %}</h3>
 <p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
