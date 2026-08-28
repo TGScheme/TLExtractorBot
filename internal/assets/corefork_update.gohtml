@@ -1,6 +1,12 @@
-<b>💡 Telegram Schema {{layer}} Officially Released on CoreFork!</b>
-
-<b>Changes:</b>
+<h3>Layer {{ layer }} Officially Released</h3>
+<p><i>Published on CoreFork by the Telegram MTProto developers</i></p>
+{%- if description %}
+<details>
+<summary>{{ total }} change{{ total | pluralize }} documented by Telegram</summary>
 {{ description | safe }}
-
-#CoreFork #Stable #Layer{{layer}}
+</details>
+{%- else %}
+<p>No changelog provided by the Telegram MTProto developers.</p>
+<hr>
+{%- endif %}
+<footer>#CoreFork #Stable #Layer{{ layer }}</footer>

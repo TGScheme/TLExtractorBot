@@ -36,26 +36,42 @@ func (s *Service) pollCoreFork() {
 	}
 
 	changelogPage := fmt.Sprintf("%s/api/layers", consts.MainReleasedTL)
-	if err = s.bot.DirectMessage(
-		assets.Render("corefork_update", map[string]any{
-			"layer":       latest,
-			"description": fetchChangelog(changelogPage, latest),
-		}),
-		&tgTypes.InlineKeyboardMarkup{
-			InlineKeyboard: [][]tgTypes.InlineKeyboardButton{{
-				{Text: "Full Changelog", URL: fmt.Sprintf("%s/#layer-%d", changelogPage, latest)},
-				{Text: "Schema", URL: fmt.Sprintf("%s/schema?layer=%d", consts.MainReleasedTL, latest)},
-			}},
-		},
-	); err != nil {
+	changelog := fetchChangelog(changelogPage, latest)
+	keyboard := &tgTypes.InlineKeyboardMarkup{
+		InlineKeyboard: [][]tgTypes.InlineKeyboardButton{{
+			{Text: "Full Changelog", URL: fmt.Sprintf("%s/#layer-%d", changelogPage, latest)},
+			{Text: "Schema", URL: fmt.Sprintf("%s/schema?layer=%d", consts.MainReleasedTL, latest)},
+		}},
+	}
+	if err = s.bot.DirectRich(assets.Render("corefork_update", map[string]any{
+		"layer":       latest,
+		"description": changelog,
+		"total":       strings.Count(changelog, "<li"),
+	}), keyboard); err == nil {
+		return
+	}
+	gologging.Error("telegram: unable to send the corefork rich message, falling back to the plain one:", err)
+	if err = s.bot.DirectMessage(assets.Render("corefork_update_plain", map[string]any{
+		"layer":       latest,
+		"description": bulletize(changelog),
+	}), keyboard); err != nil {
 		gologging.Error(err)
 	}
+}
+
+func bulletize(list string) string {
+	for _, replacement := range [][2]string{
+		{"<li>", "• "}, {"</li>", ""}, {"<ul>", ""}, {"</ul>", ""},
+	} {
+		list = strings.ReplaceAll(list, replacement[0], replacement[1])
+	}
+	return strings.TrimSpace(list)
 }
 
 func fetchChangelog(page string, layer int) string {
 	res, err := http.ExecuteRequest(page)
 	if err != nil {
-		return "• No changelog provided by Telegram MTProto developers."
+		return ""
 	}
 	content := soup.HTMLParse(res.String()).Find("div", "id", "dev_page_content")
 	for _, node := range content.Children() {
@@ -67,15 +83,12 @@ func fetchChangelog(page string, layer int) string {
 				continue
 			}
 			text := soup.Root{Pointer: sibling, NodeValue: sibling.Data}.HTML()
-			for _, replacement := range [][2]string{
-				{"<li>", "• "}, {"</li>", ""}, {"<ul>", ""}, {"</ul>", ""},
-			} {
-				text = strings.ReplaceAll(text, replacement[0], replacement[1])
-			}
-			text = strings.ReplaceAll(strings.TrimSpace(text), "href=\"/", fmt.Sprintf("href=\"%s/", consts.MainReleasedTL))
-			return text
+			return strings.ReplaceAll(
+				strings.TrimSpace(text),
+				"href=\"/", fmt.Sprintf("href=\"%s/", consts.MainReleasedTL),
+			)
 		}
 		break
 	}
-	return "• No changelog provided by Telegram MTProto developers."
+	return ""
 }
