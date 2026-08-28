@@ -33,8 +33,12 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 	if threads < 1 {
 		threads = runtime.NumCPU()
 	}
+	jvmOpts := strings.Fields(cfg.JadxJVMOpts)
+	if !hasJVMOpt(jvmOpts, "-XX:ActiveProcessorCount") {
+		jvmOpts = append(jvmOpts, "-XX:ActiveProcessorCount="+strconv.Itoa(threads))
+	}
 	args := append(
-		strings.Fields(cfg.JadxJVMOpts),
+		jvmOpts,
 		"-Djdk.util.zip.disableZip64ExtraFieldValidation=true",
 		"-cp", cfg.JadxJar,
 		"jadx.cli.JadxCLI",
@@ -46,7 +50,10 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		"--output-dir", outDir,
 		path.Join(cfg.WorkDir, consts.TempApk),
 	)
-	gologging.Info(fmt.Sprintf("jadx: %d threads, jvm opts %q", threads, cfg.JadxJVMOpts))
+	gologging.Info(fmt.Sprintf(
+		"jadx: %d threads (numcpu %d, gomaxprocs %d), jvm opts %q",
+		threads, runtime.NumCPU(), runtime.GOMAXPROCS(0), strings.Join(jvmOpts, " "),
+	))
 	cmd := exec.Command(cfg.JavaBin, args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -87,6 +94,15 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		return err
 	}
 	return checkOutput(cfg.WorkDir)
+}
+
+func hasJVMOpt(opts []string, name string) bool {
+	for _, opt := range opts {
+		if opt == name || strings.HasPrefix(opt, name+"=") || strings.HasPrefix(opt, name+":") {
+			return true
+		}
+	}
+	return false
 }
 
 func checkOutput(workDir string) error {
