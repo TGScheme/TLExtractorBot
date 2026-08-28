@@ -176,10 +176,13 @@ func (s *Service) publish(
 	stableStats := scheme.GetStats(stableDiffs)
 
 	pageTitle := fmt.Sprintf("Layer %d", fullScheme.Layer)
-	if !fullScheme.IsSync {
-		pageTitle += " Preview"
+	previousLayer := 0
+	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
+		previousLayer = stableScheme.Layer
 	}
 	pageArgs := map[string]any{
+		"layer":               fullScheme.Layer,
+		"previous_layer":      previousLayer,
 		"differences":         stableDiffs,
 		"stats":               stableStats,
 		"commit_urls":         commitInfo.FilesLines,

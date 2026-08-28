@@ -14,7 +14,7 @@ import "os_utils"
 {%- if latest %}
 <h3>New in this build</h3>
 {%- if latest_source %}
-<p><i>{{ osName(latest_source.Source) }} {{ osVersion(latest_source.Source, latest_source.VersionName, latest_source.BuildNumber) }}</i></p>
+<p><i>{{ osName(latest_source.Source) }} {{ osVersion(latest_source.Source, latest_source.VersionName, latest_source.BuildNumber) }}, compared with the previous build of Layer {{ layer }}</i></p>
 {%- endif %}
 {%- if latest_stats.MainApi.Total > 0 %}
 {{ getObjectsDifference("Methods", latest_stats.MainApi.Methods, latest.MainApi.MethodsDifference) }}
@@ -27,12 +27,12 @@ import "os_utils"
 <hr>
 {% endif -%}
 {%- if stats.MainApi.Total > 0 -%}
-{{ getSchemeChanges(differences.MainApi, stats.MainApi, true) }}
+{{ getSchemeChanges(differences.MainApi, stats.MainApi, true, layer, previous_layer) }}
 <h4>Schema</h4>
 <pre>{{ main_scheme }}</pre>
 {%- endif %}
 {% if stats.E2EApi.Total > 0 -%}
-{{ getSchemeChanges(differences.E2EApi, stats.E2EApi, false) }}
+{{ getSchemeChanges(differences.E2EApi, stats.E2EApi, false, layer, previous_layer) }}
 <h4>End-to-end schema</h4>
 <pre>{{ e2e_scheme }}</pre>
 {%- endif -%}

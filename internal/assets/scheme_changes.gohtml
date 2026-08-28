@@ -1,8 +1,11 @@
-{% macro getSchemeChanges(diffs, schemeStats, isMain) -%}
+{% macro getSchemeChanges(diffs, schemeStats, isMain, layer, previousLayer) -%}
 {% if isMain -%}
-<h3>Schema changes</h3>
+<h3>All changes in Layer {{ layer }}</h3>
+{%- if previousLayer > 0 %}
+<p><i>Compared with Layer {{ previousLayer }}</i></p>
+{%- endif %}
 {%- else -%}
-<h3>End-to-end schema changes</h3>
+<h3>All end-to-end changes in Layer {{ layer }}</h3>
 {% endif -%}
 {%- if diffs.MethodsDifference | length > 0 %}
 {{ getObjectsDifference("Methods", schemeStats.Methods, diffs.MethodsDifference) }}
