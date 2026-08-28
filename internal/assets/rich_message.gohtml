@@ -1,33 +1,40 @@
-import "objects_difference"
 import "fields_difference"
 import "object_linked"
 import "os_utils"
 
-<h3>Layer {{ layer }}</h3>
-<p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · {% if is_stable %}Stable{% else %}Preview{% endif %}{% if is_patch %} · Patch{% endif %}</i></p>
+{%- if is_incremental %}
+<h3>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}</h3>
+<p><i>Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
+<details{% if changes | length <= 10 %} open{% endif %}>
+<summary>{{ changes | length }} change{{ changes | length | pluralize }} in this build</summary>
+<ul>
+{%- for change in changes %}
+{%- if forloop.Counter <= 15 %}
+<li>
+{%- if change.Object.IsNew -%}
+Added {{ objectLinked(change.Object) }}
+{%- elif change.Object.IsDeleted -%}
+Removed {{ objectLinked(change.Object) }}
+{%- elif change.Object.ChangedResult -%}
+Changed type of {{ objectLinked(change.Object) }} from <b>{{ change.Object.ChangedResult.OldType }}</b> to <b>{{ change.Object.ChangedResult.NewType }}</b>
+{%- else -%}
+{{ getFieldsDifference(change.Object) | capfirst | safe }} in {{ objectLinked(change.Object) }}
+{%- endif %}
+{%- if change.IsE2E %} <i>(secret chats)</i>{% endif -%}
+</li>
+{%- endif %}
+{%- endfor %}
+</ul>
+{%- if changes | length > 15 %}
+<p>And {{ (changes | length) - 15 }} more in the full changelog.</p>
+{%- endif %}
+</details>
+{%- else %}
+<h3>{% if title %}{{ title }}{% else %}{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}{% endif %}</h3>
+<p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
 {%- if lead %}
 <p>{{ lead | safe }}</p>
 {%- endif %}
-<table>
-<tr><th>Schema</th><th>New</th><th>Changed</th><th>Deleted</th></tr>
-{%- if stats.MainApi.Total > 0 %}
-<tr><td>Main</td><td>{{ stats.MainApi.TotalAdditions }}</td><td>{{ stats.MainApi.TotalChanges }}</td><td>{{ stats.MainApi.TotalDeletions }}</td></tr>
-{%- endif %}
-{%- if stats.E2EApi.Total > 0 %}
-<tr><td>End-to-end</td><td>{{ stats.E2EApi.TotalAdditions }}</td><td>{{ stats.E2EApi.TotalChanges }}</td><td>{{ stats.E2EApi.TotalDeletions }}</td></tr>
-{%- endif %}
-</table>
-{%- if detailed %}
-<details open>
-<summary>What changed</summary>
-{%- if stats.MainApi.Total > 0 %}
-{{ getObjectsDifference("Methods", stats.MainApi.Methods, differences.MainApi.MethodsDifference) }}
-{{ getObjectsDifference("Constructors", stats.MainApi.Constructors, differences.MainApi.ConstructorsDifference) }}
-{%- endif %}
-{%- if stats.E2EApi.Total > 0 %}
-{{ getObjectsDifference("End-to-end Methods", stats.E2EApi.Methods, differences.E2EApi.MethodsDifference) }}
-{{ getObjectsDifference("End-to-end Constructors", stats.E2EApi.Constructors, differences.E2EApi.ConstructorsDifference) }}
-{%- endif %}
-</details>
+<hr>
 {%- endif %}
 <footer>#{{ osShortName(update.Source) }} #{% if is_stable %}Stable{% else %}Preview{% endif %} #Layer{{ layer }}{% if is_patch %} #Patch{% endif %}</footer>

@@ -22,8 +22,6 @@ import (
 
 const maxReportedProblems = 10
 
-const maxRichObjects = 40
-
 func (s *Service) extract(update storeTypes.UpdateInfo) error {
 	isPatch := s.patch.Load()
 	if err := s.bot.UpdateStatus(assets.Render("message", map[string]any{
@@ -199,7 +197,7 @@ func (s *Service) publish(
 		pageArgs["latest_stats"] = stats
 		pageArgs["latest_source"] = update
 	}
-	lead := ""
+	lead, title := "", ""
 	changelog, err := s.gemini.GenerateChangelog(gemini.ChangelogRequest{
 		Layer:       fullScheme.Layer,
 		Source:      update.Source,
@@ -216,6 +214,9 @@ func (s *Service) publish(
 		pageArgs["gemini_descriptions"] = changelog.Descriptions
 		pageArgs["ai_model"] = s.gemini.Model()
 		lead = changelog.Lead
+		if len(changelog.Sections) > 0 {
+			title = changelog.Sections[0].Title
+		}
 	}
 
 	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))
@@ -233,11 +234,11 @@ func (s *Service) publish(
 		"is_stable": fullScheme.IsSync, "is_patch": isPatch,
 	}
 	richArgs := maps.Clone(messageArgs)
+	richArgs["title"] = title
 	richArgs["lead"] = lead
-	richArgs["differences"] = differences
+	richArgs["changes"] = richChanges(differences)
 	richArgs["commit_urls"] = commitInfo.FilesLines
-	richArgs["gemini_descriptions"] = pageArgs["gemini_descriptions"]
-	richArgs["detailed"] = stats.MainApi.Total+stats.E2EApi.Total <= maxRichObjects
+	richArgs["is_incremental"] = preview != nil && preview.Layer == fullScheme.Layer
 
 	if err = s.bot.PublishRich(assets.Render("rich_message", richArgs), true, keyboard); err != nil {
 		gologging.Error("telegram: unable to send the rich message, falling back to the plain one:", err)
