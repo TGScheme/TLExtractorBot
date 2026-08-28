@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"slices"
 
 	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
@@ -20,6 +21,8 @@ import (
 )
 
 const maxReportedProblems = 10
+
+const maxRichObjects = 40
 
 func (s *Service) extract(update storeTypes.UpdateInfo) error {
 	isPatch := s.patch.Load()
@@ -196,6 +199,7 @@ func (s *Service) publish(
 		pageArgs["latest_stats"] = stats
 		pageArgs["latest_source"] = update
 	}
+	lead := ""
 	changelog, err := s.gemini.GenerateChangelog(gemini.ChangelogRequest{
 		Layer:       fullScheme.Layer,
 		Source:      update.Source,
@@ -211,22 +215,35 @@ func (s *Service) publish(
 		pageArgs["story"] = changelog
 		pageArgs["gemini_descriptions"] = changelog.Descriptions
 		pageArgs["ai_model"] = s.gemini.Model()
+		lead = changelog.Lead
 	}
 
 	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))
 	if err != nil {
 		return err
 	}
-	if err = s.bot.UpdateStatus(assets.Render("message", map[string]any{
-		"update": update, "layer": fullScheme.Layer, "stats": stats,
-		"is_stable": fullScheme.IsSync, "is_patch": isPatch,
-	}), true, true, &tgTypes.InlineKeyboardMarkup{
+	keyboard := &tgTypes.InlineKeyboardMarkup{
 		InlineKeyboard: [][]tgTypes.InlineKeyboardButton{{
 			{Text: "Full Changelog", URL: url},
 			{Text: "GitHub", URL: commitInfo.SourceURL},
 		}},
-	}); err != nil {
-		return err
+	}
+	messageArgs := map[string]any{
+		"update": update, "layer": fullScheme.Layer, "stats": stats,
+		"is_stable": fullScheme.IsSync, "is_patch": isPatch,
+	}
+	richArgs := maps.Clone(messageArgs)
+	richArgs["lead"] = lead
+	richArgs["differences"] = differences
+	richArgs["commit_urls"] = commitInfo.FilesLines
+	richArgs["gemini_descriptions"] = pageArgs["gemini_descriptions"]
+	richArgs["detailed"] = stats.MainApi.Total+stats.E2EApi.Total <= maxRichObjects
+
+	if err = s.bot.PublishRich(assets.Render("rich_message", richArgs), true, keyboard); err != nil {
+		gologging.Error("telegram: unable to send the rich message, falling back to the plain one:", err)
+		if err = s.bot.UpdateStatus(assets.Render("message", messageArgs), true, true, keyboard); err != nil {
+			return err
+		}
 	}
 	return s.promote(fullScheme, preview)
 }
