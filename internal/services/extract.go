@@ -24,7 +24,11 @@ const maxReportedProblems = 10
 
 func (s *Service) extract(update storeTypes.UpdateInfo) error {
 	isPatch := s.patch.Load()
-	if err := s.updateStatus(update, isPatch, initialStage(update.Source), 0); err != nil {
+	stage := initialStage(update.Source)
+	if update.Source == "android" {
+		stage = stageDecompiling
+	}
+	if err := s.updateStatus(update, isPatch, stage, 0); err != nil {
 		return err
 	}
 

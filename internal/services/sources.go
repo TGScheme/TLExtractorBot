@@ -59,15 +59,28 @@ func (s *Service) pollSources() {
 	if int64(info.VersionCode) <= settings.LastVersionCode && !s.patch.Load() {
 		return
 	}
-	if err = storeapi.DownloadApk(s.cfg, info); err != nil {
-		gologging.Error(err)
-		return
-	}
-	s.dispatch(storeTypes.UpdateInfo{
+	update := storeTypes.UpdateInfo{
 		VersionName: info.Version,
 		BuildNumber: info.VersionCode,
 		Source:      "android",
-	}, func() error { return s.db.SettingsStore.SetLastVersionCode(int64(info.VersionCode)) })
+	}
+	isPatch := s.patch.Load()
+	if err = s.updateStatus(update, isPatch, stageDownloading, 0); err != nil {
+		gologging.Error(err)
+		return
+	}
+	if err = storeapi.DownloadApk(s.cfg, info, func(percentage int64) {
+		_ = s.updateStatus(update, isPatch, stageDownloading, percentage)
+	}); err != nil {
+		gologging.Error(err)
+		if errStatus := s.bot.UpdateStatus("", false, false, nil); errStatus != nil {
+			gologging.Error(errStatus)
+		}
+		return
+	}
+	s.dispatch(update, func() error {
+		return s.db.SettingsStore.SetLastVersionCode(int64(info.VersionCode))
+	})
 }
 
 func (s *Service) dispatch(update storeTypes.UpdateInfo, commit func() error) {

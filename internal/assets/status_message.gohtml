@@ -3,9 +3,11 @@ import "os_utils"
 <h3>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}</h3>
 <p><i>{% if is_patch %}Patching{% else %}Extracting{% endif %} the TL-schema</i></p>
 <ul>
-<li>{% if update.Source == "android" %}Downloaded the apk{% else %}Fetched the source{% endif %}</li>
 {% if update.Source == "android" %}
-<li>{% if stage == 1 %}<b>Decompiling… {{ progress }}%</b>{% else %}Decompiled the apk{% endif %}</li>
+<li>{% if stage == 0 %}<b>Downloading the apk… {{ progress }}%</b>{% else %}Downloaded the apk{% endif %}</li>
+<li>{% if stage == 1 %}<b>Decompiling… {{ progress }}%</b>{% else %}Decompiling the apk{% endif %}</li>
+{% else %}
+<li>Fetched the source</li>
 {% endif %}
 <li>{% if stage == 2 %}<b>Extracting the schema</b>{% else %}Extracting the schema{% endif %}</li>
 <li>{% if stage == 3 %}<b>Publishing the changelog</b>{% else %}Publishing the changelog{% endif %}</li>

@@ -6,6 +6,7 @@ import (
 )
 
 const (
+	stageDownloading = 0
 	stageDecompiling = 1
 	stageExtracting  = 2
 	stagePublishing  = 3
@@ -27,7 +28,7 @@ func (s *Service) updateStatus(update storeTypes.UpdateInfo, isPatch bool, stage
 
 func initialStage(source string) int {
 	if source == "android" {
-		return stageDecompiling
+		return stageDownloading
 	}
 	return stageExtracting
 }
