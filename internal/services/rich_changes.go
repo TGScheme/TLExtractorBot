@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
 )
 
@@ -33,4 +35,20 @@ func richChanges(diffs *schemeTypes.TLFullDifferences) []richChange {
 	var changes []richChange
 	changes = appendRichChanges(changes, diffs.MainApi, false)
 	return appendRichChanges(changes, diffs.E2EApi, true)
+}
+
+func combinedStats(stats schemeTypes.DifferenceStats) schemeTypes.SchemeStats {
+	return schemeTypes.SchemeStats{
+		Total:          stats.MainApi.Total + stats.E2EApi.Total,
+		TotalAdditions: stats.MainApi.TotalAdditions + stats.E2EApi.TotalAdditions,
+		TotalChanges:   stats.MainApi.TotalChanges + stats.E2EApi.TotalChanges,
+		TotalDeletions: stats.MainApi.TotalDeletions + stats.E2EApi.TotalDeletions,
+	}
+}
+
+func patchSummary(total int) string {
+	if total == 1 {
+		return "1 correction to the published schema"
+	}
+	return fmt.Sprintf("%d corrections to the published schema", total)
 }

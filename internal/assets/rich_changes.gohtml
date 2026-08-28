@@ -1,11 +1,8 @@
-{% macro getRichChanges(changes, noun, suffix, alwaysOpen) -%}
-<details{% if alwaysOpen or changes | length <= 10 %} open{% endif %}>
-<summary>{{ changes | length }} {{ noun }}{{ changes | length | pluralize }}{{ suffix }}</summary>
-<ul>
-{%- for change in changes %}
-{%- if forloop.Counter <= 15 %}
-<li>
-{%- if change.Object.IsNew -%}
+{% macro getRichChanges(changes, summary) -%}
+<blockquote expandable><b>{{ summary }}</b>
+{%- for change in changes -%}
+{%- if forloop.Counter <= 15 -%}
+<br>• {% if change.Object.IsNew -%}
 Added {{ objectLinked(change.Object) }}
 {%- elif change.Object.IsDeleted -%}
 Removed {{ objectLinked(change.Object) }}
@@ -13,14 +10,12 @@ Removed {{ objectLinked(change.Object) }}
 Changed type of {{ objectLinked(change.Object) }} from <b>{{ change.Object.ChangedResult.OldType }}</b> to <b>{{ change.Object.ChangedResult.NewType }}</b>
 {%- else -%}
 {{ getFieldsDifference(change.Object) | capfirst | safe }} in {{ objectLinked(change.Object) }}
-{%- endif %}
+{%- endif -%}
 {%- if change.IsE2E %} <i>(secret chats)</i>{% endif -%}
-</li>
-{%- endif %}
-{%- endfor %}
-</ul>
-{%- if changes | length > 15 %}
-<p>And {{ (changes | length) - 15 }} more in the full changelog.</p>
-{%- endif %}
-</details>
+{%- endif -%}
+{%- endfor -%}
+{%- if changes | length > 15 -%}
+<br>And {{ (changes | length) - 15 }} more in the full changelog.
+{%- endif -%}
+</blockquote>
 {%- endmacro %}

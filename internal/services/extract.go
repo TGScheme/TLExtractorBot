@@ -24,9 +24,7 @@ const maxReportedProblems = 10
 
 func (s *Service) extract(update storeTypes.UpdateInfo) error {
 	isPatch := s.patch.Load()
-	if err := s.bot.UpdateStatus(assets.Render("message", map[string]any{
-		"update": update, "progress": 0, "is_patch": isPatch,
-	}), false, false, nil); err != nil {
+	if err := s.updateStatus(update, isPatch, initialStage(update.Source), 0); err != nil {
 		return err
 	}
 
@@ -74,12 +72,11 @@ func (s *Service) buildScheme(
 ) (*schemeTypes.TLFullScheme, error) {
 	if update.Source == "android" {
 		if err := jadx.Decompile(s.cfg, func(percentage int64) {
-			_ = s.bot.UpdateStatus(assets.Render("message", map[string]any{
-				"update": update, "progress": percentage, "is_patch": isPatch,
-			}), false, false, nil)
+			_ = s.updateStatus(update, isPatch, stageDecompiling, percentage)
 		}); err != nil {
 			return nil, err
 		}
+		_ = s.updateStatus(update, isPatch, stageExtracting, 100)
 		return android.ExtractScheme(s.cfg.WorkDir, s.scheme, branch)
 	}
 
@@ -155,6 +152,8 @@ func (s *Service) publish(
 			gologging.Error("scheme: unable to report the validation warnings:", err)
 		}
 	}
+
+	_ = s.updateStatus(update, isPatch, stagePublishing, 100)
 
 	stats := scheme.GetStats(differences)
 	commitMessage := fmt.Sprintf("Updated to Layer %d", fullScheme.Layer)
@@ -236,7 +235,10 @@ func (s *Service) publish(
 	richArgs := maps.Clone(messageArgs)
 	richArgs["title"] = title
 	richArgs["lead"] = lead
-	richArgs["changes"] = richChanges(differences)
+	changes := richChanges(differences)
+	richArgs["changes"] = changes
+	richArgs["total_stats"] = combinedStats(stats)
+	richArgs["patch_summary"] = patchSummary(len(changes))
 	richArgs["commit_urls"] = commitInfo.FilesLines
 	richArgs["is_incremental"] = preview != nil && preview.Layer == fullScheme.Layer
 

@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/consts"
 	"github.com/anaskhan96/soup"
 )
+
+var listItemRgx = regexp.MustCompile(`(?s)<li>(.*?)</li>`)
 
 func (s *Service) pollCoreFork() {
 	latest, firstRun, err := s.scheme.RefreshReleasedLayers()
@@ -45,7 +48,7 @@ func (s *Service) pollCoreFork() {
 	}
 	if err = s.bot.DirectRich(assets.Render("corefork_update", map[string]any{
 		"layer":       latest,
-		"description": changelog,
+		"description": richBullets(changelog),
 		"total":       strings.Count(changelog, "<li"),
 	}), keyboard); err == nil {
 		return
@@ -57,6 +60,15 @@ func (s *Service) pollCoreFork() {
 	}), keyboard); err != nil {
 		gologging.Error(err)
 	}
+}
+
+func richBullets(list string) string {
+	items := listItemRgx.FindAllStringSubmatch(list, -1)
+	rows := make([]string, 0, len(items))
+	for _, item := range items {
+		rows = append(rows, "• "+strings.Join(strings.Fields(item[1]), " "))
+	}
+	return strings.Join(rows, "<br>")
 }
 
 func bulletize(list string) string {

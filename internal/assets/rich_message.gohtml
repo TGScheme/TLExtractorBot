@@ -1,16 +1,17 @@
 import "fields_difference"
 import "object_linked"
 import "os_utils"
+import "stats"
 import "rich_changes"
 
 {%- if is_patch %}
 <h3>Layer {{ layer }} Patched</h3>
 <p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
-{{ getRichChanges(changes, "correction", "", true) }}
+{{ getRichChanges(changes, patch_summary) }}
 {%- elif is_incremental %}
 <h3>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}</h3>
 <p><i>Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
-{{ getRichChanges(changes, "change", " in this build", false) }}
+{{ getRichChanges(changes, getStats(total_stats)) }}
 {%- else %}
 <h3>{% if title %}{{ title }}{% else %}{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}{% endif %}</h3>
 <p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>

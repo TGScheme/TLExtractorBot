@@ -1,10 +1,7 @@
 <h3>Layer {{ layer }} Officially Released</h3>
 <p><i>Published on CoreFork by the Telegram MTProto developers</i></p>
 {%- if description %}
-<details>
-<summary>{{ total }} change{{ total | pluralize }} documented by Telegram</summary>
-{{ description | safe }}
-</details>
+<blockquote expandable><b>{{ total }} change{{ total | pluralize }} documented by Telegram</b><br>{{ description | safe }}</blockquote>
 {%- else %}
 <p>No changelog provided by the Telegram MTProto developers.</p>
 <hr>

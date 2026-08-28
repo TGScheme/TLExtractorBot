@@ -47,6 +47,7 @@ func (ctx *Client) UpdateStatus(text string, withNotification, isFinal bool, key
 					ctx.statusText = text
 					return nil
 				}
+				ctx.dropStatus()
 			}
 		}
 		res, err := ctx.client.Invoke(
