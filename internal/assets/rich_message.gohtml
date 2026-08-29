@@ -14,7 +14,7 @@ import "rich_changes"
 {{ getRichChanges(changes, getStats(total_stats)) }}
 {%- else %}
 <h3>{% if title %}{{ title }}{% else %}{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}{% endif %}</h3>
-<p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
+<p><i>{% if title %}{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · {% endif %}Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
 {%- if lead %}
 <p>{{ lead | safe }}</p>
 {%- endif %}
