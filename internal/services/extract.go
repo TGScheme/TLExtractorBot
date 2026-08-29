@@ -81,7 +81,14 @@ func (s *Service) buildScheme(
 			return nil, err
 		}
 		_ = s.updateStatus(update, isPatch, stageExtracting, 100)
-		return android.ExtractScheme(s.cfg.WorkDir, s.scheme, branch)
+		fullScheme, extracted, err := android.ExtractScheme(s.cfg.WorkDir, s.scheme, branch)
+		if err != nil {
+			return nil, err
+		}
+		if err = s.applyDisappeared(update.Source, fullScheme, extracted); err != nil {
+			return nil, err
+		}
+		return fullScheme, nil
 	}
 
 	var remoteScheme *schemeTypes.TLRemoteScheme
