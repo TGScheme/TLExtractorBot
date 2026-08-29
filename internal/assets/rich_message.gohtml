@@ -18,6 +18,5 @@ import "rich_changes"
 {%- if lead %}
 <p>{{ lead | safe }}</p>
 {%- endif %}
-<hr>
 {%- endif %}
 <footer>#{{ osShortName(update.Source) }} #{% if is_stable %}Stable{% else %}Preview{% endif %} #Layer{{ layer }}{% if is_patch %} #Patch{% endif %}</footer>
