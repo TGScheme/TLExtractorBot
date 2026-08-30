@@ -1,7 +1,16 @@
-# TLExtractorBot
-
-Extracts the Telegram TL scheme from the Android apk, tdesktop and TDLib, merges
-the three, and publishes the result to GitHub, Telegraph and Telegram.
+<p align="center">
+    <img src="assets/tl-icon-dark.svg" width="110" alt="TLExtractorBot">
+</p>
+<h1 align="center">TLExtractorBot</h1>
+<p align="center">
+    Extracts the Telegram TL scheme from the Android apk, TDesktop and TDLib,
+    merges the three, and publishes the result to GitHub, Telegraph and Telegram.
+</p>
+<p align="center">
+    <img src="https://img.shields.io/badge/go-1.26-00ADD8" alt="Go 1.26">
+    <img src="https://img.shields.io/badge/runs%20on-docker-blue" alt="Docker">
+    <img src="https://img.shields.io/badge/license-LGPL--3.0-yellow" alt="LGPL-3.0">
+</p>
 
 ## Running
 
