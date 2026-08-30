@@ -75,6 +75,7 @@ func (s *Service) buildScheme(
 	isPatch bool,
 ) (*schemeTypes.TLFullScheme, error) {
 	if update.Source == "android" {
+		_ = s.updateStatus(update, isPatch, stageDecompiling, 0)
 		if err := jadx.Decompile(s.cfg, func(percentage int64) {
 			_ = s.updateStatus(update, isPatch, stageDecompiling, percentage)
 		}); err != nil {
