@@ -42,11 +42,13 @@ var (
 	PackagesFolder    = "packages"
 	TempFolder        = "temp"
 	GithubPem         = "github.pem"
+	TgnetPackage      = "org.telegram.tgnet"
 	TempBins          = path.Join(TempFolder, "bins")
 	TempPackages      = path.Join(TempFolder, "packages")
 	TempApk           = path.Join(TempBins, "telegram.apk")
 	TempDecompiled    = path.Join(TempFolder, "decompiled")
-	TempSources       = path.Join(TempDecompiled, "sources", "org", "telegram", "tgnet")
+	TempSourcesRoot   = path.Join(TempDecompiled, "sources")
+	TempSources       = path.Join(TempSourcesRoot, "org", "telegram", "tgnet")
 )
 
 var (

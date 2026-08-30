@@ -1,10 +1,13 @@
 FROM golang:1.26-alpine
-RUN apk add --no-cache git gcc musl-dev openjdk21-jre-headless postgresql-client curl unzip \
+RUN apk add --no-cache git gcc musl-dev openjdk21-jdk postgresql-client curl unzip \
  && go install github.com/air-verse/air@latest \
  && go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest \
  && curl -sSL -o /tmp/jadx.zip https://github.com/skylot/jadx/releases/download/v1.5.0/jadx-1.5.0.zip \
  && mkdir -p /opt/jadx \
  && unzip -q /tmp/jadx.zip -d /opt/jadx \
  && rm /tmp/jadx.zip
+COPY internal/java/jadx/TLExtract.java /tmp/TLExtract.java
+RUN javac --release 21 -nowarn -cp /opt/jadx/lib/jadx-1.5.0-all.jar -d /tmp/classes /tmp/TLExtract.java \
+ && jar cf /opt/jadx/lib/tlextract.jar -C /tmp/classes .
 WORKDIR /app
 CMD ["sh", "-c", "go get ./cmd/sqlgen ./cmd/bot && air"]

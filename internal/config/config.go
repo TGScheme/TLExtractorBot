@@ -27,9 +27,10 @@ func Load() (*Config, error) {
 
 		BannerURL: getEnvString("BANNER_URL", "https://telegra.ph/file/5d6793d8428d3ce93fd95.png"),
 
-		WorkDir: getEnvString("WORK_DIR", "/var/lib/tlextractor"),
-		JadxJar: getEnvString("JADX_JAR", "/opt/jadx/lib/jadx-1.5.0-all.jar"),
-		JavaBin: getEnvString("JAVA_BIN", "java"),
+		WorkDir:    getEnvString("WORK_DIR", "/var/lib/tlextractor"),
+		JadxJar:    getEnvString("JADX_JAR", "/opt/jadx/lib/jadx-1.5.0-all.jar"),
+		ExtractJar: getEnvString("JADX_EXTRACT_JAR", "/opt/jadx/lib/tlextract.jar"),
+		JavaBin:    getEnvString("JAVA_BIN", "java"),
 
 		JadxThreads: int(getEnvInt64("JADX_THREADS", 0)),
 		JadxJVMOpts: getEnvString("JADX_JVM_OPTS", "-Xms256M -XX:MaxRAMPercentage=70.0"),

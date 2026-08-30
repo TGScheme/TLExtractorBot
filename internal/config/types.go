@@ -20,9 +20,10 @@ type Config struct {
 
 	BannerURL string
 
-	WorkDir string
-	JadxJar string
-	JavaBin string
+	WorkDir    string
+	JadxJar    string
+	ExtractJar string
+	JavaBin    string
 
 	JadxThreads int
 	JadxJVMOpts string

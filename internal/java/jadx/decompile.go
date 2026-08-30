@@ -22,11 +22,11 @@ import (
 var progressRgx = regexp.MustCompile(`INFO\s+-\s+progress:\s+[0-9]+\s+of\s+[0-9]+\s+\(([0-9]+)%\)`)
 
 func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
-	outDir := path.Join(cfg.WorkDir, consts.TempDecompiled)
-	if err := os.RemoveAll(outDir); err != nil && !os.IsExist(err) {
+	sources := path.Join(cfg.WorkDir, consts.TempSourcesRoot)
+	if err := os.RemoveAll(path.Join(cfg.WorkDir, consts.TempDecompiled)); err != nil && !os.IsExist(err) {
 		return err
 	}
-	if err := os.MkdirAll(outDir, os.ModePerm); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(sources, os.ModePerm); err != nil && !os.IsExist(err) {
 		return err
 	}
 	threads := cfg.JadxThreads
@@ -40,19 +40,16 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 	args := append(
 		jvmOpts,
 		"-Djdk.util.zip.disableZip64ExtraFieldValidation=true",
-		"-cp", cfg.JadxJar,
-		"jadx.cli.JadxCLI",
-		"--comments-level", "none",
-		"--no-replace-consts",
-		"--no-res",
-		"--no-inline-anonymous",
-		"-j", strconv.Itoa(threads),
-		"--output-dir", outDir,
+		"-cp", cfg.JadxJar+string(os.PathListSeparator)+cfg.ExtractJar,
+		"TLExtract",
 		path.Join(cfg.WorkDir, consts.TempApk),
+		sources,
+		consts.TgnetPackage,
+		strconv.Itoa(threads),
 	)
 	gologging.Info(fmt.Sprintf(
-		"jadx: %d threads (numcpu %d, gomaxprocs %d), jvm opts %q",
-		threads, runtime.NumCPU(), runtime.GOMAXPROCS(0), strings.Join(jvmOpts, " "),
+		"jadx: %d threads (numcpu %d, gomaxprocs %d), jvm opts %q, package %s",
+		threads, runtime.NumCPU(), runtime.GOMAXPROCS(0), strings.Join(jvmOpts, " "), consts.TgnetPackage,
 	))
 	cmd := exec.Command(cfg.JavaBin, args...)
 	stdout, err := cmd.StdoutPipe()
