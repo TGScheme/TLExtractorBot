@@ -1,7 +1,6 @@
 package consts
 
 import (
-	"errors"
 	"path"
 	"regexp"
 	"time"
@@ -22,16 +21,11 @@ const (
 var TDesktopBranch = "dev"
 
 const (
-	ServiceDisplayName    = "TL Extractor Service"
-	ServiceDescription    = "Automatically fetches, decompile and commits new Telegram Android TL schema changes."
-	ServiceName           = "tl-extractor"
 	UpdateMessageRate     = time.Second * 3
 	AndroidBetaChannel    = "TAndroidBeta"
 	ChannelPostWindow     = 20
 	MTProtoSessionFile    = "mtproto.session"
 	MTProtoReconnectDelay = time.Second * 15
-	MaxGithubRequests     = 5000 - 100
-	NumSources            = 3
 )
 
 var (
@@ -40,18 +34,13 @@ var (
 )
 
 var (
-	CredentialsFolder = "credentials.json"
-	StorageFolder     = "storage.json"
-	PackagesFolder    = "packages"
-	TempFolder        = "temp"
-	GithubPem         = "github.pem"
-	TgnetPackage      = "org.telegram.tgnet"
-	TempBins          = path.Join(TempFolder, "bins")
-	TempPackages      = path.Join(TempFolder, "packages")
-	TempApk           = path.Join(TempBins, "telegram.apk")
-	TempDecompiled    = path.Join(TempFolder, "decompiled")
-	TempSourcesRoot   = path.Join(TempDecompiled, "sources")
-	TempSources       = path.Join(TempSourcesRoot, "org", "telegram", "tgnet")
+	TempFolder      = "temp"
+	TgnetPackage    = "org.telegram.tgnet"
+	TempBins        = path.Join(TempFolder, "bins")
+	TempApk         = path.Join(TempBins, "telegram.apk")
+	TempDecompiled  = path.Join(TempFolder, "decompiled")
+	TempSourcesRoot = path.Join(TempDecompiled, "sources")
+	TempSources     = path.Join(TempSourcesRoot, "org", "telegram", "tgnet")
 )
 
 var (
@@ -92,12 +81,6 @@ var SupportedBotAliases = []string{
 	"/",
 	"!",
 }
-
-var (
-	PackageNotFound = errors.New("package not found")
-	JadxNotFound    = errors.New("jadx not found")
-	InvalidToken    = errors.New("invalid token")
-)
 
 const (
 	JavaClassQuery = `
