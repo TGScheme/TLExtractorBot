@@ -15,6 +15,7 @@ type progressWriter struct {
 	total      int64
 	mutex      sync.Mutex
 	written    int64
+	reported   int64
 	lastAt     time.Time
 	onProgress func(percentage int64)
 }
@@ -26,10 +27,10 @@ func (w *progressWriter) WriteAt(chunk []byte, offset int64) (int, error) {
 	}
 	w.mutex.Lock()
 	w.written += int64(written)
-	report := time.Since(w.lastAt) >= consts.UpdateMessageRate
 	percentage := w.written * 100 / w.total
+	report := percentage > w.reported && time.Since(w.lastAt) >= consts.UpdateMessageRate
 	if report {
-		w.lastAt = time.Now()
+		w.lastAt, w.reported = time.Now(), percentage
 	}
 	w.mutex.Unlock()
 	if report {

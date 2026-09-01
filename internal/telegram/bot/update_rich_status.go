@@ -7,6 +7,16 @@ import (
 )
 
 func (ctx *Client) UpdateRichStatus(html, plain string) error {
+	if err := ctx.richStatus(html); err != nil {
+		gologging.Error("telegram: unable to send the rich status, falling back to the plain one:", err)
+		return ctx.UpdateStatus(plain, false, false, nil)
+	}
+	return nil
+}
+
+func (ctx *Client) richStatus(html string) error {
+	ctx.statusMutex.Lock()
+	defer ctx.statusMutex.Unlock()
 	if ctx.statusMessageID != 0 {
 		if html == ctx.statusText {
 			return nil
@@ -27,8 +37,7 @@ func (ctx *Client) UpdateRichStatus(html, plain string) error {
 		DisableNotification: true,
 	})
 	if err != nil {
-		gologging.Error("telegram: unable to send the rich status, falling back to the plain one:", err)
-		return ctx.UpdateStatus(plain, false, false, nil)
+		return err
 	}
 	ctx.statusMessageID = res.Result.(types.Message).MessageID
 	ctx.statusText = html

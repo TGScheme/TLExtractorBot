@@ -19,6 +19,7 @@ type Client struct {
 	logChatID int64
 	startedAt time.Time
 
+	statusMutex     sync.Mutex
 	statusMessageID int64
 	statusText      string
 

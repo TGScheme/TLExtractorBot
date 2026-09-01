@@ -6,6 +6,8 @@ import (
 )
 
 func (ctx *Client) UpdateStatus(text string, withNotification, isFinal bool, keyboard *types.InlineKeyboardMarkup) error {
+	ctx.statusMutex.Lock()
+	defer ctx.statusMutex.Unlock()
 	if len(text) == 0 {
 		_, err := ctx.client.Invoke(
 			&methods.DeleteMessage{
