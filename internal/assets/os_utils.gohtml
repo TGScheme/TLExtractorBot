@@ -14,7 +14,7 @@ TDLib
 {%- if osName == "tdesktop" || osName == "tdlib" -%}
 {{versionName}}
 {%- elif osName == "android" || osName == "ios" -%}
-{{versionName}} ({{buildNumber}})
+{%- if buildNumber -%}{{versionName}} ({{buildNumber}}){%- endif -%}
 {%- endif -%}
 {%- endmacro %}
 

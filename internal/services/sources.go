@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"runtime/debug"
+	"strconv"
 
 	"github.com/Laky-64/gologging"
 	"github.com/Laky-64/http"
@@ -69,6 +70,10 @@ func (s *Service) pollSources() {
 	}
 	isPatch := s.patch.Load()
 	update := UpdateInfo{Source: "android"}
+	if version := consts.BetaPostVersionRgx.FindStringSubmatch(post.Text); version != nil {
+		build, _ := strconv.ParseUint(version[2], 10, 32)
+		update.VersionName, update.BuildNumber = version[1], uint32(build)
+	}
 	if err = s.updateStatus(update, isPatch, stageDownloading, 0); err != nil {
 		gologging.Error(err)
 		return
@@ -99,6 +104,9 @@ func (s *Service) pollSources() {
 			post.ID, info.VersionName, buildNumber, settings.LastVersionCode,
 		))
 		if err = s.db.SettingsStore.SetLastPostID(int64(post.ID)); err != nil {
+			gologging.Error(err)
+		}
+		if err = s.bot.UpdateStatus("", false, false, nil); err != nil {
 			gologging.Error(err)
 		}
 		return
