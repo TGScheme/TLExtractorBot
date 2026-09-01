@@ -37,6 +37,7 @@ func main() {
 	if err != nil {
 		gologging.Fatal(err)
 	}
+	defer botClient.Close()
 	githubClient, err := github.New(cfg)
 	if err != nil {
 		gologging.Fatal(err)

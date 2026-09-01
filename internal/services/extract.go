@@ -14,7 +14,6 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/db/models"
 	"github.com/TGScheme/TLExtractorBot/internal/gemini"
 	"github.com/TGScheme/TLExtractorBot/internal/java/jadx"
-	storeTypes "github.com/TGScheme/TLExtractorBot/internal/storeapi/types"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
 	telegraphTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/telegraph/types"
@@ -22,7 +21,7 @@ import (
 
 const maxReportedProblems = 10
 
-func (s *Service) extract(update storeTypes.UpdateInfo) error {
+func (s *Service) extract(update UpdateInfo) error {
 	isPatch := s.patch.Load()
 	stage := initialStage(update.Source)
 	if update.Source == "android" {
@@ -68,7 +67,7 @@ func (s *Service) extract(update storeTypes.UpdateInfo) error {
 }
 
 func (s *Service) buildScheme(
-	update storeTypes.UpdateInfo,
+	update UpdateInfo,
 	branch string,
 	preview *schemeTypes.TLFullScheme,
 	previewLayer int,
@@ -149,7 +148,7 @@ func clonePreview(preview *schemeTypes.TLFullScheme, layer int, isE2E bool) *sch
 }
 
 func (s *Service) publish(
-	update storeTypes.UpdateInfo,
+	update UpdateInfo,
 	fullScheme *schemeTypes.TLFullScheme,
 	preview *schemeTypes.TLFullScheme,
 	differences *schemeTypes.TLFullDifferences,
@@ -263,7 +262,7 @@ func (s *Service) publish(
 	return s.promote(fullScheme, preview)
 }
 
-func (s *Service) reportProblems(update storeTypes.UpdateInfo, layer int, problems []scheme.Problem, blocking bool) error {
+func (s *Service) reportProblems(update UpdateInfo, layer int, problems []scheme.Problem, blocking bool) error {
 	for _, problem := range problems {
 		gologging.Error("scheme:", problem)
 	}

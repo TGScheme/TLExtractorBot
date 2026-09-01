@@ -1,4 +1,4 @@
-package types
+package services
 
 type UpdateInfo struct {
 	VersionName string

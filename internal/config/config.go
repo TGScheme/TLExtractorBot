@@ -11,6 +11,8 @@ func Load() (*Config, error) {
 		Debug: getEnvBool("DEBUG", false),
 
 		BotToken:       os.Getenv("BOT_TOKEN"),
+		APIID:          int(getEnvInt64("API_ID", 0)),
+		APIHash:        os.Getenv("API_HASH"),
 		ChannelID:      getEnvInt64("CHANNEL_ID", 0),
 		LogChatID:      getEnvInt64("LOG_CHAT_ID", 0),
 		BackupChatID:   getEnvInt64("BACKUP_CHAT_ID", 0),
@@ -49,6 +51,8 @@ func Load() (*Config, error) {
 		empty bool
 	}{
 		{"BOT_TOKEN", cfg.BotToken == ""},
+		{"API_ID", cfg.APIID == 0},
+		{"API_HASH", cfg.APIHash == ""},
 		{"TELEGRAPH_TOKEN", cfg.TelegraphToken == ""},
 		{"GEMINI_TOKEN", cfg.GeminiToken == ""},
 		{"CHANNEL_ID", cfg.ChannelID == 0},

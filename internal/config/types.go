@@ -4,6 +4,8 @@ type Config struct {
 	Debug bool
 
 	BotToken       string
+	APIID          int
+	APIHash        string
 	ChannelID      int64
 	LogChatID      int64
 	BackupChatID   int64

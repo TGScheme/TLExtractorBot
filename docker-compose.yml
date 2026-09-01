@@ -42,6 +42,8 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       BOT_TOKEN: ${BOT_TOKEN}
+      API_ID: ${API_ID}
+      API_HASH: ${API_HASH}
       CHANNEL_ID: ${CHANNEL_ID}
       LOG_CHAT_ID: ${LOG_CHAT_ID}
       BACKUP_CHAT_ID: ${BACKUP_CHAT_ID}

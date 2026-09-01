@@ -2,13 +2,15 @@ package services
 
 import (
 	"fmt"
+	"os"
+	"path"
 	"runtime/debug"
 
 	"github.com/Laky-64/gologging"
 	"github.com/Laky-64/http"
+	"github.com/TGScheme/TLExtractorBot/internal/android"
 	"github.com/TGScheme/TLExtractorBot/internal/consts"
-	"github.com/TGScheme/TLExtractorBot/internal/storeapi"
-	storeTypes "github.com/TGScheme/TLExtractorBot/internal/storeapi/types"
+	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/TGScheme/TLExtractorBot/internal/utils"
 )
 
@@ -31,7 +33,7 @@ func (s *Service) pollSources() {
 		if version, name, errFetch := s.tdesktopVersion(settings.TdesktopBranch); errFetch != nil {
 			gologging.Error(errFetch)
 		} else if int64(version) > settings.LastTdeskID {
-			s.dispatch(storeTypes.UpdateInfo{
+			s.dispatch(UpdateInfo{
 				VersionName: name,
 				BuildNumber: uint32(version),
 				Source:      "tdesktop",
@@ -42,7 +44,7 @@ func (s *Service) pollSources() {
 		if version, name, errFetch := s.tdlibVersion(); errFetch != nil {
 			gologging.Error(errFetch)
 		} else if int64(version) > settings.LastTdlibID {
-			s.dispatch(storeTypes.UpdateInfo{
+			s.dispatch(UpdateInfo{
 				VersionName: name,
 				BuildNumber: uint32(version),
 				Source:      "tdlib",
@@ -51,25 +53,32 @@ func (s *Service) pollSources() {
 		}
 	}
 
-	info, err := storeapi.GetAppInfo()
+	post, err := s.betaPost(settings.LastPostID)
 	if err != nil {
 		gologging.Error(err)
 		return
 	}
-	if int64(info.VersionCode) <= settings.LastVersionCode && !s.patch.Load() {
+	if post == nil {
 		return
 	}
-	update := storeTypes.UpdateInfo{
-		VersionName: info.Version,
-		BuildNumber: info.VersionCode,
-		Source:      "android",
+	if post.Document == nil {
+		if err = s.db.SettingsStore.SetLastPostID(int64(post.ID)); err != nil {
+			gologging.Error(err)
+		}
+		return
 	}
 	isPatch := s.patch.Load()
+	update := UpdateInfo{Source: "android"}
 	if err = s.updateStatus(update, isPatch, stageDownloading, 0); err != nil {
 		gologging.Error(err)
 		return
 	}
-	if err = storeapi.DownloadApk(s.cfg, info, func(percentage int64) {
+	apkPath := path.Join(s.cfg.WorkDir, consts.TempApk)
+	if err = os.MkdirAll(path.Join(s.cfg.WorkDir, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
+		gologging.Error(err)
+		return
+	}
+	if err = s.bot.DownloadDocument(post.Document, apkPath, func(percentage int64) {
 		_ = s.updateStatus(update, isPatch, stageDownloading, percentage)
 	}); err != nil {
 		gologging.Error(err)
@@ -78,12 +87,54 @@ func (s *Service) pollSources() {
 		}
 		return
 	}
+	info, err := android.ReadAPKInfo(apkPath)
+	if err != nil {
+		gologging.Error(err)
+		return
+	}
+	buildNumber := info.VersionCode / 10
+	if int64(buildNumber) <= settings.LastVersionCode && !isPatch {
+		gologging.Info(fmt.Sprintf(
+			"beta channel: post %d carries %s (%d), not newer than %d",
+			post.ID, info.VersionName, buildNumber, settings.LastVersionCode,
+		))
+		if err = s.db.SettingsStore.SetLastPostID(int64(post.ID)); err != nil {
+			gologging.Error(err)
+		}
+		return
+	}
+	update.VersionName, update.BuildNumber = info.VersionName, buildNumber
 	s.dispatch(update, func() error {
-		return s.db.SettingsStore.SetLastVersionCode(int64(info.VersionCode))
+		if err = s.db.SettingsStore.SetLastPostID(int64(post.ID)); err != nil {
+			return err
+		}
+		return s.db.SettingsStore.SetLastVersionCode(int64(buildNumber))
 	})
 }
 
-func (s *Service) dispatch(update storeTypes.UpdateInfo, commit func() error) {
+func (s *Service) betaPost(lastPostID int64) (*bot.ChannelPost, error) {
+	if s.patch.Load() {
+		if lastPostID > 0 {
+			return s.bot.GetChannelPost(consts.AndroidBetaChannel, int(lastPostID))
+		}
+		latest, err := s.bot.LatestChannelPost(consts.AndroidBetaChannel)
+		if err != nil {
+			return nil, err
+		}
+		return s.bot.GetChannelPost(consts.AndroidBetaChannel, latest)
+	}
+	if lastPostID == 0 {
+		latest, err := s.bot.LatestChannelPost(consts.AndroidBetaChannel)
+		if err != nil {
+			return nil, err
+		}
+		gologging.Info(fmt.Sprintf("beta channel: starting from post %d", latest))
+		return nil, s.db.SettingsStore.SetLastPostID(int64(latest))
+	}
+	return s.bot.NextChannelPost(consts.AndroidBetaChannel, int(lastPostID))
+}
+
+func (s *Service) dispatch(update UpdateInfo, commit func() error) {
 	s.building.Store(true)
 	defer s.building.Store(false)
 	defer func() {

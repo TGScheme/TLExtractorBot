@@ -1,5 +1,6 @@
 -- name: GetSettings :one
 SELECT last_version_code,
+       last_post_id,
        last_tdesk_id,
        last_tdlib_id,
        last_corefork_layer,
@@ -11,6 +12,9 @@ WHERE id = TRUE;
 
 -- name: SetLastVersionCode :exec
 UPDATE settings SET last_version_code = @last_version_code, updated_at = NOW() WHERE id = TRUE;
+
+-- name: SetLastPostID :exec
+UPDATE settings SET last_post_id = @last_post_id, updated_at = NOW() WHERE id = TRUE;
 
 -- name: SetLastTDeskID :exec
 UPDATE settings SET last_tdesk_id = @last_tdesk_id, updated_at = NOW() WHERE id = TRUE;

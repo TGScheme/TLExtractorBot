@@ -8,27 +8,30 @@ import (
 )
 
 const (
-	TDesktopSources  = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/%s/Telegram/SourceFiles"
-	TDLibSources     = "https://raw.githubusercontent.com/tdlib/td/master/"
-	TDesktopTL       = TDesktopSources + "/mtproto/scheme/api.tl"
-	TDLibTL          = TDLibSources + "td/generate/scheme/telegram_api.tl"
-	TDAndroidBetaAPI = "https://telegram.org/dl/android/apk-public-beta.json"
-	E2ETL            = "https://core.telegram.org/schema/end-to-end-json"
-	TelegraphApi     = "https://api.telegra.ph"
-	TelegraphUrl     = "https://telegra.ph"
-	GithubURL        = "https://github.com"
-	MainReleasedTL   = "https://corefork.telegram.org"
+	TDesktopSources = "https://raw.githubusercontent.com/telegramdesktop/tdesktop/%s/Telegram/SourceFiles"
+	TDLibSources    = "https://raw.githubusercontent.com/tdlib/td/master/"
+	TDesktopTL      = TDesktopSources + "/mtproto/scheme/api.tl"
+	TDLibTL         = TDLibSources + "td/generate/scheme/telegram_api.tl"
+	E2ETL           = "https://core.telegram.org/schema/end-to-end-json"
+	TelegraphApi    = "https://api.telegra.ph"
+	TelegraphUrl    = "https://telegra.ph"
+	GithubURL       = "https://github.com"
+	MainReleasedTL  = "https://corefork.telegram.org"
 )
 
 var TDesktopBranch = "dev"
 
 const (
-	ServiceDisplayName = "TL Extractor Service"
-	ServiceDescription = "Automatically fetches, decompile and commits new Telegram Android TL schema changes."
-	ServiceName        = "tl-extractor"
-	UpdateMessageRate  = time.Second * 3
-	MaxGithubRequests  = 5000 - 100
-	NumSources         = 3
+	ServiceDisplayName    = "TL Extractor Service"
+	ServiceDescription    = "Automatically fetches, decompile and commits new Telegram Android TL schema changes."
+	ServiceName           = "tl-extractor"
+	UpdateMessageRate     = time.Second * 3
+	AndroidBetaChannel    = "TAndroidBeta"
+	ChannelPostWindow     = 20
+	MTProtoSessionFile    = "mtproto.session"
+	MTProtoReconnectDelay = time.Second * 15
+	MaxGithubRequests     = 5000 - 100
+	NumSources            = 3
 )
 
 var (
