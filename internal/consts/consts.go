@@ -24,7 +24,7 @@ const (
 	UpdateMessageRate     = time.Second * 3
 	AndroidBetaChannel    = "TAndroidBeta"
 	ChannelPostWindow     = 20
-	DownloadThreads       = 8
+	DownloadThreads       = 2
 	MTProtoSessionFile    = "mtproto.session"
 	MTProtoReconnectDelay = time.Second * 15
 )
