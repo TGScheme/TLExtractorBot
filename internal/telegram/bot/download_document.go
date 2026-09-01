@@ -1,10 +1,12 @@
 package bot
 
 import (
+	"fmt"
 	"os"
 	"sync"
 	"time"
 
+	"github.com/Laky-64/gologging"
 	"github.com/TGScheme/TLExtractorBot/internal/consts"
 	"github.com/gotd/td/telegram/downloader"
 	"github.com/gotd/td/tg"
@@ -61,6 +63,10 @@ func (ctx *Client) DownloadDocument(document *tg.Document, dest string, onProgre
 		ID:            document.ID,
 		AccessHash:    document.AccessHash,
 		FileReference: document.FileReference,
-	}).WithThreads(consts.DownloadThreads).Parallel(ctx.mtProtoCtx, writer)
+	}).WithThreads(consts.DownloadThreads).WithRetryHandler(func(event downloader.RetryEvent) {
+		gologging.Warn(fmt.Sprintf(
+			"download: %s retried (attempt %d): %v", event.Operation, event.Attempt, event.Err,
+		))
+	}).Parallel(ctx.mtProtoCtx, writer)
 	return err
 }
