@@ -61,6 +61,6 @@ func (ctx *Client) DownloadDocument(document *tg.Document, dest string, onProgre
 		ID:            document.ID,
 		AccessHash:    document.AccessHash,
 		FileReference: document.FileReference,
-	}).Parallel(ctx.mtProtoCtx, writer)
+	}).WithThreads(consts.DownloadThreads).Parallel(ctx.mtProtoCtx, writer)
 	return err
 }
