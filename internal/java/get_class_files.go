@@ -25,6 +25,12 @@ func getClassFiles(workDir string, language *sitter.Language) (map[string]string
 
 	contentFiles := make(map[string]string)
 
+	query, queryErr := sitter.NewQuery(language, consts.JavaClassQuery)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	defer query.Close()
+
 	if !IsUnified(workDir) {
 		for _, file := range dir {
 			if file.IsDir {
@@ -46,7 +52,6 @@ func getClassFiles(workDir string, language *sitter.Language) (map[string]string
 				return nil, err
 			}
 			tree := parser.Parse(readFile, nil)
-			query, _ := sitter.NewQuery(language, consts.JavaClassQuery)
 			cursor := sitter.NewQueryCursor()
 			matches := cursor.Matches(query, tree.RootNode(), readFile)
 			match := matches.Next()

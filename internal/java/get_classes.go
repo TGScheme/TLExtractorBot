@@ -16,6 +16,22 @@ func GetClasses(workDir string) (map[string]map[string]*types.AstClass, *sitter.
 		return nil, nil, err
 	}
 
+	query, queryErr := sitter.NewQuery(language, consts.JavaClassWithNameQuery)
+	if queryErr != nil {
+		return nil, nil, queryErr
+	}
+	defer query.Close()
+	classVarsQuery, queryErr := sitter.NewQuery(language, consts.ExtractJavaVars)
+	if queryErr != nil {
+		return nil, nil, queryErr
+	}
+	defer classVarsQuery.Close()
+	classMethQuery, queryErr := sitter.NewQuery(language, consts.ExtractJavaFunctions)
+	if queryErr != nil {
+		return nil, nil, queryErr
+	}
+	defer classMethQuery.Close()
+
 	allClassesReturn := make(map[string]map[string]*types.AstClass)
 
 	for parent, file := range files {
@@ -29,7 +45,6 @@ func GetClasses(workDir string) (map[string]map[string]*types.AstClass, *sitter.
 		}
 		fileBytes := []byte(file)
 		tree := parser.Parse(fileBytes, nil)
-		query, _ := sitter.NewQuery(language, consts.JavaClassWithNameQuery)
 		cursor := sitter.NewQueryCursor()
 		matches := cursor.Matches(query, tree.RootNode(), fileBytes)
 		for data := matches.Next(); data != nil; data = matches.Next() {
@@ -46,7 +61,6 @@ func GetClasses(workDir string) (map[string]map[string]*types.AstClass, *sitter.
 			classBytes := []byte(data.Captures[0].Node.Utf8Text(fileBytes))
 			classTree := parserClass.Parse(classBytes, nil)
 
-			classVarsQuery, _ := sitter.NewQuery(language, consts.ExtractJavaVars)
 			classVarsCursor := sitter.NewQueryCursor()
 			classVarsMatches := classVarsCursor.Matches(classVarsQuery, classTree.RootNode(), classBytes)
 			classVars := make(map[string]*types.AstVar)
@@ -64,10 +78,8 @@ func GetClasses(workDir string) (map[string]map[string]*types.AstClass, *sitter.
 				classVars[varData.Captures[1].Node.Utf8Text(classBytes)] = info
 			}
 
-			classVarsQuery.Close()
 			classVarsCursor.Close()
 
-			classMethQuery, _ := sitter.NewQuery(language, consts.ExtractJavaFunctions)
 			classMethCursor := sitter.NewQueryCursor()
 			classMethMatches := classMethCursor.Matches(classMethQuery, classTree.RootNode(), classBytes)
 			classMethods := make(map[string]string)
@@ -83,7 +95,6 @@ func GetClasses(workDir string) (map[string]map[string]*types.AstClass, *sitter.
 				}
 			}
 
-			classMethQuery.Close()
 			classMethCursor.Close()
 
 			classTree.Close()
@@ -118,7 +129,6 @@ func GetClasses(workDir string) (map[string]map[string]*types.AstClass, *sitter.
 		}
 		tree.Close()
 		parser.Close()
-		query.Close()
 	}
 
 	classesReturn := make(map[string]map[string]*types.AstClass)

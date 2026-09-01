@@ -11,7 +11,7 @@ func (ctx *Client) UpdateUpstreamCache(source string, localScheme *types.TLRemot
 	if localScheme == nil {
 		tempTdLibScheme, errCache := GetTDLibScheme()
 		if errCache != nil {
-			return err
+			return errCache
 		}
 		tempTDeskScheme, errCache := GetScheme(branch)
 		if errCache != nil {

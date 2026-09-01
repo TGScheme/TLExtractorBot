@@ -51,6 +51,7 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		"jadx: %d threads (numcpu %d, gomaxprocs %d), jvm opts %q, package %s",
 		threads, runtime.NumCPU(), runtime.GOMAXPROCS(0), strings.Join(jvmOpts, " "), consts.TgnetPackage,
 	))
+	started := time.Now()
 	cmd := exec.Command(cfg.JavaBin, args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -90,6 +91,7 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		}
 		return err
 	}
+	gologging.Info(fmt.Sprintf("jadx: decompiled the package in %s", time.Since(started).Round(time.Millisecond)))
 	return checkOutput(cfg.WorkDir)
 }
 
