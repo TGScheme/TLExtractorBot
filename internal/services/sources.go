@@ -111,11 +111,12 @@ func (s *Service) pollSources() {
 		}
 		return
 	}
+	if err = s.db.SettingsStore.SetLastPostID(int64(post.ID)); err != nil {
+		gologging.Error(err)
+		return
+	}
 	update.VersionName, update.BuildNumber = info.VersionName, buildNumber
 	s.dispatch(update, func() error {
-		if err = s.db.SettingsStore.SetLastPostID(int64(post.ID)); err != nil {
-			return err
-		}
 		return s.db.SettingsStore.SetLastVersionCode(int64(buildNumber))
 	})
 }
@@ -145,6 +146,7 @@ func (s *Service) betaPost(lastPostID int64) (*bot.ChannelPost, error) {
 func (s *Service) dispatch(update UpdateInfo, commit func() error) {
 	s.building.Store(true)
 	defer s.building.Store(false)
+	defer s.patch.Store(false)
 	defer func() {
 		if recovered := recover(); recovered != nil {
 			gologging.Error(fmt.Sprintf("extraction panic (%s): %v\n%s", update.Source, recovered, debug.Stack()))
@@ -156,9 +158,7 @@ func (s *Service) dispatch(update UpdateInfo, commit func() error) {
 	}
 	if err := commit(); err != nil {
 		gologging.Error(err)
-		return
 	}
-	s.patch.Store(false)
 }
 
 func (s *Service) tdesktopVersion(branch string) (int, string, error) {
