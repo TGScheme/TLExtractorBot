@@ -19,6 +19,10 @@ func (s *Service) pollSources() {
 	if s.building.Load() {
 		return
 	}
+	if !s.polling.CompareAndSwap(false, true) {
+		return
+	}
+	defer s.polling.Store(false)
 	settings, err := s.db.SettingsStore.GetSettings()
 	if err != nil {
 		gologging.Error(err)

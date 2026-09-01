@@ -23,6 +23,7 @@ type Service struct {
 	scheme    *scheme.Client
 
 	building atomic.Bool
+	polling  atomic.Bool
 	patch    atomic.Bool
 }
 
