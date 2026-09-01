@@ -50,7 +50,7 @@ func (s *Service) Register(c *cron.Cron) error {
 	if _, err := c.AddFunc("@every 30s", s.pollCoreFork); err != nil {
 		return err
 	}
-	if _, err := c.AddFunc("@every 15s", s.pollSources); err != nil {
+	if _, err := c.AddFunc("@every 10s", s.pollSources); err != nil {
 		return err
 	}
 	if _, err := c.AddFunc("0 */6 * * *", s.backupDatabase); err != nil {
