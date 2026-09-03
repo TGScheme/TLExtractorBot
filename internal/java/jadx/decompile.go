@@ -63,6 +63,15 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		return err
 	}
 
+	updates := make(chan int64, 1)
+	reported := make(chan struct{})
+	go func() {
+		defer close(reported)
+		for percentage := range updates {
+			onProgress(percentage)
+		}
+	}()
+
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
@@ -80,10 +89,15 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 				continue
 			}
 			last, lastAt = percentage, time.Now()
-			onProgress(percentage)
+			select {
+			case updates <- percentage:
+			default:
+			}
 		}
 	}()
 	<-done
+	close(updates)
+	<-reported
 
 	if err = cmd.Wait(); err != nil {
 		if message := stdErr.String(); len(message) > 0 {
