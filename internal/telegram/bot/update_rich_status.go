@@ -6,15 +6,7 @@ import (
 	"github.com/Laky-64/gologging"
 )
 
-func (ctx *Client) UpdateRichStatus(html, plain string) error {
-	if err := ctx.richStatus(html); err != nil {
-		gologging.Error("telegram: unable to send the rich status, falling back to the plain one:", err)
-		return ctx.UpdateStatus(plain, false, false, nil)
-	}
-	return nil
-}
-
-func (ctx *Client) richStatus(html string) error {
+func (ctx *Client) UpdateRichStatus(html string) error {
 	ctx.statusMutex.Lock()
 	defer ctx.statusMutex.Unlock()
 	if ctx.statusMessageID != 0 {
@@ -29,7 +21,9 @@ func (ctx *Client) richStatus(html string) error {
 			ctx.statusText = html
 			return nil
 		}
-		ctx.dropStatus()
+		if err := ctx.dropStatus(); err != nil {
+			gologging.Error("telegram: unable to delete the stale status message:", err)
+		}
 	}
 	res, err := ctx.client.Invoke(&methods.SendRichMessage{
 		ChatID:              ctx.channelID,

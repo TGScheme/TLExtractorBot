@@ -266,44 +266,41 @@ func parseWriteSideTernary(tern *sitter.Node, src []byte) (boolName, rawBase str
 		return "", "", 0, false
 	}
 
-	var bn string
-	if cond != nil {
-		switch cond.Kind() {
-		case "field_access":
-			bn = fieldNameFromLHS(cond, src)
-		case "identifier":
-			bn = textOf(cond, src)
-		}
-	}
+	bn := nameOfNode(cond, src)
 	if bn == "" {
 		return "", "", 0, false
 	}
-
-	var base string
-	switch baseNode.Kind() {
-	case "field_access":
-		base = fieldNameFromLHS(baseNode, src)
-	case "identifier":
-		base = textOf(baseNode, src)
-	}
+	base := nameOfNode(baseNode, src)
 	if base == "" {
 		base = "flags"
 	}
 	return bn, base, b, true
 }
 
-func parseSetFlagCall(call *sitter.Node, src []byte) (boolName, rawBase string, bit int, ok bool) {
+func nameOfNode(node *sitter.Node, src []byte) string {
+	if node == nil {
+		return ""
+	}
+	switch node.Kind() {
+	case "field_access":
+		return fieldNameFromLHS(node, src)
+	case "identifier":
+		return textOf(node, src)
+	}
+	return ""
+}
+
+func setFlagArgs(call *sitter.Node, src []byte) ([]*sitter.Node, bool) {
 	if call == nil || call.Kind() != "method_invocation" {
-		return "", "", 0, false
+		return nil, false
 	}
 	if streamMethodName(call, src) != "setFlag" {
-		return "", "", 0, false
+		return nil, false
 	}
 	args := childByKind(call, "argument_list")
 	if args == nil {
-		return "", "", 0, false
+		return nil, false
 	}
-
 	var real []*sitter.Node
 	for i := uint(0); i < args.ChildCount(); i++ {
 		c := args.Child(i)
@@ -317,27 +314,25 @@ func parseSetFlagCall(call *sitter.Node, src []byte) (boolName, rawBase string, 
 		}
 	}
 	if len(real) != 3 {
+		return nil, false
+	}
+	return real, true
+}
+
+func parseSetFlagCall(call *sitter.Node, src []byte) (boolName, rawBase string, bit int, ok bool) {
+	real, okArgs := setFlagArgs(call, src)
+	if !okArgs {
 		return "", "", 0, false
 	}
 	b, okBit := bitOfMask(textOf(real[1], src))
 	if !okBit {
 		return "", "", 0, false
 	}
-	switch real[0].Kind() {
-	case "field_access":
-		rawBase = fieldNameFromLHS(real[0], src)
-	case "identifier":
-		rawBase = textOf(real[0], src)
-	}
+	rawBase = nameOfNode(real[0], src)
 	if rawBase == "" {
 		rawBase = "flags"
 	}
-	switch real[2].Kind() {
-	case "field_access":
-		boolName = fieldNameFromLHS(real[2], src)
-	case "identifier":
-		boolName = textOf(real[2], src)
-	}
+	boolName = nameOfNode(real[2], src)
 	if boolName == "" {
 		return "", "", 0, false
 	}
@@ -345,37 +340,11 @@ func parseSetFlagCall(call *sitter.Node, src []byte) (boolName, rawBase string, 
 }
 
 func parseSetFlagBase(call *sitter.Node, src []byte) (rawBase string, ok bool) {
-	if call == nil || call.Kind() != "method_invocation" {
+	real, okArgs := setFlagArgs(call, src)
+	if !okArgs {
 		return "", false
 	}
-	if streamMethodName(call, src) != "setFlag" {
-		return "", false
-	}
-	args := childByKind(call, "argument_list")
-	if args == nil {
-		return "", false
-	}
-	var real []*sitter.Node
-	for i := uint(0); i < args.ChildCount(); i++ {
-		c := args.Child(i)
-		if c == nil {
-			continue
-		}
-		switch c.Kind() {
-		case "(", ")", ",":
-		default:
-			real = append(real, c)
-		}
-	}
-	if len(real) != 3 {
-		return "", false
-	}
-	switch real[0].Kind() {
-	case "field_access":
-		rawBase = fieldNameFromLHS(real[0], src)
-	case "identifier":
-		rawBase = textOf(real[0], src)
-	}
+	rawBase = nameOfNode(real[0], src)
 	if rawBase == "" {
 		rawBase = "flags"
 	}

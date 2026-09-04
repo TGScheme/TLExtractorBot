@@ -1,15 +1,23 @@
 import "os_utils"
 
-<h3>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}</h3>
+{% macro step(stage, at, text) -%}
+<li>{% if stage == at %}<b>{{ text }}</b>{% else %}{{ text }}{% endif %}</li>
+{%- endmacro %}
+
+{% macro stepProgress(stage, at, doing, done, progress) -%}
+<li>{% if stage == at %}<b>{{ doing }} {{ progress }}%</b>{% else %}{{ done }}{% endif %}</li>
+{%- endmacro %}
+
+<h3>{{ osFull(update) }}</h3>
 <p><i>{% if is_patch %}Patching{% else %}Extracting{% endif %} the TL-schema</i></p>
 <ul>
 {% if update.Source == "android" %}
-<li>{% if stage == 0 %}<b>Downloading the apk… {{ progress }}%</b>{% else %}Downloaded the apk{% endif %}</li>
-<li>{% if stage == 1 %}<b>Decompiling… {{ progress }}%</b>{% else %}Decompiling the apk{% endif %}</li>
+{{ stepProgress(stage, 0, "Downloading the apk…", "Downloaded the apk", progress) }}
+{{ stepProgress(stage, 1, "Decompiling…", "Decompiling the apk", progress) }}
 {% else %}
 <li>Fetched the source</li>
 {% endif %}
-<li>{% if stage == 2 %}<b>Extracting the schema</b>{% else %}Extracting the schema{% endif %}</li>
-<li>{% if stage == 3 %}<b>Publishing the changelog</b>{% else %}Publishing the changelog{% endif %}</li>
+{{ step(stage, 2, "Extracting the schema") }}
+{{ step(stage, 3, "Publishing the changelog") }}
 </ul>
 <footer>This message will be replaced by the changelog.</footer>

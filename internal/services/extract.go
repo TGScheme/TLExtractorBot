@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"maps"
 	"slices"
 
 	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
@@ -62,7 +61,7 @@ func (s *Service) extract(update UpdateInfo) error {
 
 	differences := scheme.GetDiffs(preview, fullScheme)
 	if differences == nil || fullScheme.Layer < previewLayer {
-		return s.bot.UpdateStatus("", false, false, nil)
+		return s.bot.DropStatus()
 	}
 	return s.publish(update, fullScheme, preview, differences, isPatch)
 }
@@ -240,11 +239,10 @@ func (s *Service) publish(
 			{Text: "GitHub", URL: commitInfo.SourceURL},
 		}},
 	}
-	messageArgs := map[string]any{
+	richArgs := map[string]any{
 		"update": update, "layer": fullScheme.Layer, "stats": stats,
 		"is_stable": fullScheme.IsSync, "is_patch": isPatch,
 	}
-	richArgs := maps.Clone(messageArgs)
 	richArgs["title"] = title
 	richArgs["lead"] = lead
 	changes := richChanges(differences)
@@ -256,10 +254,7 @@ func (s *Service) publish(
 	richArgs["banner_url"] = bannerURL
 
 	if err = s.bot.PublishRich(assets.Render("rich_message", richArgs), true, keyboard); err != nil {
-		gologging.Error("telegram: unable to send the rich message, falling back to the plain one:", err)
-		if err = s.bot.UpdateStatus(assets.Render("message", messageArgs), true, true, keyboard); err != nil {
-			return err
-		}
+		return err
 	}
 	return s.promote(fullScheme, preview)
 }
@@ -320,7 +315,7 @@ func (s *Service) reportProblems(update UpdateInfo, layer int, problems []scheme
 		shown = shown[:maxReportedProblems]
 	}
 	if blocking {
-		if err := s.bot.UpdateStatus("", false, false, nil); err != nil {
+		if err := s.bot.DropStatus(); err != nil {
 			return err
 		}
 	}

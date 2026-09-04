@@ -14,7 +14,7 @@ import "os_utils"
 {%- if latest %}
 <h3>New in this build</h3>
 {%- if latest_source %}
-<p><i>{{ osName(latest_source.Source) }} {{ osVersion(latest_source.Source, latest_source.VersionName, latest_source.BuildNumber) }}, compared with the previous build of Layer {{ layer }}</i></p>
+<p><i>{{ osFull(latest_source) }}, compared with the previous build of Layer {{ layer }}</i></p>
 {%- endif %}
 {%- if latest_stats.MainApi.Total > 0 %}
 {{ getObjectsDifference("Methods", latest_stats.MainApi.Methods, latest.MainApi.MethodsDifference) }}

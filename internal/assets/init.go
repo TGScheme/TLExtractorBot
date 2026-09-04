@@ -10,30 +10,21 @@ import (
 	"github.com/flosch/pongo2/v6"
 )
 
-var (
-	Templates map[string]string
-	Resources map[string][]byte
-)
+var Templates map[string]string
 
-//go:embed *.gohtml *.png
+//go:embed *.gohtml
 var assetsFolder embed.FS
 
 func init() {
 	Templates = make(map[string]string)
-	Resources = make(map[string][]byte)
 	files, _ := assetsFolder.ReadDir(".")
 	for _, file := range files {
-		ext := filepath.Ext(file.Name())
 		readFile, err := assetsFolder.ReadFile(file.Name())
 		if err != nil {
 			gologging.Fatal(err)
 		}
-		if ext == ".gohtml" {
-			fileName := file.Name()[:len(file.Name())-len(ext)]
-			Templates[fileName] = string(readFile)
-		} else {
-			Resources[file.Name()] = readFile
-		}
+		name := file.Name()
+		Templates[name[:len(name)-len(filepath.Ext(name))]] = string(readFile)
 	}
 	for key, value := range Templates {
 		var foundImport, foundImportType bool

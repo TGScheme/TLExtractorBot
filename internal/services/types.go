@@ -1,6 +1,6 @@
 package services
 
-import "fmt"
+import "github.com/TGScheme/TLExtractorBot/internal/assets"
 
 type UpdateInfo struct {
 	VersionName string
@@ -9,14 +9,5 @@ type UpdateInfo struct {
 }
 
 func (u UpdateInfo) Display() string {
-	name := map[string]string{
-		"tdesktop": "Telegram Desktop",
-		"android":  "Telegram for Android",
-		"ios":      "Telegram for iOS",
-		"tdlib":    "TDLib",
-	}[u.Source]
-	if u.Source == "android" || u.Source == "ios" {
-		return fmt.Sprintf("%s %s (%d)", name, u.VersionName, u.BuildNumber)
-	}
-	return fmt.Sprintf("%s %s", name, u.VersionName)
+	return assets.Render("os_full", map[string]any{"update": u})
 }

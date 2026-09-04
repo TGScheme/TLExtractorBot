@@ -36,8 +36,8 @@ func (ctx *Client) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs scheme
 	commitInfo.SourceURL = fmt.Sprintf(
 		"%s/%s/%s/tree/%s",
 		consts.GithubURL,
-		consts.SchemeRepoOwner,
-		consts.SchemeRepoName,
+		ctx.repoOwner,
+		ctx.repoName,
 		hashes[len(hashes)-1],
 	)
 
@@ -46,8 +46,8 @@ func (ctx *Client) MakeCommit(fullScheme *schemeTypes.TLFullScheme, diffs scheme
 			commitInfo.FilesLines[constructor] = fmt.Sprintf(
 				"%s/%s/%s/blob/%s/%s#L%d",
 				consts.GithubURL,
-				consts.SchemeRepoOwner,
-				consts.SchemeRepoName,
+				ctx.repoOwner,
+				ctx.repoName,
 				files[file],
 				file,
 				line,

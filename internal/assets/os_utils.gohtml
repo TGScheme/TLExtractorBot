@@ -29,3 +29,10 @@ iOS
 TDLib
 {%- endif -%}
 {%- endmacro %}
+{% macro osFull(update) -%}
+{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}
+{%- endmacro %}
+
+{% macro osHashtags(update, isStable, layer, isPatch) -%}
+#{{ osShortName(update.Source) }} #{% if isStable %}Stable{% else %}Preview{% endif %} #Layer{{ layer }}{% if isPatch %} #Patch{% endif %}
+{%- endmacro %}

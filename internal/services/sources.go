@@ -35,25 +35,12 @@ func (s *Service) pollSources() {
 	}
 
 	if hasPreview {
-		if version, name, errFetch := s.tdesktopVersion(settings.TdesktopBranch); errFetch != nil {
-			gologging.Error(errFetch)
-		} else if int64(version) > settings.LastTdeskID {
-			s.dispatch(UpdateInfo{
-				VersionName: name,
-				BuildNumber: uint32(version),
-				Source:      "tdesktop",
-			}, func() error { return s.db.SettingsStore.SetLastTDeskID(int64(version)) })
+		if s.pollSource("tdesktop", settings.LastTdeskID, func() (int, string, error) {
+			return s.tdesktopVersion(settings.TdesktopBranch)
+		}, s.db.SettingsStore.SetLastTDeskID) {
 			return
 		}
-
-		if version, name, errFetch := s.tdlibVersion(); errFetch != nil {
-			gologging.Error(errFetch)
-		} else if int64(version) > settings.LastTdlibID {
-			s.dispatch(UpdateInfo{
-				VersionName: name,
-				BuildNumber: uint32(version),
-				Source:      "tdlib",
-			}, func() error { return s.db.SettingsStore.SetLastTDLibID(int64(version)) })
+		if s.pollSource("tdlib", settings.LastTdlibID, s.tdlibVersion, s.db.SettingsStore.SetLastTDLibID) {
 			return
 		}
 	}
@@ -91,7 +78,7 @@ func (s *Service) pollSources() {
 		_ = s.updateStatus(update, isPatch, stageDownloading, percentage)
 	}); err != nil {
 		gologging.Error(err)
-		if errStatus := s.bot.UpdateStatus("", false, false, nil); errStatus != nil {
+		if errStatus := s.bot.DropStatus(); errStatus != nil {
 			gologging.Error(errStatus)
 		}
 		return
@@ -110,7 +97,7 @@ func (s *Service) pollSources() {
 		if err = s.db.SettingsStore.SetLastPostID(int64(post.ID)); err != nil {
 			gologging.Error(err)
 		}
-		if err = s.bot.UpdateStatus("", false, false, nil); err != nil {
+		if err = s.bot.DropStatus(); err != nil {
 			gologging.Error(err)
 		}
 		return
@@ -123,6 +110,28 @@ func (s *Service) pollSources() {
 	s.dispatch(update, func() error {
 		return s.db.SettingsStore.SetLastVersionCode(int64(buildNumber))
 	})
+}
+
+func (s *Service) pollSource(
+	source string,
+	last int64,
+	fetch func() (int, string, error),
+	commit func(int64) error,
+) bool {
+	version, name, err := fetch()
+	if err != nil {
+		gologging.Error(err)
+		return false
+	}
+	if int64(version) <= last {
+		return false
+	}
+	s.dispatch(UpdateInfo{
+		VersionName: name,
+		BuildNumber: uint32(version),
+		Source:      source,
+	}, func() error { return commit(int64(version)) })
+	return true
 }
 
 func (s *Service) betaPost(lastPostID int64) (*bot.ChannelPost, error) {

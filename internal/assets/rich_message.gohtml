@@ -9,17 +9,17 @@ import "rich_changes"
 {%- endif %}
 {%- if is_patch %}
 <h3>Layer {{ layer }} Patched</h3>
-<p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
+<p><i>{{ osFull(update) }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
 {{ getRichChanges(changes, patch_summary) }}
 {%- elif is_incremental %}
-<h3>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}</h3>
+<h3>{{ osFull(update) }}</h3>
 <p><i>Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
 {{ getRichChanges(changes, getStats(total_stats)) }}
 {%- else %}
-<h3>{% if title %}{{ title }}{% else %}{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }}{% endif %}</h3>
-<p><i>{% if title %}{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · {% endif %}Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
+<h3>{% if title %}{{ title }}{% else %}{{ osFull(update) }}{% endif %}</h3>
+<p><i>{% if title %}{{ osFull(update) }} · {% endif %}Layer {{ layer }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
 {%- if lead %}
 <p>{{ lead | safe }}</p>
 {%- endif %}
 {%- endif %}
-<footer>#{{ osShortName(update.Source) }} #{% if is_stable %}Stable{% else %}Preview{% endif %} #Layer{{ layer }}{% if is_patch %} #Patch{% endif %}</footer>
+<footer>{{ osHashtags(update, is_stable, layer, is_patch) }}</footer>

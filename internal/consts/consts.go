@@ -19,8 +19,6 @@ const (
 	MainReleasedTL  = "https://corefork.telegram.org"
 )
 
-var TDesktopBranch = "dev"
-
 const (
 	UpdateMessageRate     = time.Second * 3
 	AndroidBetaChannel    = "TAndroidBeta"
@@ -28,11 +26,6 @@ const (
 	DownloadThreads       = 2
 	MTProtoSessionFile    = "mtproto.session"
 	MTProtoReconnectDelay = time.Second * 15
-)
-
-var (
-	SchemeRepoOwner = "TGScheme"
-	SchemeRepoName  = "Schema"
 )
 
 var (

@@ -50,13 +50,6 @@ func (s *Service) pollCoreFork() {
 		"layer":       latest,
 		"description": richBullets(changelog),
 		"total":       strings.Count(changelog, "<li"),
-	}), keyboard); err == nil {
-		return
-	}
-	gologging.Error("telegram: unable to send the corefork rich message, falling back to the plain one:", err)
-	if err = s.bot.DirectMessage(assets.Render("corefork_update_plain", map[string]any{
-		"layer":       latest,
-		"description": bulletize(changelog),
 	}), keyboard); err != nil {
 		gologging.Error(err)
 	}
@@ -69,15 +62,6 @@ func richBullets(list string) string {
 		rows = append(rows, "• "+strings.Join(strings.Fields(item[1]), " "))
 	}
 	return strings.Join(rows, "<br>")
-}
-
-func bulletize(list string) string {
-	for _, replacement := range [][2]string{
-		{"<li>", "• "}, {"</li>", ""}, {"<ul>", ""}, {"</ul>", ""},
-	} {
-		list = strings.ReplaceAll(list, replacement[0], replacement[1])
-	}
-	return strings.TrimSpace(list)
 }
 
 func fetchChangelog(page string, layer int) string {

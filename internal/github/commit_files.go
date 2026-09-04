@@ -1,13 +1,11 @@
 package github
 
 import (
-	"github.com/TGScheme/TLExtractorBot/internal/consts"
-
 	"github.com/google/go-github/v72/github"
 )
 
 func (ctx *Client) commitsFiles(files map[string]string, commitMessage string) (map[string]string, error) {
-	_, contents, resp, err := ctx.client.Repositories.GetContents(ctx.ctx, consts.SchemeRepoOwner, consts.SchemeRepoName, ".", nil)
+	_, contents, resp, err := ctx.client.Repositories.GetContents(ctx.ctx, ctx.repoOwner, ctx.repoName, ".", nil)
 	if err != nil && (resp == nil || resp.StatusCode != 404) {
 		return nil, err
 	}
@@ -21,8 +19,8 @@ func (ctx *Client) commitsFiles(files map[string]string, commitMessage string) (
 		if sha, ok := alreadyExists[path]; ok {
 			res, _, err = ctx.client.Repositories.UpdateFile(
 				ctx.ctx,
-				consts.SchemeRepoOwner,
-				consts.SchemeRepoName,
+				ctx.repoOwner,
+				ctx.repoName,
 				path,
 				&github.RepositoryContentFileOptions{
 					Content: []byte(content),
@@ -36,8 +34,8 @@ func (ctx *Client) commitsFiles(files map[string]string, commitMessage string) (
 		} else {
 			res, _, err = ctx.client.Repositories.CreateFile(
 				ctx.ctx,
-				consts.SchemeRepoOwner,
-				consts.SchemeRepoName,
+				ctx.repoOwner,
+				ctx.repoName,
 				path,
 				&github.RepositoryContentFileOptions{
 					Content: []byte(content),
