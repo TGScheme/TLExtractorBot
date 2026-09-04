@@ -15,6 +15,7 @@ type ChangelogRequest struct {
 }
 
 type Changelog struct {
+	Title    string             `json:"title"`
 	Lead     string             `json:"lead"`
 	Sections []ChangelogSection `json:"sections"`
 	Items    []ChangelogItem    `json:"items"`

@@ -223,10 +223,7 @@ func (s *Service) publish(
 		pageArgs["story"] = changelog
 		pageArgs["gemini_descriptions"] = changelog.Descriptions
 		pageArgs["ai_model"] = s.gemini.Model()
-		lead = changelog.Lead
-		if len(changelog.Sections) > 0 {
-			title = changelog.Sections[0].Title
-		}
+		lead, title = changelog.Lead, changelog.Title
 	}
 
 	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))

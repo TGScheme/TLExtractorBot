@@ -95,6 +95,7 @@ func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
 }
 
 func normalize(changelog *Changelog, expectedItems int) {
+	changelog.Title = sanitize(changelog.Title)
 	changelog.Lead = sanitize(changelog.Lead)
 	var sections []ChangelogSection
 	for _, section := range changelog.Sections {
@@ -248,6 +249,10 @@ func baseType(fieldType string) string {
 var changelogSchema = &genai.Schema{
 	Type: genai.TypeObject,
 	Properties: map[string]*genai.Schema{
+		"title": {
+			Type:        genai.TypeString,
+			Description: "Title of the article, naming the biggest changes.",
+		},
 		"lead": {
 			Type:        genai.TypeString,
 			Description: "Opening paragraph of the article, one or two sentences.",
@@ -296,6 +301,6 @@ var changelogSchema = &genai.Schema{
 			},
 		},
 	},
-	Required:         []string{"lead", "sections", "items"},
-	PropertyOrdering: []string{"lead", "sections", "items"},
+	Required:         []string{"title", "lead", "sections", "items"},
+	PropertyOrdering: []string{"title", "lead", "sections", "items"},
 }
