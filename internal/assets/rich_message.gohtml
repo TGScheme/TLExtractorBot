@@ -4,6 +4,9 @@ import "os_utils"
 import "stats"
 import "rich_changes"
 
+{%- if banner_url %}
+<img src="{{ banner_url }}">
+{%- endif %}
 {%- if is_patch %}
 <h3>Layer {{ layer }} Patched</h3>
 <p><i>{{ osName(update.Source) }} {{ osVersion(update.Source, update.VersionName, update.BuildNumber) }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>

@@ -10,6 +10,7 @@ import (
 	"github.com/Laky-64/gologging"
 	"github.com/TGScheme/TLExtractorBot/internal/android"
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
+	"github.com/TGScheme/TLExtractorBot/internal/banner"
 	"github.com/TGScheme/TLExtractorBot/internal/db"
 	"github.com/TGScheme/TLExtractorBot/internal/db/models"
 	"github.com/TGScheme/TLExtractorBot/internal/gemini"
@@ -226,6 +227,9 @@ func (s *Service) publish(
 		lead, title = changelog.Lead, changelog.Title
 	}
 
+	bannerURL, pageBannerURL := s.layerBanner(update, fullScheme, stats, title, isPatch)
+	pageArgs["banner_url"] = pageBannerURL
+
 	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))
 	if err != nil {
 		return err
@@ -249,6 +253,7 @@ func (s *Service) publish(
 	richArgs["patch_summary"] = patchSummary(len(changes))
 	richArgs["commit_urls"] = commitInfo.FilesLines
 	richArgs["is_incremental"] = preview != nil && preview.Layer == fullScheme.Layer
+	richArgs["banner_url"] = bannerURL
 
 	if err = s.bot.PublishRich(assets.Render("rich_message", richArgs), true, keyboard); err != nil {
 		gologging.Error("telegram: unable to send the rich message, falling back to the plain one:", err)
@@ -257,6 +262,52 @@ func (s *Service) publish(
 		}
 	}
 	return s.promote(fullScheme, preview)
+}
+
+func (s *Service) layerBanner(
+	update UpdateInfo,
+	fullScheme *schemeTypes.TLFullScheme,
+	stats schemeTypes.DifferenceStats,
+	title string,
+	isPatch bool,
+) (string, string) {
+	if title == "" {
+		title = update.Display()
+	}
+	totals := combinedStats(stats)
+	input := banner.Input{
+		Layer:    fullScheme.Layer,
+		Title:    title,
+		Source:   update.Display(),
+		Added:    totals.TotalAdditions,
+		Changed:  totals.TotalChanges,
+		Removed:  totals.TotalDeletions,
+		IsStable: fullScheme.IsSync,
+	}
+	name := fmt.Sprintf("layer-%d", fullScheme.Layer)
+	if isPatch {
+		name = fmt.Sprintf("layer-%d-patch", fullScheme.Layer)
+	}
+	message := fmt.Sprintf("Banner for Layer %d", fullScheme.Layer)
+	full, err := s.upload(name+".png", message, func() ([]byte, error) { return banner.Render(input) })
+	if err != nil {
+		gologging.Error("banner: unable to publish the layer banner:", err)
+		return s.cfg.BannerURL, s.cfg.BannerURL
+	}
+	compact, err := s.upload(name+".jpg", message, func() ([]byte, error) { return banner.RenderCompact(input) })
+	if err != nil {
+		gologging.Error("banner: unable to publish the compact banner:", err)
+		return full, full
+	}
+	return full, compact
+}
+
+func (s *Service) upload(name, message string, render func() ([]byte, error)) (string, error) {
+	image, err := render()
+	if err != nil {
+		return "", err
+	}
+	return s.github.CommitBanner(name, image, message)
 }
 
 func (s *Service) reportProblems(update UpdateInfo, layer int, problems []scheme.Problem, blocking bool) error {

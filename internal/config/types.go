@@ -22,6 +22,9 @@ type Config struct {
 
 	BannerURL string
 
+	BannersRepoOwner string
+	BannersRepoName  string
+
 	WorkDir    string
 	JadxJar    string
 	ExtractJar string

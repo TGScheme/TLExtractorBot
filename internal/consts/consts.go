@@ -15,6 +15,7 @@ const (
 	TelegraphApi    = "https://api.telegra.ph"
 	TelegraphUrl    = "https://telegra.ph"
 	GithubURL       = "https://github.com"
+	GithubRawURL    = "https://raw.githubusercontent.com"
 	MainReleasedTL  = "https://corefork.telegram.org"
 )
 
@@ -37,6 +38,7 @@ var (
 var (
 	TempFolder      = "temp"
 	TgnetPackage    = "org.telegram.tgnet"
+	BannersFolder   = "banners"
 	TempBins        = path.Join(TempFolder, "bins")
 	TempApk         = path.Join(TempBins, "telegram.apk")
 	TempDecompiled  = path.Join(TempFolder, "decompiled")

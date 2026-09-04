@@ -29,6 +29,9 @@ func Load() (*Config, error) {
 
 		BannerURL: getEnvString("BANNER_URL", "https://telegra.ph/file/5d6793d8428d3ce93fd95.png"),
 
+		BannersRepoOwner: getEnvString("BANNERS_REPO_OWNER", "TGScheme"),
+		BannersRepoName:  getEnvString("BANNERS_REPO_NAME", "Banners"),
+
 		WorkDir:    getEnvString("WORK_DIR", "/var/lib/tlextractor"),
 		JadxJar:    getEnvString("JADX_JAR", "/opt/jadx/lib/jadx-1.5.0-all.jar"),
 		ExtractJar: getEnvString("JADX_EXTRACT_JAR", "/opt/jadx/lib/tlextract.jar"),

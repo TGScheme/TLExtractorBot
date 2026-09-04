@@ -15,6 +15,9 @@ type Client struct {
 	client    *github.Client
 	repoOwner string
 	repoName  string
+
+	bannersOwner string
+	bannersName  string
 }
 
 func New(cfg *config.Config) (*Client, error) {
@@ -36,6 +39,9 @@ func New(cfg *config.Config) (*Client, error) {
 		client:    github.NewClient(&http.Client{Transport: transport}),
 		repoOwner: cfg.SchemeRepoOwner,
 		repoName:  cfg.SchemeRepoName,
+
+		bannersOwner: cfg.BannersRepoOwner,
+		bannersName:  cfg.BannersRepoName,
 	}
 	if _, _, err = c.client.Users.Get(c.ctx, "octocat"); err != nil {
 		return nil, err
