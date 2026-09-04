@@ -271,12 +271,14 @@ func (s *Service) layerBanner(
 	}
 	totals := combinedStats(stats)
 	input := banner.Input{
-		Layer:    fullScheme.Layer,
-		Title:    title,
-		Source:   update.Display(),
-		Added:    totals.TotalAdditions,
-		Changed:  totals.TotalChanges,
-		Removed:  totals.TotalDeletions,
+		Layer:        fullScheme.Layer,
+		Title:        title,
+		Source:       update.Display(),
+		ChangesLabel: "CONSTRUCTORS",
+		Highlight:    fmt.Sprintf("%d", totals.TotalAdditions),
+		Changes: fmt.Sprintf(
+			" added · %d changed · %d removed", totals.TotalChanges, totals.TotalDeletions,
+		),
 		IsStable: fullScheme.IsSync,
 	}
 	name := fmt.Sprintf("layer-%d", fullScheme.Layer)

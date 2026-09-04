@@ -10,6 +10,7 @@ import (
 	"github.com/Laky-64/gologging"
 	"github.com/Laky-64/http"
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
+	"github.com/TGScheme/TLExtractorBot/internal/banner"
 	"github.com/TGScheme/TLExtractorBot/internal/consts"
 	"github.com/anaskhan96/soup"
 )
@@ -46,13 +47,38 @@ func (s *Service) pollCoreFork() {
 			{Text: "Schema", URL: fmt.Sprintf("%s/schema?layer=%d", consts.MainReleasedTL, latest)},
 		}},
 	}
+	total := strings.Count(changelog, "<li")
 	if err = s.bot.DirectRich(assets.Render("corefork_update", map[string]any{
 		"layer":       latest,
 		"description": richBullets(changelog),
-		"total":       strings.Count(changelog, "<li"),
+		"total":       total,
+		"banner_url":  s.coreforkBanner(latest, total),
 	}), keyboard); err != nil {
 		gologging.Error(err)
 	}
+}
+
+func (s *Service) coreforkBanner(layer, total int) string {
+	url, err := s.upload(
+		fmt.Sprintf("layer-%d-corefork.png", layer),
+		fmt.Sprintf("Banner for the corefork Layer %d", layer),
+		func() ([]byte, error) {
+			return banner.Render(banner.Input{
+				Layer:        layer,
+				Title:        "Released on Corefork",
+				Source:       "corefork.telegram.org",
+				ChangesLabel: "CHANGELOG",
+				Highlight:    fmt.Sprintf("%d", total),
+				Changes:      " entries published by Telegram",
+				IsStable:     true,
+			})
+		},
+	)
+	if err != nil {
+		gologging.Error("banner: unable to publish the corefork banner:", err)
+		return ""
+	}
+	return url
 }
 
 func richBullets(list string) string {

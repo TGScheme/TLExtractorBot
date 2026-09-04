@@ -175,10 +175,10 @@ func (c *composition) footer(input Input) {
 
 	c.text(marginLeft, 620, 13, canvas.FontSemiBold, "#FFFFFF", 0.40, 1.8, alignLeft, "SOURCE")
 	c.text(marginLeft, 652, 21, canvas.FontSemiBold, "#FFFFFF", 0.94, 0, alignLeft, input.Source)
-	c.text(marginRight, 620, 13, canvas.FontSemiBold, "#FFFFFF", 0.40, 1.8, alignRight, "CONSTRUCTORS")
+	c.text(marginRight, 620, 13, canvas.FontSemiBold, "#FFFFFF", 0.40, 1.8, alignRight, input.ChangesLabel)
 	c.coloured(marginRight, 652, 21, canvas.FontSemiBold, 0.94, 0, alignRight, []textRun{
-		{Text: fmt.Sprintf("%d", input.Added), Colour: "#25C87C"},
-		{Text: fmt.Sprintf(" added · %d changed · %d removed", input.Changed, input.Removed), Colour: "#FFFFFF"},
+		{Text: input.Highlight, Colour: "#25C87C"},
+		{Text: input.Changes, Colour: "#FFFFFF"},
 	})
 }
 

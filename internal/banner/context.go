@@ -12,13 +12,13 @@ import (
 var fontFiles embed.FS
 
 type Input struct {
-	Layer    int
-	Title    string
-	Source   string
-	Added    int
-	Changed  int
-	Removed  int
-	IsStable bool
+	Layer        int
+	Title        string
+	Source       string
+	ChangesLabel string
+	Highlight    string
+	Changes      string
+	IsStable     bool
 }
 
 var (
