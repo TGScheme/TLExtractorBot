@@ -186,7 +186,6 @@ func (s *Service) publish(
 	}
 	stableStats := scheme.GetStats(stableDiffs)
 
-	pageTitle := fmt.Sprintf("Layer %d", fullScheme.Layer)
 	previousLayer := 0
 	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
 		previousLayer = stableScheme.Layer
@@ -201,6 +200,8 @@ func (s *Service) publish(
 		"main_scheme":         scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
 		"e2e_scheme":          scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
 		"gemini_descriptions": map[string]string{},
+		"update":              update,
+		"is_stable":           fullScheme.IsSync,
 	}
 	if preview != nil && preview.Layer == fullScheme.Layer {
 		pageArgs["latest"] = differences
@@ -228,6 +229,11 @@ func (s *Service) publish(
 
 	bannerURL, pageBannerURL := s.layerBanner(update, fullScheme, stats, title, isPatch)
 	pageArgs["banner_url"] = pageBannerURL
+
+	pageTitle := fmt.Sprintf("Layer %d", fullScheme.Layer)
+	if title != "" {
+		pageTitle = title
+	}
 
 	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))
 	if err != nil {
@@ -338,6 +344,11 @@ func (s *Service) publishPage(layer int, title, html string) (string, error) {
 	}
 	var page telegraphTypes.PageInfo
 	if storedPath != "" {
+		if published, errTitle := s.telegraph.PageTitle(storedPath); errTitle != nil {
+			gologging.Error("telegraph: unable to read the published title:", errTitle)
+		} else if published != "" {
+			title = published
+		}
 		if page, err = s.telegraph.EditPage(storedPath, title, html); err != nil {
 			gologging.Error("telegraph: unable to edit the page, creating a new one:", err)
 			storedPath = ""
