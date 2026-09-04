@@ -13,7 +13,6 @@ const (
 	TDLibTL         = TDLibSources + "td/generate/scheme/telegram_api.tl"
 	E2ETL           = "https://core.telegram.org/schema/end-to-end-json"
 	TelegraphApi    = "https://api.telegra.ph"
-	TelegraphUrl    = "https://telegra.ph"
 	GithubURL       = "https://github.com"
 	GithubRawURL    = "https://raw.githubusercontent.com"
 	MainReleasedTL  = "https://corefork.telegram.org"

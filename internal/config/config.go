@@ -8,8 +8,6 @@ import (
 
 func Load() (*Config, error) {
 	cfg := &Config{
-		Debug: getEnvBool("DEBUG", false),
-
 		BotToken:       os.Getenv("BOT_TOKEN"),
 		APIID:          int(getEnvInt64("API_ID", 0)),
 		APIHash:        os.Getenv("API_HASH"),
@@ -95,15 +93,6 @@ func getEnvInt64(key string, fallback int64) int64 {
 	if val := os.Getenv(key); val != "" {
 		if i, err := strconv.ParseInt(val, 10, 64); err == nil {
 			return i
-		}
-	}
-	return fallback
-}
-
-func getEnvBool(key string, fallback bool) bool {
-	if val := os.Getenv(key); val != "" {
-		if b, err := strconv.ParseBool(val); err == nil {
-			return b
 		}
 	}
 	return fallback
