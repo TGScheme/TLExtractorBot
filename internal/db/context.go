@@ -22,6 +22,10 @@ func NewDB(cfg *config.Config) (*DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("goose open: %w", err)
 	}
+	if err = waitFor("postgres", sqlConn.Ping); err != nil {
+		_ = sqlConn.Close()
+		return nil, err
+	}
 	goose.SetBaseFS(schemaFiles)
 	goose.SetLogger(goose.NopLogger())
 	if err = goose.Up(sqlConn, "schema"); err != nil {
@@ -30,11 +34,14 @@ func NewDB(cfg *config.Config) (*DB, error) {
 	}
 	_ = sqlConn.Close()
 
-	redis, err := valkey.NewClient(valkey.ClientOption{
-		InitAddress: []string{cfg.ValkeyAddr},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("connect to valkey: %w", err)
+	var redis valkey.Client
+	if err = waitFor("valkey", func() error {
+		redis, err = valkey.NewClient(valkey.ClientOption{
+			InitAddress: []string{cfg.ValkeyAddr},
+		})
+		return err
+	}); err != nil {
+		return nil, err
 	}
 	return new(dsn, redis)
 }
