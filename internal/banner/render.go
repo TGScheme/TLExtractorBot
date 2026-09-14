@@ -131,7 +131,7 @@ func (c *composition) mark() {
 }
 
 func (c *composition) header(input Input) {
-	c.text(128, 103, 17, canvas.FontBold, "#FFFFFF", 0.92, 1.6, alignLeft, "TL SCHEMA")
+	c.text(128, 103, 17, canvas.FontBold, "#FFFFFF", 0.92, 1.6, alignLeft, "TGSCHEME")
 	state := "PREVIEW"
 	if input.IsStable {
 		state = "STABLE"
