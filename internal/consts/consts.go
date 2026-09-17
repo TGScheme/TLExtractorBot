@@ -45,6 +45,7 @@ var (
 	TDLibLayerRgx       = regexp.MustCompile(`constexpr int32 MTPROTO_LAYER = ([0-9]+);`)
 	TDeskVersionNameRgx = regexp.MustCompile(`AppVersionStr *?= *?"([0-9.]+)";`)
 	DigitVersionRgx     = regexp.MustCompile(`^\S+[^0-9p][0-9]+$`)
+	JadxFieldAliasRgx   = regexp.MustCompile(`^f[0-9]+([a-zA-Z_].*)$`)
 	BetaPostVersionRgx  = regexp.MustCompile(`([0-9]+(?:\.[0-9]+)+)\s*\(([0-9]+)\)`)
 	OldLayers           = []*regexp.Regexp{
 		regexp.MustCompile(`Old[0-9]*$`),

@@ -6,7 +6,7 @@ import (
 )
 
 func fixParamName(name string) string {
-	newName := utils.SnakeCase(name)
+	newName := utils.SnakeCase(consts.JadxFieldAliasRgx.ReplaceAllString(name, "$1"))
 	for rgx, repl := range consts.BrokenNames {
 		newName = rgx.ReplaceAllString(newName, repl)
 	}
