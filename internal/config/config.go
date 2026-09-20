@@ -31,7 +31,7 @@ func Load() (*Config, error) {
 		BannersRepoName:  getEnvString("BANNERS_REPO_NAME", "Banners"),
 
 		WorkDir:    getEnvString("WORK_DIR", "/var/lib/tlextractor"),
-		JadxJar:    getEnvString("JADX_JAR", "/opt/jadx/lib/jadx-1.5.0-all.jar"),
+		JadxJar:    getEnvString("JADX_JAR", "/opt/jadx/lib/jadx-all.jar"),
 		ExtractJar: getEnvString("JADX_EXTRACT_JAR", "/opt/jadx/lib/tlextract.jar"),
 		JavaBin:    getEnvString("JAVA_BIN", "java"),
 
