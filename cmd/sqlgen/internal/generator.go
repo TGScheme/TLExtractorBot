@@ -13,7 +13,7 @@ var (
 	outputDir      = filepath.Join("internal", "db")
 	modelsDir      = filepath.Join(outputDir, "models")
 	sqlcJsonFile   = filepath.Join(currentDir, "sqlc.json")
-	currentPackage = strings.Join(strings.Split(reflect.TypeOf(SQLCConfig{}).PkgPath(), "/")[:3], "/") +
+	currentPackage = strings.Join(strings.Split(reflect.TypeFor[SQLCConfig]().PkgPath(), "/")[:3], "/") +
 		"/" + strings.ReplaceAll(outputDir, string(os.PathSeparator), "/")
 )
 

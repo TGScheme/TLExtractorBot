@@ -47,9 +47,7 @@ func (tl *TLBase) IsSecret() bool {
 func (tl *TLBase) Clone() TLBase {
 	var tlBase TLBase
 	tlBase.ID = tl.ID
-	for _, param := range tl.Params {
-		tlBase.Params = append(tlBase.Params, param)
-	}
+	tlBase.Params = append(tlBase.Params, tl.Params...)
 	tlBase.Type = tl.Type
 	tlBase.Layer = tl.Layer
 	tlBase.ForceSecret = tl.ForceSecret

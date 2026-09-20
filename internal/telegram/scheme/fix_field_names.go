@@ -13,12 +13,8 @@ func FixFieldNames(scheme *types.TLFullScheme) int {
 	fixed := 0
 	for _, part := range []types.TLScheme{scheme.MainApi, scheme.E2EApi} {
 		var objects []types.TLInterface
-		for _, object := range part.GetConstructors() {
-			objects = append(objects, object)
-		}
-		for _, object := range part.GetMethods() {
-			objects = append(objects, object)
-		}
+		objects = append(objects, part.GetConstructors()...)
+		objects = append(objects, part.GetMethods()...)
 		for _, object := range objects {
 			fixed += fixFieldNames(object)
 		}

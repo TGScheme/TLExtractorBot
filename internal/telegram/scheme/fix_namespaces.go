@@ -87,26 +87,27 @@ func namespaceVariants(name, result string) [][2]string {
 }
 
 func splitNamespace(value string) (string, string) {
-	if dot := strings.LastIndex(value, "."); dot >= 0 {
-		return value[:dot], value[dot+1:]
+	if before, after, found := strings.CutLast(value, "."); found {
+		return before, after
 	}
 	return "", value
 }
 
 func objectRepresentation(name, result string, params []types.Parameter) string {
-	representation := name
+	var representation strings.Builder
+	representation.WriteString(name)
 	magic := result
 	if fields := strings.Split(result, " "); len(fields) > 1 {
 		magic = fields[len(fields)-1]
 	}
 	if magic == "X" || magic == "t" {
-		representation += fmt.Sprintf(" {%s:Type}", magic)
+		representation.WriteString(fmt.Sprintf(" {%s:Type}", magic))
 	}
 	if magic == "t" {
-		representation += fmt.Sprintf(" # [ %s ]", magic)
+		representation.WriteString(fmt.Sprintf(" # [ %s ]", magic))
 	}
 	for _, param := range params {
-		representation += fmt.Sprintf(" %s:%s", param.Name, param.Type)
+		representation.WriteString(fmt.Sprintf(" %s:%s", param.Name, param.Type))
 	}
-	return representation + " = " + result
+	return representation.String() + " = " + result
 }

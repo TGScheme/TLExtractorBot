@@ -151,15 +151,15 @@ func parseTLLine(line string) (tlObject, string) {
 		return object, "missing the trailing semicolon"
 	}
 	body := strings.TrimSpace(strings.TrimSuffix(line, ";"))
-	separator := strings.LastIndex(body, "=")
-	if separator < 0 {
+	head, result, found := strings.CutLast(body, "=")
+	if !found {
 		return object, "missing the result type"
 	}
-	object.result = strings.TrimSpace(body[separator+1:])
+	object.result = strings.TrimSpace(result)
 	if object.result == "" {
 		return object, "missing the result type"
 	}
-	fields := strings.Fields(strings.TrimSpace(body[:separator]))
+	fields := strings.Fields(strings.TrimSpace(head))
 	if len(fields) == 0 {
 		return object, "missing the object name"
 	}
@@ -314,7 +314,7 @@ func (object tlObject) problem(fatal bool, reason string) Problem {
 
 func typeAtoms(rawType string) []string {
 	var atoms []string
-	for _, field := range strings.Fields(rawType) {
+	for field := range strings.FieldsSeq(rawType) {
 		field = strings.TrimLeft(field, "!%")
 		for strings.HasPrefix(field, "Vector<") && strings.HasSuffix(field, ">") {
 			atoms = append(atoms, "Vector")

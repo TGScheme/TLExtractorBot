@@ -36,7 +36,7 @@ func getClassFiles(workDir string, language *sitter.Language) (map[string]string
 			if file.IsDir {
 				continue
 			}
-			baseClassName := strings.Split(file.Name, "$")[0]
+			baseClassName, _, _ := strings.Cut(file.Name, "$")
 			if _, ok := contentFiles[baseClassName]; !ok {
 				contentFiles[baseClassName] = fmt.Sprintf(
 					"public class %s {\n",

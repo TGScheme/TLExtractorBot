@@ -6,12 +6,13 @@ import (
 )
 
 func SnakeCase(name string) string {
-	nameNew := strings.ToLower(name[:1])
+	var nameNew strings.Builder
+	nameNew.WriteString(strings.ToLower(name[:1]))
 	for _, v := range name[1:] {
 		if unicode.IsUpper(v) {
-			nameNew += "_"
+			nameNew.WriteString("_")
 		}
-		nameNew += strings.ToLower(string(v))
+		nameNew.WriteString(strings.ToLower(string(v)))
 	}
-	return nameNew
+	return nameNew.String()
 }

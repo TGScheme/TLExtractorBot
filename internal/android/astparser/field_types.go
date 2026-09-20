@@ -26,8 +26,8 @@ func astTypeToScheme(astType *javaTypes.AstVar) string {
 		parsedType = "Bool"
 	default:
 		t := astType.Type
-		if strings.HasPrefix(t, "Tl_") {
-			t = "TL_" + strings.TrimPrefix(t, "Tl_")
+		if after, ok := strings.CutPrefix(t, "Tl_"); ok {
+			t = "TL_" + after
 		}
 		if strings.HasPrefix(t, "TL_") {
 			parsedType, _ = FixTypeName(t, "", true)
@@ -87,8 +87,7 @@ func FixTypeName(name, hint string, allowCasing bool) (string, int) {
 	var layer int
 	layerIdx := -1
 	for i, part := range typeInfo {
-		if strings.HasPrefix(part, "layer") {
-			suffix := strings.TrimPrefix(part, "layer")
+		if suffix, ok := strings.CutPrefix(part, "layer"); ok {
 			if suffix == "" && i+1 < len(typeInfo) {
 				r, err := strconv.Atoi(typeInfo[i+1])
 				if err == nil {

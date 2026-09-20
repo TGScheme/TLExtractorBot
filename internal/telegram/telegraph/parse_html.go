@@ -17,7 +17,7 @@ func parseHtml(html string) ([]types.Node, error) {
 	var varName, varValue, specialChar string
 	var tag string
 	var line int
-	for i := 0; i < len(chars); i++ {
+	for i := range chars {
 		if chars[i] == '\n' {
 			line++
 		}

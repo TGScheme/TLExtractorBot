@@ -12,7 +12,7 @@ const (
 
 func waitFor(name string, attempt func() error) error {
 	var err error
-	for i := 0; i < waitAttempts; i++ {
+	for range waitAttempts {
 		if err = attempt(); err == nil {
 			return nil
 		}

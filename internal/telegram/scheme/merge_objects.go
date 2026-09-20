@@ -8,8 +8,8 @@ import (
 )
 
 func resultLeaf(s string) string {
-	if i := strings.LastIndex(s, "."); i >= 0 {
-		s = s[i+1:]
+	if _, after, found := strings.CutLast(s, "."); found {
+		return after
 	}
 	return s
 }

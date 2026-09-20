@@ -13,7 +13,7 @@ func ParseTLScheme(rawScheme string) (*types.TLRemoteScheme, error) {
 	var isMethodDeclaration bool
 	compileParams := regexp.MustCompile(`(\w+):(\S+)`)
 	compileVersion := regexp.MustCompile(`// LAYER (\d+)`)
-	for _, line := range strings.Split(rawScheme, "\n") {
+	for line := range strings.SplitSeq(rawScheme, "\n") {
 		line = strings.TrimSpace(line)
 		if matches := consts.TLSchemeLineRgx.FindAllStringSubmatch(line, -1); len(matches) > 0 {
 			tlBase := types.TLBase{

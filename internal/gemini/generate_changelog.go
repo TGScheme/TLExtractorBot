@@ -62,8 +62,8 @@ func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
 			}},
 		}},
 		&genai.GenerateContentConfig{
-			Temperature:      genai.Ptr(float32(0.35)),
-			TopP:             genai.Ptr(float32(0.95)),
+			Temperature:      new(float32(0.35)),
+			TopP:             new(float32(0.95)),
 			MaxOutputTokens:  65536,
 			ResponseMIMEType: "application/json",
 			ResponseSchema:   changelogSchema,
@@ -200,9 +200,7 @@ func buildContext(fullScheme *schemeTypes.TLFullScheme, differences *schemeTypes
 			return
 		}
 		seen[name] = true
-		for _, line := range byResult[name] {
-			context = append(context, line)
-		}
+		context = append(context, byResult[name]...)
 	}
 	for _, api := range []*schemeTypes.TLSchemeDifferences{differences.MainApi, differences.E2EApi} {
 		if api == nil {
@@ -227,11 +225,12 @@ func buildContext(fullScheme *schemeTypes.TLFullScheme, differences *schemeTypes
 }
 
 func tlLine(object schemeTypes.TLInterface) string {
-	line := fmt.Sprintf("%s#%s", object.Package(), scheme.ParseConstructor(object.Constructor()))
+	var line strings.Builder
+	line.WriteString(fmt.Sprintf("%s#%s", object.Package(), scheme.ParseConstructor(object.Constructor())))
 	for _, param := range object.Parameters() {
-		line += fmt.Sprintf(" %s:%s", param.Name, param.Type)
+		line.WriteString(fmt.Sprintf(" %s:%s", param.Name, param.Type))
 	}
-	return line + " = " + object.Result() + ";"
+	return line.String() + " = " + object.Result() + ";"
 }
 
 func baseType(fieldType string) string {
@@ -259,7 +258,7 @@ var changelogSchema = &genai.Schema{
 		},
 		"sections": {
 			Type:     genai.TypeArray,
-			MaxItems: genai.Ptr(int64(6)),
+			MaxItems: new(int64(6)),
 			Items: &genai.Schema{
 				Type: genai.TypeObject,
 				Properties: map[string]*genai.Schema{
@@ -269,12 +268,12 @@ var changelogSchema = &genai.Schema{
 					},
 					"paragraphs": {
 						Type:     genai.TypeArray,
-						MaxItems: genai.Ptr(int64(3)),
+						MaxItems: new(int64(3)),
 						Items:    &genai.Schema{Type: genai.TypeString},
 					},
 					"highlights": {
 						Type:     genai.TypeArray,
-						MaxItems: genai.Ptr(int64(6)),
+						MaxItems: new(int64(6)),
 						Items:    &genai.Schema{Type: genai.TypeString},
 					},
 				},

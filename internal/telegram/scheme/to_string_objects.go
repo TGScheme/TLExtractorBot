@@ -9,7 +9,7 @@ import (
 )
 
 func toStringObjects(objects []types.TLInterface, schemeLayer int) string {
-	var tl string
+	var tl strings.Builder
 	var keyOrder []string
 	var layerOrder []int
 	layeredObjects := make(map[int][]types.TLInterface)
@@ -51,7 +51,7 @@ func toStringObjects(objects []types.TLInterface, schemeLayer int) string {
 	}
 	for _, packageName := range keyOrder {
 		if strings.HasPrefix(packageName, "layer") {
-			tl += fmt.Sprintf("// %s\n", packageName)
+			tl.WriteString(fmt.Sprintf("// %s\n", packageName))
 			continue
 		}
 		c := objectsOrder[packageName]
@@ -64,23 +64,23 @@ func toStringObjects(objects []types.TLInterface, schemeLayer int) string {
 			if bestLayer[name] != 0 && bestLayer[name] != objectLayer {
 				name += strconv.Itoa(objectLayer)
 			}
-			tl += fmt.Sprintf("%s#%s", name, ParseConstructor(constructor.Constructor()))
+			tl.WriteString(fmt.Sprintf("%s#%s", name, ParseConstructor(constructor.Constructor())))
 			tempMagicCheck := strings.Split(constructor.Result(), " ")
 			magicCheck := tempMagicCheck[len(tempMagicCheck)-1]
 			if magicCheck == "X" || magicCheck == "t" {
-				tl += fmt.Sprintf(" {%s:Type}", magicCheck)
+				tl.WriteString(fmt.Sprintf(" {%s:Type}", magicCheck))
 			}
 			if magicCheck == "t" {
-				tl += fmt.Sprintf(" # [ %s ]", magicCheck)
+				tl.WriteString(fmt.Sprintf(" # [ %s ]", magicCheck))
 			}
 			for _, param := range constructor.Parameters() {
-				tl += fmt.Sprintf(" %s:%s", param.Name, param.Type)
+				tl.WriteString(fmt.Sprintf(" %s:%s", param.Name, param.Type))
 			}
-			tl += " = "
-			tl += constructor.Result()
-			tl += ";\n"
+			tl.WriteString(" = ")
+			tl.WriteString(constructor.Result())
+			tl.WriteString(";\n")
 		}
-		tl += "\n"
+		tl.WriteString("\n")
 	}
-	return strings.TrimSpace(tl)
+	return strings.TrimSpace(tl.String())
 }

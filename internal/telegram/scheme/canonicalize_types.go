@@ -22,8 +22,8 @@ func canonicalTypeIndex(objs []types.TLInterface) map[string]string {
 			return
 		}
 		leaf := full
-		if i := strings.LastIndex(leaf, "."); i >= 0 {
-			leaf = leaf[i+1:]
+		if _, after, found := strings.CutLast(leaf, "."); found {
+			leaf = after
 		}
 		ll := strings.ToLower(leaf)
 		if ll == "" {
@@ -51,8 +51,8 @@ func canonicalTypeIndex(objs []types.TLInterface) map[string]string {
 func canonicalPredicateIndex(objs []types.TLInterface) map[string]string {
 	lowerLeafOf := func(s string) string {
 		s = strings.ToLower(strings.TrimSpace(s))
-		if i := strings.LastIndex(s, "."); i >= 0 {
-			s = s[i+1:]
+		if _, after, found := strings.CutLast(s, "."); found {
+			return after
 		}
 		return s
 	}
@@ -100,8 +100,8 @@ func canonicalizeType(t string, idx, predIdx map[string]string) string {
 		return prefix + open + t + closing
 	}
 	leaf := t
-	if i := strings.LastIndex(leaf, "."); i >= 0 {
-		leaf = leaf[i+1:]
+	if _, after, found := strings.CutLast(leaf, "."); found {
+		leaf = after
 	}
 	if canon, ok := idx[strings.ToLower(leaf)]; ok {
 		if canon != t {
