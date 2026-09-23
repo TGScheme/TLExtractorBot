@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/Laky-64/gologging"
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
@@ -42,6 +43,7 @@ func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
 		return nil, nil
 	}
 
+	started := time.Now()
 	resp, err := ctx.apiClient.Models.GenerateContent(
 		ctx.ctx,
 		ctx.model,
@@ -77,6 +79,13 @@ func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
 	)
 	if err != nil {
 		return nil, err
+	}
+	if usage := resp.UsageMetadata; usage != nil {
+		gologging.Info(fmt.Sprintf(
+			"gemini: generated the changelog with %s in %s (%d prompt, %d thinking, %d output tokens)",
+			ctx.model, time.Since(started).Round(time.Millisecond),
+			usage.PromptTokenCount, usage.ThoughtsTokenCount, usage.CandidatesTokenCount,
+		))
 	}
 	if len(resp.Candidates) == 0 {
 		return nil, fmt.Errorf("no candidates")

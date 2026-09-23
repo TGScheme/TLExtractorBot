@@ -10,6 +10,12 @@ import (
 	"google.golang.org/genai"
 )
 
+const (
+	retryAttempts     = 5
+	retryInitialDelay = 5.0
+	retryMaxDelay     = 30.0
+)
+
 type Client struct {
 	ctx       context.Context
 	apiClient *genai.Client
@@ -23,7 +29,17 @@ type Model struct {
 
 func New(cfg *config.Config, model string) (*Client, error) {
 	ctx := context.Background()
-	apiClient, err := genai.NewClient(ctx, &genai.ClientConfig{APIKey: cfg.GeminiToken})
+	apiClient, err := genai.NewClient(ctx, &genai.ClientConfig{
+		APIKey: cfg.GeminiToken,
+		HTTPOptions: genai.HTTPOptions{
+			RetryOptions: &genai.HTTPRetryOptions{
+				Attempts:        new(int32(retryAttempts)),
+				InitialDelay:    new(retryInitialDelay),
+				MaxDelay:        new(retryMaxDelay),
+				HTTPStatusCodes: []int32{500, 502, 503, 504},
+			},
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
