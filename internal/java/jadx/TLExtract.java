@@ -1,3 +1,5 @@
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import jadx.api.CommentsLevel;
 import jadx.api.JadxArgs;
 import jadx.api.JadxDecompiler;
@@ -14,8 +16,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.LoggerFactory;
+
 public final class TLExtract {
     public static void main(String[] argv) throws Exception {
+        ((Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)).setLevel(Level.ERROR);
         if (argv.length < 4) {
             System.err.println("usage: TLExtract <inputs> <sources-dir> <package-prefix> <threads>");
             System.exit(2);

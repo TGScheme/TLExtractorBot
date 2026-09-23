@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/Laky-64/gologging"
+	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -15,9 +15,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Laky-64/gologging"
 	"github.com/TGScheme/TLExtractorBot/internal/config"
 	"github.com/TGScheme/TLExtractorBot/internal/consts"
 )
+
+const maxReportedFailures = 10
 
 var progressRgx = regexp.MustCompile(`INFO\s+-\s+progress:\s+[0-9]+\s+of\s+[0-9]+\s+\(([0-9]+)%\)`)
 
@@ -68,9 +71,17 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 	scanner.Split(scanLines)
 	var last int64 = -1
 	var lastAt time.Time
+	var failures []string
 	for scanner.Scan() {
-		match := progressRgx.FindStringSubmatch(scanner.Text())
+		line := scanner.Text()
+		match := progressRgx.FindStringSubmatch(line)
 		if match == nil {
+			if strings.HasPrefix(line, "ERROR") {
+				failures = append(failures, line)
+				if len(failures) > maxReportedFailures {
+					failures = failures[1:]
+				}
+			}
 			continue
 		}
 		percentage, _ := strconv.ParseInt(match[1], 10, 64)
@@ -80,10 +91,17 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		last, lastAt = percentage, time.Now()
 		onProgress(percentage)
 	}
+	if err = scanner.Err(); err != nil {
+		gologging.Warn("jadx: stopped reading the output:", err)
+		_, _ = io.Copy(io.Discard, stdout)
+	}
 
 	if err = cmd.Wait(); err != nil {
 		if message := stdErr.String(); len(message) > 0 {
 			return errors.New(message)
+		}
+		if len(failures) > 0 {
+			return fmt.Errorf("%w: %s", err, strings.Join(failures, "\n"))
 		}
 		return err
 	}
