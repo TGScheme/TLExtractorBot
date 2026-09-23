@@ -33,6 +33,7 @@ var (
 	BannersFolder   = "banners"
 	TempBins        = path.Join(TempFolder, "bins")
 	TempApk         = path.Join(TempBins, "telegram.apk")
+	TempDex         = path.Join(TempBins, "dex")
 	TempDecompiled  = path.Join(TempFolder, "decompiled")
 	TempSourcesRoot = path.Join(TempDecompiled, "sources")
 	TempSources     = path.Join(TempSourcesRoot, "org", "telegram", "tgnet")

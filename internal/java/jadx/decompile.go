@@ -37,12 +37,13 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 	if !hasJVMOpt(jvmOpts, "-XX:ActiveProcessorCount") {
 		jvmOpts = append(jvmOpts, "-XX:ActiveProcessorCount="+strconv.Itoa(threads))
 	}
+	inputs := selectInputs(path.Join(cfg.WorkDir, consts.TempApk), path.Join(cfg.WorkDir, consts.TempDex), consts.TgnetPackage)
 	args := append(
 		jvmOpts,
 		"-Djdk.util.zip.disableZip64ExtraFieldValidation=true",
 		"-cp", cfg.JadxJar+string(os.PathListSeparator)+cfg.ExtractJar,
 		"TLExtract",
-		path.Join(cfg.WorkDir, consts.TempApk),
+		strings.Join(inputs, string(os.PathListSeparator)),
 		sources,
 		consts.TgnetPackage,
 		strconv.Itoa(threads),

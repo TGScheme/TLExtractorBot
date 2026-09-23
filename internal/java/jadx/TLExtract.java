@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,16 +17,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class TLExtract {
     public static void main(String[] argv) throws Exception {
         if (argv.length < 4) {
-            System.err.println("usage: TLExtract <apk> <sources-dir> <package-prefix> <threads>");
+            System.err.println("usage: TLExtract <inputs> <sources-dir> <package-prefix> <threads>");
             System.exit(2);
         }
-        File apk = new File(argv[0]);
+        List<File> inputs = new ArrayList<>();
+        for (String input : argv[0].split(File.pathSeparator)) {
+            inputs.add(new File(input));
+        }
         Path sources = Path.of(argv[1]);
         String prefix = argv[2];
         int threads = Math.max(1, Integer.parseInt(argv[3]));
 
         JadxArgs args = new JadxArgs();
-        args.setInputFiles(Collections.singletonList(apk));
+        args.setInputFiles(inputs);
         args.setOutDir(sources.toFile());
         args.setOutDirSrc(sources.toFile());
         args.setSkipResources(true);
