@@ -5,6 +5,7 @@ import (
 )
 
 func (ctx *Client) DropStatus() error {
+	ctx.discardStatus()
 	ctx.statusMutex.Lock()
 	defer ctx.statusMutex.Unlock()
 	return ctx.dropStatus()

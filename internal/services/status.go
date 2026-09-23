@@ -17,8 +17,8 @@ func statusArgs(update UpdateInfo, isPatch bool, stage int, progress int64) map[
 	}
 }
 
-func (s *Service) updateStatus(update UpdateInfo, isPatch bool, stage int, progress int64) error {
-	return s.bot.UpdateRichStatus(assets.Render("status_message", statusArgs(update, isPatch, stage, progress)))
+func (s *Service) updateStatus(update UpdateInfo, isPatch bool, stage int, progress int64) {
+	s.bot.UpdateRichStatus(assets.Render("status_message", statusArgs(update, isPatch, stage, progress)))
 }
 
 func initialStage(source string) int {

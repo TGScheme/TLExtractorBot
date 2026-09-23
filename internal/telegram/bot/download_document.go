@@ -13,33 +13,26 @@ import (
 )
 
 type progressWriter struct {
-	file     *os.File
-	total    int64
-	mutex    sync.Mutex
-	written  int64
-	reported int64
-	lastAt   time.Time
-	updates  chan<- int64
+	file       *os.File
+	total      int64
+	mutex      sync.Mutex
+	written    int64
+	reported   int64
+	lastAt     time.Time
+	onProgress func(percentage int64)
 }
 
 func (w *progressWriter) WriteAt(chunk []byte, offset int64) (int, error) {
 	written, err := w.file.WriteAt(chunk, offset)
-	if w.updates == nil || w.total <= 0 {
+	if w.onProgress == nil || w.total <= 0 {
 		return written, err
 	}
 	w.mutex.Lock()
+	defer w.mutex.Unlock()
 	w.written += int64(written)
-	percentage := w.written * 100 / w.total
-	report := percentage > w.reported && time.Since(w.lastAt) >= consts.UpdateMessageRate
-	if report {
+	if percentage := w.written * 100 / w.total; percentage > w.reported && time.Since(w.lastAt) >= consts.UpdateMessageRate {
 		w.lastAt, w.reported = time.Now(), percentage
-	}
-	w.mutex.Unlock()
-	if report {
-		select {
-		case w.updates <- percentage:
-		default:
-		}
+		w.onProgress(percentage)
 	}
 	return written, err
 }
@@ -56,22 +49,7 @@ func (ctx *Client) DownloadDocument(document *tg.Document, dest string, onProgre
 	defer func() {
 		_ = file.Close()
 	}()
-	writer := &progressWriter{file: file, total: document.Size, lastAt: time.Now()}
-	if onProgress != nil {
-		updates := make(chan int64, 1)
-		reported := make(chan struct{})
-		go func() {
-			defer close(reported)
-			for percentage := range updates {
-				onProgress(percentage)
-			}
-		}()
-		writer.updates = updates
-		defer func() {
-			close(updates)
-			<-reported
-		}()
-	}
+	writer := &progressWriter{file: file, total: document.Size, lastAt: time.Now(), onProgress: onProgress}
 	_, err = downloader.NewDownloader().Download(api, &tg.InputDocumentFileLocation{
 		ID:            document.ID,
 		AccessHash:    document.AccessHash,

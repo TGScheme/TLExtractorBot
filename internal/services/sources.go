@@ -65,17 +65,14 @@ func (s *Service) pollSources() {
 		build, _ := strconv.ParseUint(version[2], 10, 32)
 		update.VersionName, update.BuildNumber = version[1], uint32(build)
 	}
-	if err = s.updateStatus(update, isPatch, stageDownloading, 0); err != nil {
-		gologging.Error(err)
-		return
-	}
+	s.updateStatus(update, isPatch, stageDownloading, 0)
 	apkPath := path.Join(s.cfg.WorkDir, consts.TempApk)
 	if err = os.MkdirAll(path.Join(s.cfg.WorkDir, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
 		gologging.Error(err)
 		return
 	}
 	if err = s.bot.DownloadDocument(post.Document, apkPath, func(percentage int64) {
-		_ = s.updateStatus(update, isPatch, stageDownloading, percentage)
+		s.updateStatus(update, isPatch, stageDownloading, percentage)
 	}); err != nil {
 		gologging.Error(err)
 		if errStatus := s.bot.DropStatus(); errStatus != nil {

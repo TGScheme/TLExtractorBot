@@ -63,41 +63,22 @@ func Decompile(cfg *config.Config, onProgress func(percentage int64)) error {
 		return err
 	}
 
-	updates := make(chan int64, 1)
-	reported := make(chan struct{})
-	go func() {
-		defer close(reported)
-		for percentage := range updates {
-			onProgress(percentage)
+	scanner := bufio.NewScanner(stdout)
+	scanner.Split(scanLines)
+	var last int64 = -1
+	var lastAt time.Time
+	for scanner.Scan() {
+		match := progressRgx.FindStringSubmatch(scanner.Text())
+		if match == nil {
+			continue
 		}
-	}()
-
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		scanner := bufio.NewScanner(stdout)
-		scanner.Split(scanLines)
-		var last int64 = -1
-		var lastAt time.Time
-		for scanner.Scan() {
-			match := progressRgx.FindStringSubmatch(scanner.Text())
-			if match == nil {
-				continue
-			}
-			percentage, _ := strconv.ParseInt(match[1], 10, 64)
-			if percentage == last || time.Since(lastAt) < consts.UpdateMessageRate {
-				continue
-			}
-			last, lastAt = percentage, time.Now()
-			select {
-			case updates <- percentage:
-			default:
-			}
+		percentage, _ := strconv.ParseInt(match[1], 10, 64)
+		if percentage == last || time.Since(lastAt) < consts.UpdateMessageRate {
+			continue
 		}
-	}()
-	<-done
-	close(updates)
-	<-reported
+		last, lastAt = percentage, time.Now()
+		onProgress(percentage)
+	}
 
 	if err = cmd.Wait(); err != nil {
 		if message := stdErr.String(); len(message) > 0 {

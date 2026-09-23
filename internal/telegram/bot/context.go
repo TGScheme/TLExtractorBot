@@ -23,6 +23,12 @@ type Client struct {
 	statusMessageID int64
 	statusText      string
 
+	statusQueue      sync.Mutex
+	statusPending    string
+	statusQueued     bool
+	statusGeneration uint64
+	statusWake       chan struct{}
+
 	mtProtoMutex  sync.RWMutex
 	mtProtoCtx    context.Context
 	mtProtoCancel context.CancelFunc
@@ -55,7 +61,9 @@ func New(cfg *config.Config) (*Client, error) {
 		mtProtoCtx:    mtProtoCtx,
 		mtProtoCancel: mtProtoCancel,
 		channels:      make(map[string]*tg.InputChannel),
+		statusWake:    make(chan struct{}, 1),
 	}
+	go ctx.runStatus()
 	ready := make(chan error, 1)
 	go ctx.superviseMTProto(cfg, ready)
 	if err := <-ready; err != nil {

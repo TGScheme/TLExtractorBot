@@ -27,9 +27,7 @@ func (s *Service) extract(update UpdateInfo) error {
 	if update.Source == "android" {
 		stage = stageDecompiling
 	}
-	if err := s.updateStatus(update, isPatch, stage, 0); err != nil {
-		return err
-	}
+	s.updateStatus(update, isPatch, stage, 0)
 
 	settings, err := s.db.SettingsStore.GetSettings()
 	if err != nil {
@@ -74,13 +72,13 @@ func (s *Service) buildScheme(
 	isPatch bool,
 ) (*schemeTypes.TLFullScheme, error) {
 	if update.Source == "android" {
-		_ = s.updateStatus(update, isPatch, stageDecompiling, 0)
+		s.updateStatus(update, isPatch, stageDecompiling, 0)
 		if err := jadx.Decompile(s.cfg, func(percentage int64) {
-			_ = s.updateStatus(update, isPatch, stageDecompiling, percentage)
+			s.updateStatus(update, isPatch, stageDecompiling, percentage)
 		}); err != nil {
 			return nil, err
 		}
-		_ = s.updateStatus(update, isPatch, stageExtracting, 100)
+		s.updateStatus(update, isPatch, stageExtracting, 100)
 		fullScheme, extracted, err := android.ExtractScheme(s.cfg.WorkDir, s.scheme, branch)
 		if err != nil {
 			return nil, err
@@ -164,7 +162,7 @@ func (s *Service) publish(
 		}
 	}
 
-	_ = s.updateStatus(update, isPatch, stagePublishing, 100)
+	s.updateStatus(update, isPatch, stagePublishing, 100)
 
 	stats := scheme.GetStats(differences)
 	commitMessage := fmt.Sprintf("Updated to Layer %d", fullScheme.Layer)
