@@ -12,6 +12,7 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
 	"github.com/TGScheme/TLExtractorBot/internal/banner"
 	"github.com/TGScheme/TLExtractorBot/internal/consts"
+	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/anaskhan96/soup"
 )
 
@@ -48,37 +49,35 @@ func (s *Service) pollCoreFork() {
 		}},
 	}
 	total := strings.Count(changelog, "<li")
-	if err = s.bot.DirectRich(assets.Render("corefork_update", map[string]any{
+	args := map[string]any{
 		"layer":       latest,
 		"description": richBullets(changelog),
 		"total":       total,
-		"banner_url":  s.coreforkBanner(latest, total),
-	}), keyboard); err != nil {
+	}
+	image := coreforkBanner(latest, total)
+	if image != nil {
+		args["banner_url"] = bot.BannerSource
+	}
+	if err = s.bot.DirectRich(assets.Render("corefork_update", args), keyboard, image); err != nil {
 		gologging.Error(err)
 	}
 }
 
-func (s *Service) coreforkBanner(layer, total int) string {
-	url, err := s.upload(
-		fmt.Sprintf("layer-%d-corefork.png", layer),
-		fmt.Sprintf("Banner for the corefork Layer %d", layer),
-		func() ([]byte, error) {
-			return banner.Render(banner.Input{
-				Layer:        layer,
-				Title:        "Released on Corefork",
-				Source:       "corefork.telegram.org",
-				ChangesLabel: "CHANGELOG",
-				Highlight:    fmt.Sprintf("%d", total),
-				Changes:      " entries published by Telegram",
-				IsStable:     true,
-			})
-		},
-	)
+func coreforkBanner(layer, total int) []byte {
+	image, err := banner.Render(banner.Input{
+		Layer:        layer,
+		Title:        "Released on Corefork",
+		Source:       "corefork.telegram.org",
+		ChangesLabel: "CHANGELOG",
+		Highlight:    fmt.Sprintf("%d", total),
+		Changes:      " entries published by Telegram",
+		IsStable:     true,
+	})
 	if err != nil {
-		gologging.Error("banner: unable to publish the corefork banner:", err)
-		return ""
+		gologging.Error("banner: unable to render the corefork banner:", err)
+		return nil
 	}
-	return url
+	return image
 }
 
 func richBullets(list string) string {
