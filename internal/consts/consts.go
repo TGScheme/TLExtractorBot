@@ -20,7 +20,6 @@ const (
 
 const (
 	UpdateMessageRate     = time.Second * 3
-	AndroidBetaChannel    = "TAndroidBeta"
 	ChannelPostWindow     = 20
 	DownloadThreads       = 2
 	MTProtoSessionFile    = "mtproto.session"
@@ -28,6 +27,7 @@ const (
 )
 
 var (
+	AndroidChannels = []string{"TAndroidBeta", "TAndroidAPK"}
 	TempFolder      = "temp"
 	TgnetPackage    = "org.telegram.tgnet"
 	BannersFolder   = "banners"
