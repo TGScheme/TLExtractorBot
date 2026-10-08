@@ -254,9 +254,9 @@ func (w *walker) handleLocalVar(stmt *sitter.Node) {
 
 	if val.Kind() == "binary_expression" {
 		if ff, bit, ok := parseMaskNotZero(val, w.src); ok {
-			w.flags.mapBool(name, w.resolveFlagField(ff), bit)
+			w.flags.mapBool(name, w.maskFlagField(ff), bit)
 		} else if ff, bit, ok := parsePlainAndMask(val, w.src); ok {
-			w.flags.mapBool(name, w.resolveFlagField(ff), bit)
+			w.flags.mapBool(name, w.maskFlagField(ff), bit)
 		}
 	}
 
@@ -283,6 +283,15 @@ func (w *walker) registerWriteSideBool(localName, boolName, rawBase string, bit 
 	w.writeSideBools = append(w.writeSideBools, pendingBool{
 		name: field, flagField: flagField, bit: bit,
 	})
+}
+
+func (w *walker) maskFlagField(raw string) string {
+	if !strings.Contains(raw, ".readInt32(") {
+		return w.resolveFlagField(raw)
+	}
+	name := w.nextFlagName()
+	w.ensureFlagField(name)
+	return name
 }
 
 func (w *walker) resolveFlagField(name string) string {
@@ -366,11 +375,10 @@ func (w *walker) handleExpression(stmt *sitter.Node, loopNesting int, fs flagSta
 		w.flags.declareFlagField(info.Field)
 		w.emit(info.Field, "#")
 	case stmtBoolFromMask:
-
-		w.flags.mapBool(info.BoolVar, w.resolveFlagField(info.FlagField), info.Bit)
+		flagField := w.maskFlagField(info.FlagField)
+		w.flags.mapBool(info.BoolVar, flagField, info.Bit)
 		w.pendingBool = append(w.pendingBool, pendingBool{
-			name: info.Field, flagField: w.resolveFlagField(info.FlagField),
-			bit: info.Bit,
+			name: info.Field, flagField: flagField, bit: info.Bit,
 		})
 	case stmtOptionalTernary:
 		flagField := w.resolveFlagField(info.FlagField)
