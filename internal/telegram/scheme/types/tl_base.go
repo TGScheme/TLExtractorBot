@@ -6,6 +6,7 @@ type TLBase struct {
 	Type        string      `json:"type"`
 	Layer       int         `json:"layer"`
 	ForceSecret bool        `json:"force_secret"`
+	Namespace   string      `json:"-"`
 }
 
 func (tl *TLBase) Constructor() string {
@@ -40,6 +41,10 @@ func (tl *TLBase) SetLayer(layer int) {
 	tl.Layer = layer
 }
 
+func (tl *TLBase) FileNamespace() string {
+	return tl.Namespace
+}
+
 func (tl *TLBase) IsSecret() bool {
 	return tl.ForceSecret
 }
@@ -51,5 +56,6 @@ func (tl *TLBase) Clone() TLBase {
 	tlBase.Type = tl.Type
 	tlBase.Layer = tl.Layer
 	tlBase.ForceSecret = tl.ForceSecret
+	tlBase.Namespace = tl.Namespace
 	return tlBase
 }

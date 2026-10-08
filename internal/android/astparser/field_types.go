@@ -58,6 +58,14 @@ func parseStreamPrimitive(javaType string) (string, bool) {
 	return "", false
 }
 
+func FileNamespace(parent string) string {
+	switch parent {
+	case "TLRPC", "TLObject":
+		return ""
+	}
+	return strings.TrimPrefix(parent, "TL_")
+}
+
 func FixTypeName(name, hint string, allowCasing bool) (string, int) {
 	if strings.Contains(name, ".") {
 		parts := strings.Split(name, ".")
@@ -73,16 +81,7 @@ func FixTypeName(name, hint string, allowCasing bool) (string, int) {
 	}
 	typeInfo := strings.Split(name, "_")
 
-	var packageName string
-	if len(hint) > 0 {
-		switch hint {
-		case "TLRPC", "TLObject":
-			packageName = ""
-		default:
-
-			packageName = strings.TrimPrefix(hint, "TL_")
-		}
-	}
+	packageName := FileNamespace(hint)
 
 	var layer int
 	layerIdx := -1

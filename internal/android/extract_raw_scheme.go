@@ -107,9 +107,10 @@ func extractRawScheme(workDir string) (*types.RawTLScheme, error) {
 			}
 
 			baseScheme := types.TLBase{
-				ID:     astClass.Vars["constructor"].Value,
-				Layer:  layer,
-				Params: params,
+				ID:        astClass.Vars["constructor"].Value,
+				Layer:     layer,
+				Params:    params,
+				Namespace: astparser.FileNamespace(parent),
 			}
 
 			var hint string

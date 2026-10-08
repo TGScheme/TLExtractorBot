@@ -13,77 +13,158 @@ func FixNamespaces(scheme *types.TLFullScheme) int {
 	for _, part := range []types.TLScheme{scheme.MainApi, scheme.E2EApi} {
 		taken := make(map[string]bool)
 		var objects []types.TLInterface
-		for _, object := range part.GetConstructors() {
-			taken[object.Package()] = true
-			objects = append(objects, object)
-		}
-		for _, object := range part.GetMethods() {
-			taken[object.Package()] = true
-			objects = append(objects, object)
-		}
+		objects = append(objects, part.GetConstructors()...)
+		objects = append(objects, part.GetMethods()...)
 		for _, object := range objects {
-			if fixNamespace(object, taken) {
-				fixed++
+			taken[object.Package()] = true
+		}
+		for {
+			known := qualifiedTypes(objects)
+			progress := 0
+			for _, object := range objects {
+				if fixNamespace(object, taken, known) {
+					progress++
+				}
 			}
+			if progress == 0 {
+				break
+			}
+			fixed += progress
 		}
 	}
 	return fixed
 }
 
-func fixNamespace(object types.TLInterface, taken map[string]bool) bool {
+func qualifiedTypes(objects []types.TLInterface) map[string]bool {
+	known := make(map[string]bool)
+	for _, object := range objects {
+		if result := object.Result(); strings.Contains(result, ".") && !strings.ContainsAny(result, "<> ") {
+			known[result] = true
+		}
+	}
+	return known
+}
+
+func fixNamespace(object types.TLInterface, taken, known map[string]bool) bool {
 	declared, err := strconv.ParseUint(ParseConstructor(object.Constructor()), 16, 32)
 	if err != nil {
 		return false
 	}
-	name, result := object.Package(), object.Result()
+	name, result, params := object.Package(), object.Result(), object.Parameters()
 	if strings.ContainsAny(result, "<> ") {
 		return false
 	}
-	if inferIDFromText(objectRepresentation(name, result, object.Parameters())) == uint32(declared) {
+	if inferIDFromText(objectRepresentation(name, result, params)) == uint32(declared) {
 		return false
 	}
-	for _, variant := range namespaceVariants(name, result) {
-		if variant[0] != name && taken[variant[0]] {
+	fileNamespace := ""
+	if source, ok := object.(interface{ FileNamespace() string }); ok {
+		fileNamespace = source.FileNamespace()
+	}
+	for _, variant := range namespaceVariants(name, result, fileNamespace) {
+		if variant.name != name && taken[variant.name] {
 			continue
 		}
-		if inferIDFromText(objectRepresentation(variant[0], variant[1], object.Parameters())) != uint32(declared) {
+		candidate := params
+		if variant.namespace != "" {
+			candidate = qualifyParams(params, variant.namespace, known)
+		}
+		if inferIDFromText(objectRepresentation(variant.name, variant.result, candidate)) != uint32(declared) {
 			continue
 		}
-		if variant[0] != name {
+		if variant.name != name {
 			delete(taken, name)
-			taken[variant[0]] = true
+			taken[variant.name] = true
 			switch typed := object.(type) {
 			case *types.TLConstructor:
-				typed.Predicate = variant[0]
+				typed.Predicate = variant.name
 			case *types.TLMethod:
-				typed.Method = variant[0]
+				typed.Method = variant.name
 			}
 		}
-		object.SetResult(variant[1])
+		object.SetResult(variant.result)
+		object.SetParameters(candidate)
 		return true
 	}
 	return false
 }
 
-func namespaceVariants(name, result string) [][2]string {
+type namespaceVariant struct {
+	name      string
+	result    string
+	namespace string
+}
+
+func namespaceVariants(name, result, fileNamespace string) []namespaceVariant {
 	nameSpace, bareName := splitNamespace(name)
 	resultSpace, bareResult := splitNamespace(result)
-	variants := [][2]string{
-		{bareName, result},
-		{name, bareResult},
-		{bareName, bareResult},
+	variants := []namespaceVariant{
+		{bareName, result, ""},
+		{name, bareResult, ""},
+		{bareName, bareResult, ""},
 	}
-	for _, namespace := range []string{nameSpace, resultSpace} {
-		if namespace == "" {
+	seen := make(map[string]bool)
+	for _, namespace := range []string{nameSpace, resultSpace, fileNamespace} {
+		if namespace == "" || seen[namespace] {
 			continue
 		}
-		variants = append(variants,
-			[2]string{bareName, namespace + "." + bareResult},
-			[2]string{namespace + "." + bareName, bareResult},
-			[2]string{namespace + "." + bareName, namespace + "." + bareResult},
-		)
+		seen[namespace] = true
+		names := []string{name, bareName, namespace + "." + bareName}
+		if stripped, ok := stripNamespacePrefix(bareName, namespace); ok {
+			names = append(names, namespace+"."+stripped)
+		}
+		results := []string{result, bareResult, namespace + "." + bareResult}
+		if stripped, ok := stripNamespacePrefix(bareResult, namespace); ok {
+			results = append(results, namespace+"."+stripped)
+		}
+		for _, candidateName := range names {
+			for _, candidateResult := range results {
+				variants = append(variants,
+					namespaceVariant{candidateName, candidateResult, ""},
+					namespaceVariant{candidateName, candidateResult, namespace},
+				)
+			}
+		}
 	}
 	return variants
+}
+
+func stripNamespacePrefix(value, namespace string) (string, bool) {
+	if len(value) <= len(namespace) || !strings.EqualFold(value[:len(namespace)], namespace) {
+		return "", false
+	}
+	rest := value[len(namespace):]
+	if rest[0] < 'A' || rest[0] > 'Z' {
+		return "", false
+	}
+	if value[0] >= 'a' && value[0] <= 'z' {
+		return strings.ToLower(rest[:1]) + rest[1:], true
+	}
+	return rest, true
+}
+
+func qualifyParams(params []types.Parameter, namespace string, known map[string]bool) []types.Parameter {
+	qualified := make([]types.Parameter, len(params))
+	for i, param := range params {
+		qualified[i] = types.Parameter{Name: param.Name, Type: qualifyType(param.Type, namespace, known)}
+	}
+	return qualified
+}
+
+func qualifyType(paramType, namespace string, known map[string]bool) string {
+	prefix, inner := "", paramType
+	if before, after, found := strings.Cut(paramType, "?"); found {
+		prefix, inner = before+"?", after
+	}
+	opening := ""
+	for strings.HasPrefix(inner, "Vector<") && strings.HasSuffix(inner, ">") {
+		opening += "Vector<"
+		inner = inner[len("Vector<") : len(inner)-1]
+	}
+	if !strings.Contains(inner, ".") && known[namespace+"."+inner] {
+		inner = namespace + "." + inner
+	}
+	return prefix + opening + inner + strings.Repeat(">", strings.Count(opening, "<"))
 }
 
 func splitNamespace(value string) (string, string) {
