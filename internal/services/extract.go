@@ -226,6 +226,10 @@ func (s *Service) publish(
 		lead, title = changelog.Lead, changelog.Title
 	}
 
+	if published := s.publishedTitle(fullScheme.Layer); published != "" {
+		title = published
+	}
+
 	bannerImage, pageBannerURL := s.layerBanner(update, fullScheme, stats, title, isPatch)
 	pageArgs["banner_url"] = pageBannerURL
 
@@ -330,6 +334,22 @@ func (s *Service) reportProblems(update UpdateInfo, layer int, problems []scheme
 		"truncated": truncated,
 		"blocking":  blocking,
 	}))
+}
+
+func (s *Service) publishedTitle(layer int) string {
+	path, err := s.db.PagesStore.GetLayerPagePath(int64(layer))
+	if err != nil || path == "" {
+		return ""
+	}
+	title, err := s.telegraph.PageTitle(path)
+	if err != nil {
+		gologging.Error("telegraph: unable to read the published title:", err)
+		return ""
+	}
+	if title == fmt.Sprintf("Layer %d", layer) {
+		return ""
+	}
+	return title
 }
 
 func (s *Service) publishPage(layer int, title, html string) (string, error) {
