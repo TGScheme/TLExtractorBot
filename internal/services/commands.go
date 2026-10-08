@@ -96,6 +96,12 @@ func RegisterCommands(
 	}, filters.And(filters.Command("backup", supportedAliases...), filters.ChatID(cfg.LogChatID))))
 
 	botClient.OnMessage(filters.Filter(func(client *gobotapi.Client, update tgTypes.Message) {
+		go service.ExtractUploadedApk(int(update.MessageID), isPatchCaption(update.Caption), func(text string) {
+			reply(client, update, text)
+		})
+	}, filters.And(filters.ChatID(cfg.LogChatID), isApkFile())))
+
+	botClient.OnMessage(filters.Filter(func(client *gobotapi.Client, update tgTypes.Message) {
 		data, err := client.DownloadBytes(update.Document.FileID, nil)
 		if err != nil {
 			reply(client, update, fmt.Sprintf("Cannot download the dump: %v", err))
@@ -107,6 +113,26 @@ func RegisterCommands(
 		}
 		reply(client, update, "<b>✅ Backup restored</b>")
 	}, filters.And(filters.ChatID(cfg.LogChatID), isBackupFile())))
+}
+
+func isApkFile() filters.FilterOperand {
+	return func(df *filters.DataFilter) bool {
+		message, ok := df.RawUpdate.(tgTypes.Message)
+		if !ok || message.Document == nil {
+			return false
+		}
+		return strings.HasSuffix(strings.ToLower(message.Document.FileName), ".apk") ||
+			message.Document.MimeType == "application/vnd.android.package-archive"
+	}
+}
+
+func isPatchCaption(caption string) bool {
+	fields := strings.Fields(caption)
+	if len(fields) == 0 {
+		return false
+	}
+	command, _, _ := strings.Cut(strings.ToLower(fields[0]), "@")
+	return strings.TrimLeft(command, strings.Join(supportedAliases, "")) == "patch"
 }
 
 func isBackupFile() filters.FilterOperand {

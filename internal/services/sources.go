@@ -13,6 +13,7 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/consts"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/TGScheme/TLExtractorBot/internal/utils"
+	"github.com/gotd/td/tg"
 )
 
 func (s *Service) pollSources() {
@@ -65,22 +66,7 @@ func (s *Service) pollSources() {
 		build, _ := strconv.ParseUint(version[2], 10, 32)
 		update.VersionName, update.BuildNumber = version[1], uint32(build)
 	}
-	s.updateStatus(update, isPatch, stageDownloading, 0)
-	apkPath := path.Join(s.cfg.WorkDir, consts.TempApk)
-	if err = os.MkdirAll(path.Join(s.cfg.WorkDir, consts.TempBins), os.ModePerm); err != nil && !os.IsExist(err) {
-		gologging.Error(err)
-		return
-	}
-	if err = s.bot.DownloadDocument(post.Document, apkPath, func(percentage int64) {
-		s.updateStatus(update, isPatch, stageDownloading, percentage)
-	}); err != nil {
-		gologging.Error(err)
-		if errStatus := s.bot.DropStatus(); errStatus != nil {
-			gologging.Error(errStatus)
-		}
-		return
-	}
-	info, err := android.ReadAPKInfo(apkPath)
+	info, err := s.downloadApk(update, isPatch, post.Document)
 	if err != nil {
 		gologging.Error(err)
 		return
@@ -104,9 +90,34 @@ func (s *Service) pollSources() {
 		return
 	}
 	update.VersionName, update.BuildNumber = info.VersionName, buildNumber
-	s.dispatch(update, func() error {
+	_ = s.dispatch(update, func() error {
 		return s.db.SettingsStore.SetLastVersionCode(int64(buildNumber))
 	})
+}
+
+func (s *Service) downloadApk(update UpdateInfo, isPatch bool, document *tg.Document) (*android.APKInfo, error) {
+	s.updateStatus(update, isPatch, stageDownloading, 0)
+	info, err := s.fetchApk(document, func(percentage int64) {
+		s.updateStatus(update, isPatch, stageDownloading, percentage)
+	})
+	if err != nil {
+		if errStatus := s.bot.DropStatus(); errStatus != nil {
+			gologging.Error(errStatus)
+		}
+		return nil, err
+	}
+	return info, nil
+}
+
+func (s *Service) fetchApk(document *tg.Document, onProgress func(percentage int64)) (*android.APKInfo, error) {
+	apkPath := path.Join(s.cfg.WorkDir, consts.TempApk)
+	if err := os.MkdirAll(path.Join(s.cfg.WorkDir, consts.TempBins), os.ModePerm); err != nil {
+		return nil, err
+	}
+	if err := s.bot.DownloadDocument(document, apkPath, onProgress); err != nil {
+		return nil, err
+	}
+	return android.ReadAPKInfo(apkPath)
 }
 
 func (s *Service) pollSource(
@@ -123,7 +134,7 @@ func (s *Service) pollSource(
 	if int64(version) <= last {
 		return false
 	}
-	s.dispatch(UpdateInfo{
+	_ = s.dispatch(UpdateInfo{
 		VersionName: name,
 		BuildNumber: uint32(version),
 		Source:      source,
@@ -153,22 +164,24 @@ func (s *Service) betaPost(lastPostID int64) (*bot.ChannelPost, error) {
 	return s.bot.NextChannelPost(consts.AndroidBetaChannel, int(lastPostID))
 }
 
-func (s *Service) dispatch(update UpdateInfo, commit func() error) {
+func (s *Service) dispatch(update UpdateInfo, commit func() error) (err error) {
 	s.building.Store(true)
 	defer s.building.Store(false)
 	defer s.patch.Store(false)
 	defer func() {
 		if recovered := recover(); recovered != nil {
 			gologging.Error(fmt.Sprintf("extraction panic (%s): %v\n%s", update.Source, recovered, debug.Stack()))
+			err = fmt.Errorf("extraction panic: %v", recovered)
 		}
 	}()
-	if err := s.extract(update); err != nil {
+	if err = s.extract(update); err != nil {
 		gologging.Error(err)
-		return
+		return err
 	}
-	if err := commit(); err != nil {
+	if err = commit(); err != nil {
 		gologging.Error(err)
 	}
+	return err
 }
 
 func (s *Service) tdesktopVersion(branch string) (int, string, error) {
