@@ -64,14 +64,13 @@ func mergeObjects[T types.TLInterface](old, new []T, isSameLayer bool, patches *
 				removed[ParseConstructor(newInterface.Constructor())] {
 				continue
 			}
-			objects[constructor].SetParameters(
-				utils.MergeParameters(
-					oldInterface.Parameters(),
-					newInterface.Parameters(),
-					oldInterface.Constructor() == newInterface.Constructor(),
-				),
-			)
+			previous := oldInterface.Parameters()
+			changedID := oldInterface.Constructor() != newInterface.Constructor()
+			objects[constructor].SetParameters(utils.MergeParameters(previous, newInterface.Parameters(), !changedID))
 			objects[constructor].SetConstructor(newInterface.Constructor())
+			if changedID {
+				restoreParameterNames(objects[constructor], previous)
+			}
 
 			if newResult := newInterface.Result(); newResult != "" && newInterface.IsMethod() &&
 				isAbstractResult(newResult) && normalizeResult(newResult) != "updates" &&
