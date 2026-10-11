@@ -10,13 +10,19 @@ func (w *walker) walkSerializeBlock(block *sitter.Node) {
 
 func (w *walker) returnTypeFromDeserialize(block *sitter.Node) string {
 	var result string
+	locals := make(map[string]*sitter.Node)
 	var walk func(n *sitter.Node)
 	walk = func(n *sitter.Node) {
 		if n == nil || result != "" {
 			return
 		}
-		if n.Kind() == "return_statement" {
-			result = w.parseReturnExpr(n.Child(1))
+		switch n.Kind() {
+		case "local_variable_declaration":
+			if declarator := childByKind(n, "variable_declarator"); declarator != nil {
+				locals[textOf(declarator.Child(0), w.src)] = n.ChildByFieldName("type")
+			}
+		case "return_statement":
+			result = w.parseReturnExpr(n.Child(1), locals)
 			return
 		}
 		for i := uint(0); i < n.ChildCount(); i++ {
@@ -27,9 +33,18 @@ func (w *walker) returnTypeFromDeserialize(block *sitter.Node) string {
 	return result
 }
 
-func (w *walker) parseReturnExpr(expr *sitter.Node) string {
+func (w *walker) parseReturnExpr(expr *sitter.Node, locals map[string]*sitter.Node) string {
 	if expr == nil {
 		return ""
+	}
+	if expr.Kind() == "identifier" {
+		declared := locals[textOf(expr, w.src)]
+		if declared == nil || (declared.Kind() != "type_identifier" && declared.Kind() != "scoped_type_identifier") {
+			return ""
+		}
+		typeName, hint := scopedName(declared, w.src)
+		t, _ := FixTypeName(typeName, hint, false)
+		return t
 	}
 	if expr.Kind() != "method_invocation" {
 		return ""
