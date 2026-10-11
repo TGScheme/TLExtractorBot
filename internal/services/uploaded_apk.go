@@ -45,7 +45,7 @@ func (s *Service) ExtractUploadedApk(messageID int, force bool, notify func(text
 		))
 		return
 	}
-	update.VersionName, update.BuildNumber = info.VersionName, buildNumber
+	update.VersionName, update.BuildNumber, update.Package = info.VersionName, buildNumber, info.Package
 	notify(fmt.Sprintf("<b>📥 Extracting %s</b>", update.Display()))
 	if err = s.dispatch(update, func() error {
 		return s.db.SettingsStore.SetLastVersionCode(int64(buildNumber))

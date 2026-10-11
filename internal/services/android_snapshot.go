@@ -11,34 +11,62 @@ import (
 
 const maxRemovalRatio = 0.10
 
-func disappearedObjects(previous, current []string) map[string]bool {
-	present := make(map[string]bool, len(current))
-	for _, id := range current {
+func resolveDropped(previous, extracted []string, dropped map[string]int64, build int64) (missing, restored []string, excluded map[string]bool) {
+	present := make(map[string]bool, len(extracted))
+	for _, id := range extracted {
 		present[id] = true
 	}
-	disappeared := make(map[string]bool)
 	for _, id := range previous {
 		if !present[id] {
-			disappeared[id] = true
+			missing = append(missing, id)
 		}
 	}
-	return disappeared
+	excluded = make(map[string]bool, len(dropped)+len(missing))
+	for _, id := range missing {
+		excluded[id] = true
+	}
+	for id, droppedAt := range dropped {
+		if present[id] && droppedAt < build {
+			restored = append(restored, id)
+			continue
+		}
+		excluded[id] = true
+	}
+	return missing, restored, excluded
 }
 
-func (s *Service) applyDisappeared(source string, fullScheme *schemeTypes.TLFullScheme, extracted []string) error {
-	previous, err := s.db.LoadExtractedObjects(source)
+func (s *Service) applyDropped(update UpdateInfo, fullScheme *schemeTypes.TLFullScheme, extracted []string) error {
+	previous, err := s.db.LoadExtractedObjects(update.Package)
 	if err != nil {
 		return err
 	}
-	disappeared := disappearedObjects(previous, extracted)
-	if len(previous) > 0 && float64(len(disappeared)) > float64(len(previous))*maxRemovalRatio {
+	dropped, err := s.db.LoadDroppedObjects()
+	if err != nil {
+		return err
+	}
+	build := int64(update.BuildNumber)
+	missing, restored, excluded := resolveDropped(previous, extracted, dropped, build)
+	if len(previous) > 0 && float64(len(missing)) > float64(len(previous))*maxRemovalRatio {
 		return fmt.Errorf(
 			"the app dropped %d of %d objects, refusing to publish a likely broken extraction",
-			len(disappeared), len(previous),
+			len(missing), len(previous),
 		)
 	}
-	if removed := scheme.RemoveObjects(fullScheme, disappeared); removed > 0 {
-		gologging.Info(fmt.Sprintf("scheme: removed %d objects dropped by the app", removed))
+	for _, id := range missing {
+		if err = s.db.SetDroppedObject(id, build); err != nil {
+			return err
+		}
 	}
-	return db.IgnoreNoRows(s.db.SaveExtractedObjects(source, extracted))
+	for _, id := range restored {
+		if err = s.db.RestoreDroppedObject(id); err != nil {
+			return err
+		}
+	}
+	if removed := scheme.RemoveObjects(fullScheme, excluded); removed > 0 {
+		gologging.Info(fmt.Sprintf(
+			"scheme: kept %d objects dropped by the app out of the scheme (%d newly missing from %s)",
+			removed, len(missing), update.Package,
+		))
+	}
+	return db.IgnoreNoRows(s.db.SaveExtractedObjects(update.Package, extracted))
 }

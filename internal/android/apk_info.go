@@ -7,6 +7,7 @@ import (
 )
 
 type APKInfo struct {
+	Package     string
 	VersionName string
 	VersionCode uint32
 }
@@ -31,5 +32,5 @@ func ReadAPKInfo(apkPath string) (*APKInfo, error) {
 	if versionCode <= 0 {
 		return nil, fmt.Errorf("apk reports version code %d", versionCode)
 	}
-	return &APKInfo{VersionName: versionName, VersionCode: uint32(versionCode)}, nil
+	return &APKInfo{Package: pkg.PackageName(), VersionName: versionName, VersionCode: uint32(versionCode)}, nil
 }

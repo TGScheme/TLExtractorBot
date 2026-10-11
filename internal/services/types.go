@@ -6,6 +6,7 @@ type UpdateInfo struct {
 	VersionName string
 	BuildNumber uint32
 	Source      string
+	Package     string
 }
 
 func (u UpdateInfo) Display() string {
