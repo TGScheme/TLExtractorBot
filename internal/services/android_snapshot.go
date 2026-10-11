@@ -35,7 +35,21 @@ func resolveDropped(previous, extracted []string, dropped map[string]int64, buil
 	return missing, restored, excluded
 }
 
-func (s *Service) applyDropped(update UpdateInfo, fullScheme *schemeTypes.TLFullScheme, extracted []string) error {
+func otherPackageObjects(others, extracted []string, excluded map[string]bool) map[string]bool {
+	present := make(map[string]bool, len(extracted))
+	for _, id := range extracted {
+		present[id] = true
+	}
+	kept := make(map[string]bool)
+	for _, id := range others {
+		if !present[id] && !excluded[id] {
+			kept[id] = true
+		}
+	}
+	return kept
+}
+
+func (s *Service) applyDropped(update UpdateInfo, fullScheme, preview *schemeTypes.TLFullScheme, extracted []string) error {
 	previous, err := s.db.LoadExtractedObjects(update.Package)
 	if err != nil {
 		return err
@@ -67,6 +81,13 @@ func (s *Service) applyDropped(update UpdateInfo, fullScheme *schemeTypes.TLFull
 			"scheme: kept %d objects dropped by the app out of the scheme (%d newly missing from %s)",
 			removed, len(missing), update.Package,
 		))
+	}
+	others, err := s.db.LoadOtherExtractedObjects(update.Package)
+	if err != nil {
+		return err
+	}
+	if kept := scheme.KeepObjects(fullScheme, preview, otherPackageObjects(others, extracted, excluded)); kept > 0 {
+		gologging.Info(fmt.Sprintf("scheme: kept %d objects that only the other apk packages carry", kept))
 	}
 	return db.IgnoreNoRows(s.db.SaveExtractedObjects(update.Package, extracted))
 }

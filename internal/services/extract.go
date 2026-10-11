@@ -84,7 +84,7 @@ func (s *Service) buildScheme(
 		if err != nil {
 			return nil, err
 		}
-		if err = s.applyDropped(update, fullScheme, extracted); err != nil {
+		if err = s.applyDropped(update, fullScheme, preview, extracted); err != nil {
 			return nil, err
 		}
 		return fullScheme, nil

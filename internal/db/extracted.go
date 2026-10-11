@@ -53,9 +53,21 @@ func (db *DB) LoadExtractedObjects(source string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	extracted := make([]string, 0, len(ids))
-	for _, id := range ids {
-		extracted = append(extracted, formatHexID(id))
+	return formatHexIDs(ids), nil
+}
+
+func (db *DB) LoadOtherExtractedObjects(source string) ([]string, error) {
+	ids, err := db.ExtractedStore.ListOtherExtractedObjects(source)
+	if err != nil {
+		return nil, err
 	}
-	return extracted, nil
+	return formatHexIDs(ids), nil
+}
+
+func formatHexIDs(ids []int64) []string {
+	formatted := make([]string, 0, len(ids))
+	for _, id := range ids {
+		formatted = append(formatted, formatHexID(id))
+	}
+	return formatted
 }
