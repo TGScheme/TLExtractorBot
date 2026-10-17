@@ -22,7 +22,10 @@ func isOldLayer(className string) bool {
 	return false
 }
 
-var trailingDigitsRgx = regexp.MustCompile(`[0-9]+$`)
+var (
+	trailingDigitsRgx = regexp.MustCompile(`[0-9]+$`)
+	layerSuffixRgx    = regexp.MustCompile(`_layer[0-9]+$`)
+)
 
 func isOldDigitVersion(className string, allNames map[string]bool) bool {
 	if !consts.DigitVersionRgx.MatchString(className) {
@@ -118,7 +121,7 @@ func extractRawScheme(workDir string) (*types.RawTLScheme, error) {
 				hint = parent
 			}
 			mtProtoName, methLayer := astparser.FixTypeName(className, hint, false)
-			if layer > methLayer && methLayer != 0 {
+			if methLayer != 0 && (layer > methLayer || (layer == methLayer && allNames[layerSuffixRgx.ReplaceAllString(className, "")])) {
 				continue
 			}
 
