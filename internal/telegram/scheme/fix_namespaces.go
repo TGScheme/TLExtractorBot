@@ -15,26 +15,29 @@ type namespaceContext struct {
 	known      map[string]bool
 	unique     map[string]string
 	namespaces []string
-	previous   map[string][]types.Parameter
+	previous   map[string][][]types.Parameter
 }
 
-func FixNamespaces(scheme, previous *types.TLFullScheme) int {
+func FixNamespaces(scheme *types.TLFullScheme, previous ...*types.TLFullScheme) int {
 	fixed := 0
 	for i, part := range []types.TLScheme{scheme.MainApi, scheme.E2EApi} {
 		var objects []types.TLInterface
 		objects = append(objects, part.GetConstructors()...)
 		objects = append(objects, part.GetMethods()...)
-		ctx := namespaceContext{taken: make(map[string]bool), previous: make(map[string][]types.Parameter)}
+		ctx := namespaceContext{taken: make(map[string]bool), previous: make(map[string][][]types.Parameter)}
 		for _, object := range objects {
 			ctx.taken[object.Package()] = true
 		}
-		if previous != nil {
-			previousPart := previous.MainApi
+		for _, source := range previous {
+			if source == nil {
+				continue
+			}
+			previousPart := source.MainApi
 			if i == 1 {
-				previousPart = previous.E2EApi
+				previousPart = source.E2EApi
 			}
 			for _, object := range append(previousPart.GetConstructors(), previousPart.GetMethods()...) {
-				ctx.previous[object.Package()] = object.Parameters()
+				ctx.previous[object.Package()] = append(ctx.previous[object.Package()], object.Parameters())
 			}
 		}
 		for {
@@ -147,7 +150,7 @@ type namespaceVariant struct {
 	namespace string
 }
 
-func matchParams(variant namespaceVariant, declared uint32, params, previous []types.Parameter, ctx *namespaceContext) ([]types.Parameter, bool) {
+func matchParams(variant namespaceVariant, declared uint32, params []types.Parameter, previous [][]types.Parameter, ctx *namespaceContext) ([]types.Parameter, bool) {
 	for _, base := range strippedSuffixes(params) {
 		candidates := [][]types.Parameter{base}
 		if variant.namespace != "" {
@@ -158,11 +161,10 @@ func matchParams(variant namespaceVariant, declared uint32, params, previous []t
 			if inferIDFromText(objectRepresentation(variant.name, variant.result, candidate)) == declared {
 				return candidate, true
 			}
-			if previous == nil {
-				continue
-			}
-			if restored, ok := restoreNames(variant.name, variant.result, declared, candidate, previous); ok {
-				return restored, true
+			for _, source := range previous {
+				if restored, ok := restoreNames(variant.name, variant.result, declared, candidate, source); ok {
+					return restored, true
+				}
 			}
 		}
 	}

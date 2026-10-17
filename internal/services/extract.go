@@ -52,7 +52,11 @@ func (s *Service) extract(update UpdateInfo) error {
 		isPatch = false
 	}
 
-	if fixed := scheme.FixNamespaces(fullScheme, preview); fixed > 0 {
+	stable, err := s.db.LoadScheme(models.SchemeRoleEnumStable)
+	if err != nil {
+		return err
+	}
+	if fixed := scheme.FixNamespaces(fullScheme, preview, stable); fixed > 0 {
 		gologging.Info(fmt.Sprintf("scheme: fixed the namespace of %d objects", fixed))
 	}
 	if fixed := scheme.FixFieldNames(fullScheme); fixed > 0 {
