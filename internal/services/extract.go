@@ -47,6 +47,10 @@ func (s *Service) extract(update UpdateInfo) error {
 	if err != nil {
 		return err
 	}
+	if isPatch && fullScheme.Layer > previewLayer {
+		gologging.Info(fmt.Sprintf("scheme: layer %d was never published, releasing it instead of patching", fullScheme.Layer))
+		isPatch = false
+	}
 
 	if fixed := scheme.FixNamespaces(fullScheme); fixed > 0 {
 		gologging.Info(fmt.Sprintf("scheme: fixed the namespace of %d objects", fixed))
