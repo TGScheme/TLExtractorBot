@@ -2,10 +2,10 @@ package scheme
 
 import "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
 
-func getSchemeDiffs(old, new types.TLScheme) *types.TLSchemeDifferences {
+func getSchemeDiffs(old, new types.TLScheme, oldLayer, newLayer int) *types.TLSchemeDifferences {
 	var diff types.TLSchemeDifferences
-	diff.MethodsDifference = getObjsDiffs(old.Methods, new.Methods)
-	diff.ConstructorsDifference = getObjsDiffs(old.Constructors, new.Constructors)
+	diff.MethodsDifference = getObjsDiffs(old.Methods, new.Methods, oldLayer, newLayer)
+	diff.ConstructorsDifference = getObjsDiffs(old.Constructors, new.Constructors, oldLayer, newLayer)
 	if len(diff.MethodsDifference) == 0 && len(diff.ConstructorsDifference) == 0 {
 		return nil
 	}

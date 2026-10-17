@@ -7,8 +7,8 @@ func GetDiffs(old, new *types.TLFullScheme) *types.TLFullDifferences {
 		return nil
 	}
 	var diff types.TLFullDifferences
-	diff.MainApi = getSchemeDiffs(old.MainApi, new.MainApi)
-	diff.E2EApi = getSchemeDiffs(old.E2EApi, new.E2EApi)
+	diff.MainApi = getSchemeDiffs(old.MainApi, new.MainApi, old.Layer, new.Layer)
+	diff.E2EApi = getSchemeDiffs(old.E2EApi, new.E2EApi, old.Layer, new.Layer)
 	if diff.MainApi == nil && diff.E2EApi == nil {
 		return nil
 	}

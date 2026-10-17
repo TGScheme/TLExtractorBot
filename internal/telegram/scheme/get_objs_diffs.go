@@ -6,18 +6,18 @@ import (
 	"slices"
 )
 
-func getObjsDiffs[T types.TLInterface](old, new []T) []types.TLObjDifferences {
+func getObjsDiffs[T types.TLInterface](old, new []T, oldLayer, newLayer int) []types.TLObjDifferences {
 	var diff []types.TLObjDifferences
 	mappedOldObjects := make(map[string]types.TLInterface)
 	reverseNames := make(map[string]string)
 	for _, oldInterface := range old {
-		packageName := fmt.Sprintf("%s.%d", oldInterface.Package(), oldInterface.GetLayer())
+		packageName := diffKey(oldInterface, oldLayer)
 		mappedOldObjects[packageName] = oldInterface
 		reverseNames[oldInterface.Constructor()] = packageName
 	}
 	var foundPackages []string
 	for _, newInterface := range new {
-		packageName := fmt.Sprintf("%s.%d", newInterface.Package(), newInterface.GetLayer())
+		packageName := diffKey(newInterface, newLayer)
 		if reversedPackageName, ok := reverseNames[newInterface.Constructor()]; ok {
 			packageName = reversedPackageName
 		}
@@ -82,4 +82,12 @@ func getObjsDiffs[T types.TLInterface](old, new []T) []types.TLObjDifferences {
 		}
 	}
 	return diff
+}
+
+func diffKey(object types.TLInterface, schemeLayer int) string {
+	layer := object.GetLayer()
+	if layer == schemeLayer {
+		layer = 0
+	}
+	return fmt.Sprintf("%s.%d", object.Package(), layer)
 }
