@@ -30,6 +30,8 @@ type walker struct {
 	flagInsertIdx map[string]int
 
 	writeSideBools []pendingBool
+
+	nullGuards map[string]pendingBool
 }
 
 type pendingBool struct {
@@ -50,6 +52,7 @@ func newWalker(astClass *javaTypes.AstClass, src []byte) *walker {
 		syntheticFlag: make(map[string]string),
 		locals:        make(map[string]int),
 		flagInsertIdx: make(map[string]int),
+		nullGuards:    make(map[string]pendingBool),
 	}
 }
 
@@ -232,6 +235,7 @@ func (w *walker) handleLocalVar(stmt *sitter.Node) {
 			w.flags.mapBool(name, ff, bit)
 		}
 
+		w.recordNullGuards(val)
 		if bools, flagField, ok := w.collectInlineSetFlags(val); ok {
 			w.localAlias[name] = flagField
 			for _, b := range bools {
@@ -429,12 +433,14 @@ func (w *walker) trySerializeFlagsWrite(stmt *sitter.Node) bool {
 			flagField = ff
 		}
 	case "method_invocation":
-
+		guardField, guarded := w.recordNullGuards(arg)
 		if bools, ff, ok := w.collectInlineSetFlags(arg); ok {
 			flagField = ff
 			for _, b := range bools {
 				w.registerWriteSideBool("", b.name, ff, b.bit)
 			}
+		} else if guarded {
+			flagField = guardField
 		}
 	}
 	if flagField == "" {
@@ -519,6 +525,66 @@ func (w *walker) collectInlineSetFlags(call *sitter.Node) (bools []pendingBool, 
 		bools[i], bools[j] = bools[j], bools[i]
 	}
 	return bools, flagField, true
+}
+
+func (w *walker) recordNullGuards(call *sitter.Node) (string, bool) {
+	var guards []pendingBool
+	node := call
+	for node != nil && node.Kind() == "method_invocation" && streamMethodName(node, w.src) == "setFlag" {
+		args, ok := setFlagArgs(node, w.src)
+		if !ok {
+			return "", false
+		}
+		if bit, okBit := bitOfMask(textOf(args[1], w.src)); okBit && args[2].Kind() == "binary_expression" &&
+			textOf(args[2].Child(1), w.src) == "!=" && textOf(args[2].Child(2), w.src) == "null" {
+			if field := w.guardedField(args[2].Child(0)); field != "" {
+				guards = append(guards, pendingBool{name: field, bit: bit})
+			}
+		}
+		node = args[0]
+	}
+	if len(guards) == 0 {
+		return "", false
+	}
+	flagField := "flags"
+	switch {
+	case node == nil:
+	case node.Kind() == "field_access":
+		flagField = fieldNameFromLHS(node, w.src)
+	case node.Kind() == "identifier":
+		flagField = textOf(node, w.src)
+		if alias, ok := w.localAlias[flagField]; ok {
+			flagField = alias
+		}
+	}
+	for _, guard := range guards {
+		guard.flagField = flagField
+		w.nullGuards[guard.name] = guard
+	}
+	return flagField, true
+}
+
+func (w *walker) guardedField(node *sitter.Node) string {
+	switch {
+	case node == nil:
+		return ""
+	case node.Kind() == "field_access":
+		return fieldNameFromLHS(node, w.src)
+	case node.Kind() == "identifier":
+		if field, ok := w.localField[textOf(node, w.src)]; ok {
+			return field
+		}
+		return textOf(node, w.src)
+	}
+	return ""
+}
+
+func (w *walker) nullGuardOf(left, operator, right *sitter.Node) (pendingBool, bool) {
+	if textOf(operator, w.src) != "!=" || textOf(right, w.src) != "null" {
+		return pendingBool{}, false
+	}
+	guard, ok := w.nullGuards[w.guardedField(left)]
+	return guard, ok
 }
 
 func (w *walker) tryFlagAssignFromAlias(stmt *sitter.Node) bool {
@@ -806,6 +872,14 @@ func (w *walker) fieldFromArg(call *sitter.Node) string {
 				}
 			}
 		}
+		if n.Kind() == "identifier" {
+			if name, ok := w.localField[textOf(n, w.src)]; ok {
+				if _, isField := fieldVar(w.astClass, name); isField {
+					field = name
+					return
+				}
+			}
+		}
 		for i := uint(0); i < n.ChildCount(); i++ {
 			walk(n.Child(i))
 		}
@@ -870,6 +944,10 @@ func (w *walker) flagStateFromCond(inner *sitter.Node) (flagState, bool) {
 		}
 
 		c0, c1, c2 := inner.Child(0), inner.Child(1), inner.Child(2)
+		if guard, ok := w.nullGuardOf(c0, c1, c2); ok {
+			w.ensureFlagField(guard.flagField)
+			return flagState{active: true, flagField: guard.flagField, bit: guard.bit}, false
+		}
 		if c0 != nil && c0.Kind() == "identifier" && textOf(c1, w.src) == "!=" && textOf(c2, w.src) == "0" {
 			if ff, bit, ok := w.flags.lookupBool(textOf(c0, w.src)); ok {
 				return flagState{active: true, flagField: ff, bit: bit, boolGuarded: false}, false
