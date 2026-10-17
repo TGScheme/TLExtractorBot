@@ -8,21 +8,41 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
 )
 
-func FixNamespaces(scheme *types.TLFullScheme) int {
+const maxStrippedSuffixes = 4
+
+type namespaceContext struct {
+	taken      map[string]bool
+	known      map[string]bool
+	unique     map[string]string
+	namespaces []string
+	previous   map[string][]types.Parameter
+}
+
+func FixNamespaces(scheme, previous *types.TLFullScheme) int {
 	fixed := 0
-	for _, part := range []types.TLScheme{scheme.MainApi, scheme.E2EApi} {
-		taken := make(map[string]bool)
+	for i, part := range []types.TLScheme{scheme.MainApi, scheme.E2EApi} {
 		var objects []types.TLInterface
 		objects = append(objects, part.GetConstructors()...)
 		objects = append(objects, part.GetMethods()...)
+		ctx := namespaceContext{taken: make(map[string]bool), previous: make(map[string][]types.Parameter)}
 		for _, object := range objects {
-			taken[object.Package()] = true
+			ctx.taken[object.Package()] = true
+		}
+		if previous != nil {
+			previousPart := previous.MainApi
+			if i == 1 {
+				previousPart = previous.E2EApi
+			}
+			for _, object := range append(previousPart.GetConstructors(), previousPart.GetMethods()...) {
+				ctx.previous[object.Package()] = object.Parameters()
+			}
 		}
 		for {
-			known := qualifiedTypes(objects)
+			ctx.known, ctx.unique = qualifiedTypes(objects)
+			ctx.namespaces = schemeNamespaces(objects)
 			progress := 0
 			for _, object := range objects {
-				if fixNamespace(object, taken, known) {
+				if fixNamespace(object, &ctx) {
 					progress++
 				}
 			}
@@ -35,17 +55,50 @@ func FixNamespaces(scheme *types.TLFullScheme) int {
 	return fixed
 }
 
-func qualifiedTypes(objects []types.TLInterface) map[string]bool {
+func qualifiedTypes(objects []types.TLInterface) (map[string]bool, map[string]string) {
 	known := make(map[string]bool)
+	bare := make(map[string]bool)
 	for _, object := range objects {
-		if result := object.Result(); strings.Contains(result, ".") && !strings.ContainsAny(result, "<> ") {
+		result := object.Result()
+		if strings.ContainsAny(result, "<> ") {
+			continue
+		}
+		if strings.Contains(result, ".") {
 			known[result] = true
+		} else {
+			bare[result] = true
 		}
 	}
-	return known
+	unique := make(map[string]string)
+	ambiguous := make(map[string]bool)
+	for result := range known {
+		_, name := splitNamespace(result)
+		if bare[name] || ambiguous[name] {
+			continue
+		}
+		if _, found := unique[name]; found {
+			delete(unique, name)
+			ambiguous[name] = true
+			continue
+		}
+		unique[name] = result
+	}
+	return known, unique
 }
 
-func fixNamespace(object types.TLInterface, taken, known map[string]bool) bool {
+func schemeNamespaces(objects []types.TLInterface) []string {
+	seen := make(map[string]bool)
+	var namespaces []string
+	for _, object := range objects {
+		if namespace, _ := splitNamespace(object.Package()); namespace != "" && !seen[namespace] {
+			seen[namespace] = true
+			namespaces = append(namespaces, namespace)
+		}
+	}
+	return namespaces
+}
+
+func fixNamespace(object types.TLInterface, ctx *namespaceContext) bool {
 	declared, err := strconv.ParseUint(ParseConstructor(object.Constructor()), 16, 32)
 	if err != nil {
 		return false
@@ -61,20 +114,19 @@ func fixNamespace(object types.TLInterface, taken, known map[string]bool) bool {
 	if source, ok := object.(interface{ FileNamespace() string }); ok {
 		fileNamespace = source.FileNamespace()
 	}
-	for _, variant := range namespaceVariants(name, result, fileNamespace) {
-		if variant.name != name && taken[variant.name] {
+	previous := ctx.previous[name]
+	variants := append([]namespaceVariant{{name, result, ""}}, namespaceVariants(name, result, fileNamespace, ctx.namespaces)...)
+	for _, variant := range variants {
+		if variant.name != name && ctx.taken[variant.name] {
 			continue
 		}
-		candidate := params
-		if variant.namespace != "" {
-			candidate = qualifyParams(params, variant.namespace, known)
-		}
-		if inferIDFromText(objectRepresentation(variant.name, variant.result, candidate)) != uint32(declared) {
+		candidate, found := matchParams(variant, uint32(declared), params, previous, ctx)
+		if !found {
 			continue
 		}
 		if variant.name != name {
-			delete(taken, name)
-			taken[variant.name] = true
+			delete(ctx.taken, name)
+			ctx.taken[variant.name] = true
 			switch typed := object.(type) {
 			case *types.TLConstructor:
 				typed.Predicate = variant.name
@@ -95,7 +147,65 @@ type namespaceVariant struct {
 	namespace string
 }
 
-func namespaceVariants(name, result, fileNamespace string) []namespaceVariant {
+func matchParams(variant namespaceVariant, declared uint32, params, previous []types.Parameter, ctx *namespaceContext) ([]types.Parameter, bool) {
+	for _, base := range strippedSuffixes(params) {
+		candidates := [][]types.Parameter{base}
+		if variant.namespace != "" {
+			candidates = append(candidates, qualifyParams(base, variant.namespace, ctx.known))
+		}
+		candidates = append(candidates, qualifyUnique(base, ctx.unique))
+		for _, candidate := range candidates {
+			if inferIDFromText(objectRepresentation(variant.name, variant.result, candidate)) == declared {
+				return candidate, true
+			}
+			if previous == nil {
+				continue
+			}
+			if restored, ok := restoreNames(variant.name, variant.result, declared, candidate, previous); ok {
+				return restored, true
+			}
+		}
+	}
+	return nil, false
+}
+
+func strippedSuffixes(params []types.Parameter) [][]types.Parameter {
+	var indexes []int
+	for i, param := range params {
+		if strings.HasSuffix(param.Name, "_item") {
+			indexes = append(indexes, i)
+		}
+	}
+	variants := [][]types.Parameter{params}
+	if len(indexes) == 0 || len(indexes) > maxStrippedSuffixes {
+		return variants
+	}
+	for mask := 1; mask < 1<<len(indexes); mask++ {
+		candidate := append([]types.Parameter(nil), params...)
+		for bit, index := range indexes {
+			if mask&(1<<bit) != 0 {
+				candidate[index].Name = strings.TrimSuffix(candidate[index].Name, "_item")
+			}
+		}
+		variants = append(variants, candidate)
+	}
+	return variants
+}
+
+func qualifyUnique(params []types.Parameter, unique map[string]string) []types.Parameter {
+	qualified := make([]types.Parameter, len(params))
+	for i, param := range params {
+		qualified[i] = types.Parameter{Name: param.Name, Type: mapInnerType(param.Type, func(inner string) string {
+			if replacement, ok := unique[inner]; ok {
+				return replacement
+			}
+			return inner
+		})}
+	}
+	return qualified
+}
+
+func namespaceVariants(name, result, fileNamespace string, others []string) []namespaceVariant {
 	nameSpace, bareName := splitNamespace(name)
 	resultSpace, bareResult := splitNamespace(result)
 	variants := []namespaceVariant{
@@ -104,7 +214,7 @@ func namespaceVariants(name, result, fileNamespace string) []namespaceVariant {
 		{bareName, bareResult, ""},
 	}
 	seen := make(map[string]bool)
-	for _, namespace := range []string{nameSpace, resultSpace, fileNamespace} {
+	for _, namespace := range append([]string{nameSpace, resultSpace, fileNamespace}, others...) {
 		if namespace == "" || seen[namespace] {
 			continue
 		}
@@ -152,6 +262,15 @@ func qualifyParams(params []types.Parameter, namespace string, known map[string]
 }
 
 func qualifyType(paramType, namespace string, known map[string]bool) string {
+	return mapInnerType(paramType, func(inner string) string {
+		if !strings.Contains(inner, ".") && known[namespace+"."+inner] {
+			return namespace + "." + inner
+		}
+		return inner
+	})
+}
+
+func mapInnerType(paramType string, mapping func(string) string) string {
 	prefix, inner := "", paramType
 	if before, after, found := strings.Cut(paramType, "?"); found {
 		prefix, inner = before+"?", after
@@ -161,10 +280,7 @@ func qualifyType(paramType, namespace string, known map[string]bool) string {
 		opening += "Vector<"
 		inner = inner[len("Vector<") : len(inner)-1]
 	}
-	if !strings.Contains(inner, ".") && known[namespace+"."+inner] {
-		inner = namespace + "." + inner
-	}
-	return prefix + opening + inner + strings.Repeat(">", strings.Count(opening, "<"))
+	return prefix + opening + mapping(inner) + strings.Repeat(">", strings.Count(opening, "<"))
 }
 
 func splitNamespace(value string) (string, string) {

@@ -13,12 +13,17 @@ func restoreParameterNames(object types.TLInterface, previous []types.Parameter)
 	if err != nil {
 		return
 	}
-	params := object.Parameters()
+	if restored, ok := restoreNames(object.Package(), object.Result(), uint32(declared), object.Parameters(), previous); ok {
+		object.SetParameters(restored)
+	}
+}
+
+func restoreNames(name, result string, declared uint32, params, previous []types.Parameter) ([]types.Parameter, bool) {
 	matches := func(candidate []types.Parameter) bool {
-		return inferIDFromText(objectRepresentation(object.Package(), object.Result(), candidate)) == uint32(declared)
+		return inferIDFromText(objectRepresentation(name, result, candidate)) == declared
 	}
 	if matches(params) {
-		return
+		return params, true
 	}
 	countTypes := func(list []types.Parameter) map[string]int {
 		counts := make(map[string]int, len(list))
@@ -46,7 +51,7 @@ func restoreParameterNames(object types.TLInterface, previous []types.Parameter)
 		}
 	}
 	if len(indexes) == 0 || len(indexes) > maxRestoredNames {
-		return
+		return nil, false
 	}
 	for mask := 1; mask < 1<<len(indexes); mask++ {
 		candidate := append([]types.Parameter(nil), params...)
@@ -56,8 +61,8 @@ func restoreParameterNames(object types.TLInterface, previous []types.Parameter)
 			}
 		}
 		if matches(candidate) {
-			object.SetParameters(candidate)
-			return
+			return candidate, true
 		}
 	}
+	return nil, false
 }
