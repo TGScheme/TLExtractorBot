@@ -235,7 +235,7 @@ func (s *Service) publish(
 		"update":              update,
 		"is_stable":           fullScheme.IsSync,
 	}
-	if preview != nil && preview.Layer == fullScheme.Layer && !stableRelease {
+	if preview != nil && preview.Layer == fullScheme.Layer && !fullScheme.IsSync {
 		pageArgs["latest"] = differences
 		pageArgs["latest_stats"] = stats
 		pageArgs["latest_source"] = update
