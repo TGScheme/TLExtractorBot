@@ -15,10 +15,8 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/gemini"
 	githubTypes "github.com/TGScheme/TLExtractorBot/internal/github/types"
 	"github.com/TGScheme/TLExtractorBot/internal/java/jadx"
-	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
-	telegraphTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/telegraph/types"
 )
 
 const maxReportedProblems = 10
@@ -71,18 +69,18 @@ func (s *Service) extract(update UpdateInfo) error {
 	if fullScheme.Layer < previewLayer {
 		return s.bot.DropStatus()
 	}
+	firstStable, err := s.becameStable(fullScheme, preview)
+	if err != nil {
+		return err
+	}
 	if differences == nil {
-		becameStable, err := s.becameStable(fullScheme, preview)
-		if err != nil {
-			return err
-		}
-		if !becameStable {
+		if !firstStable {
 			return s.bot.DropStatus()
 		}
 		gologging.Info(fmt.Sprintf("scheme: layer %d became stable, announcing it", fullScheme.Layer))
 		isPatch = false
 	}
-	return s.publish(update, fullScheme, preview, differences, isPatch)
+	return s.publish(update, fullScheme, preview, differences, isPatch, firstStable)
 }
 
 func (s *Service) buildScheme(
@@ -172,6 +170,7 @@ func (s *Service) publish(
 	preview *schemeTypes.TLFullScheme,
 	differences *schemeTypes.TLFullDifferences,
 	isPatch bool,
+	firstStable bool,
 ) error {
 	problems := scheme.Validate(fullScheme)
 	if fatal := scheme.FatalProblems(problems); len(fatal) > 0 {
@@ -189,7 +188,6 @@ func (s *Service) publish(
 	if stableRelease {
 		differences = &schemeTypes.TLFullDifferences{}
 	}
-	stats := scheme.GetStats(differences)
 	var commitInfo *githubTypes.CommitInfo
 	var err error
 	if stableRelease {
@@ -199,7 +197,7 @@ func (s *Service) publish(
 		if isPatch {
 			commitMessage = fmt.Sprintf("Patch %d", fullScheme.Layer)
 		}
-		commitInfo, err = s.github.MakeCommit(fullScheme, stats, commitMessage)
+		commitInfo, err = s.github.MakeCommit(fullScheme, scheme.GetStats(differences), commitMessage)
 	}
 	if err != nil {
 		return err
@@ -213,34 +211,21 @@ func (s *Service) publish(
 	if stableDiffs == nil {
 		stableDiffs = differences
 	}
-	if stableRelease {
-		stats = scheme.GetStats(stableDiffs)
+	pub := publication{
+		update:        update,
+		fullScheme:    fullScheme,
+		differences:   differences,
+		stableDiffs:   stableDiffs,
+		incremental:   preview != nil && preview.Layer == fullScheme.Layer,
+		isPatch:       isPatch,
+		stableRelease: stableRelease,
+		firstStable:   firstStable,
+		commit:        commitInfo,
+		pageBanner:    s.cfg.BannerURL,
 	}
-	stableStats := scheme.GetStats(stableDiffs)
-
-	previousLayer := 0
 	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
-		previousLayer = stableScheme.Layer
+		pub.previousLayer = stableScheme.Layer
 	}
-	pageArgs := map[string]any{
-		"layer":               fullScheme.Layer,
-		"previous_layer":      previousLayer,
-		"differences":         stableDiffs,
-		"stats":               stableStats,
-		"commit_urls":         commitInfo.FilesLines,
-		"banner_url":          s.cfg.BannerURL,
-		"main_scheme":         scheme.ToString(stableDiffs.MainApi, fullScheme.Layer, false),
-		"e2e_scheme":          scheme.ToString(stableDiffs.E2EApi, fullScheme.Layer, false),
-		"gemini_descriptions": map[string]string{},
-		"update":              update,
-		"is_stable":           fullScheme.IsSync,
-	}
-	if preview != nil && preview.Layer == fullScheme.Layer && !fullScheme.IsSync {
-		pageArgs["latest"] = differences
-		pageArgs["latest_stats"] = stats
-		pageArgs["latest_source"] = update
-	}
-	lead, title := "", ""
 	changelog, err := s.gemini.GenerateChangelog(gemini.ChangelogRequest{
 		Layer:       fullScheme.Layer,
 		Source:      update.Source,
@@ -253,32 +238,30 @@ func (s *Service) publish(
 	if err != nil {
 		gologging.Error("gemini: unable to generate the changelog:", err)
 	} else if changelog != nil {
-		pageArgs["story"] = changelog
-		pageArgs["gemini_descriptions"] = changelog.Descriptions
-		pageArgs["ai_model"] = s.gemini.Model()
-		lead, title = changelog.Lead, changelog.Title
+		pub.changelog = changelog
+		pub.aiModel = s.gemini.Model()
+		pub.title = changelog.Title
 	}
-
 	if published := s.publishedTitle(fullScheme.Layer); published != "" {
-		title = published
+		pub.title = published
 	}
 
 	bannerName := fmt.Sprintf("layer-%d", fullScheme.Layer)
 	switch {
-	case stableRelease:
+	case firstStable:
 		bannerName += "-stable"
 	case isPatch:
 		bannerName += "-patch"
 	}
-	bannerImage, pageBannerURL := s.layerBanner(update, fullScheme, stats, title, bannerName)
-	pageArgs["banner_url"] = pageBannerURL
+	bannerImage, pageBannerURL := s.layerBanner(update, fullScheme, pub.bannerStats(), pub.title, bannerName)
+	pub.pageBanner = pageBannerURL
+	pub.hasBanner = bannerImage != nil
 
 	pageTitle := fmt.Sprintf("Layer %d", fullScheme.Layer)
-	if title != "" {
-		pageTitle = title
+	if pub.title != "" {
+		pageTitle = pub.title
 	}
-
-	url, err := s.publishPage(fullScheme.Layer, pageTitle, assets.Render("changelogs", pageArgs))
+	url, err := s.publishPage(fullScheme.Layer, pageTitle, pub.page())
 	if err != nil {
 		return err
 	}
@@ -288,24 +271,7 @@ func (s *Service) publish(
 			{Text: "GitHub", URL: commitInfo.SourceURL},
 		}},
 	}
-	richArgs := map[string]any{
-		"update": update, "layer": fullScheme.Layer, "stats": stats,
-		"is_stable": fullScheme.IsSync, "is_patch": isPatch,
-		"is_stable_release": stableRelease, "previous_layer": previousLayer,
-	}
-	richArgs["title"] = title
-	richArgs["lead"] = lead
-	changes := richChanges(differences)
-	richArgs["changes"] = changes
-	richArgs["total_stats"] = combinedStats(stats)
-	richArgs["patch_summary"] = patchSummary(len(changes))
-	richArgs["commit_urls"] = commitInfo.FilesLines
-	richArgs["is_incremental"] = preview != nil && preview.Layer == fullScheme.Layer
-	if bannerImage != nil {
-		richArgs["banner_url"] = bot.BannerSource
-	}
-
-	if err = s.bot.PublishRich(assets.Render("rich_message", richArgs), true, keyboard, bannerImage); err != nil {
+	if err = s.bot.PublishRich(pub.post(), true, keyboard, bannerImage); err != nil {
 		return err
 	}
 	return s.promote(fullScheme, preview)
@@ -390,29 +356,18 @@ func (s *Service) publishedTitle(layer int) string {
 }
 
 func (s *Service) publishPage(layer int, title, html string) (string, error) {
+	page, err := s.telegraph.CreatePage(title, html)
+	if err != nil {
+		return "", err
+	}
 	storedPath, err := s.db.PagesStore.GetLayerPagePath(int64(layer))
 	if err != nil {
 		return "", err
 	}
-	var page telegraphTypes.PageInfo
-	if storedPath != "" {
-		if published, errTitle := s.telegraph.PageTitle(storedPath); errTitle != nil {
-			gologging.Error("telegraph: unable to read the published title:", errTitle)
-		} else if published != "" {
-			title = published
-		}
-		if page, err = s.telegraph.EditPage(storedPath, title, html); err != nil {
-			gologging.Error("telegraph: unable to edit the page, creating a new one:", err)
-			storedPath = ""
-		}
-	}
 	if storedPath == "" {
-		if page, err = s.telegraph.CreatePage(title, html); err != nil {
+		if err = s.db.PagesStore.SetLayerPagePath(int64(layer), page.Path); err != nil {
 			return "", err
 		}
-	}
-	if err = s.db.PagesStore.SetLayerPagePath(int64(layer), page.Path); err != nil {
-		return "", err
 	}
 	return page.URL, nil
 }
