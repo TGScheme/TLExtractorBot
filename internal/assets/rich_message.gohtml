@@ -7,7 +7,13 @@ import "rich_changes"
 {%- if banner_url %}
 <img src="{{ banner_url }}">
 {%- endif %}
-{%- if is_patch %}
+{%- if is_stable_release %}
+<h3>Layer {{ layer }} Is Now Stable</h3>
+<p><i>{% if title %}{{ title }} · {% endif %}{{ osFull(update) }}</i></p>
+{%- if total_stats.Total > 0 %}
+<p>{{ getStats(total_stats) }} since {% if previous_layer %}Layer {{ previous_layer }}{% else %}the previous stable layer{% endif %}.</p>
+{%- endif %}
+{%- elif is_patch %}
 <h3>Layer {{ layer }} Patched</h3>
 <p><i>{{ osFull(update) }} · {% if is_stable %}Stable{% else %}Preview{% endif %}</i></p>
 {{ getRichChanges(changes, patch_summary) }}

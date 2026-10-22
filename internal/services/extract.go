@@ -13,6 +13,7 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/db"
 	"github.com/TGScheme/TLExtractorBot/internal/db/models"
 	"github.com/TGScheme/TLExtractorBot/internal/gemini"
+	githubTypes "github.com/TGScheme/TLExtractorBot/internal/github/types"
 	"github.com/TGScheme/TLExtractorBot/internal/java/jadx"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
@@ -67,8 +68,19 @@ func (s *Service) extract(update UpdateInfo) error {
 	}
 
 	differences := scheme.GetDiffs(preview, fullScheme)
-	if differences == nil || fullScheme.Layer < previewLayer {
+	if fullScheme.Layer < previewLayer {
 		return s.bot.DropStatus()
+	}
+	if differences == nil {
+		becameStable, err := s.becameStable(fullScheme, preview)
+		if err != nil {
+			return err
+		}
+		if !becameStable {
+			return s.bot.DropStatus()
+		}
+		gologging.Info(fmt.Sprintf("scheme: layer %d became stable, announcing it", fullScheme.Layer))
+		isPatch = false
 	}
 	return s.publish(update, fullScheme, preview, differences, isPatch)
 }
@@ -173,12 +185,22 @@ func (s *Service) publish(
 
 	s.updateStatus(update, isPatch, stagePublishing, 100)
 
-	stats := scheme.GetStats(differences)
-	commitMessage := fmt.Sprintf("Updated to Layer %d", fullScheme.Layer)
-	if isPatch {
-		commitMessage = fmt.Sprintf("Patch %d", fullScheme.Layer)
+	stableRelease := differences == nil
+	if stableRelease {
+		differences = &schemeTypes.TLFullDifferences{}
 	}
-	commitInfo, err := s.github.MakeCommit(fullScheme, stats, commitMessage)
+	stats := scheme.GetStats(differences)
+	var commitInfo *githubTypes.CommitInfo
+	var err error
+	if stableRelease {
+		commitInfo, err = s.github.CurrentCommit(fullScheme)
+	} else {
+		commitMessage := fmt.Sprintf("Updated to Layer %d", fullScheme.Layer)
+		if isPatch {
+			commitMessage = fmt.Sprintf("Patch %d", fullScheme.Layer)
+		}
+		commitInfo, err = s.github.MakeCommit(fullScheme, stats, commitMessage)
+	}
 	if err != nil {
 		return err
 	}
@@ -190,6 +212,9 @@ func (s *Service) publish(
 	stableDiffs := scheme.GetDiffs(stableScheme, fullScheme)
 	if stableDiffs == nil {
 		stableDiffs = differences
+	}
+	if stableRelease {
+		stats = scheme.GetStats(stableDiffs)
 	}
 	stableStats := scheme.GetStats(stableDiffs)
 
@@ -210,7 +235,7 @@ func (s *Service) publish(
 		"update":              update,
 		"is_stable":           fullScheme.IsSync,
 	}
-	if preview != nil && preview.Layer == fullScheme.Layer {
+	if preview != nil && preview.Layer == fullScheme.Layer && !stableRelease {
 		pageArgs["latest"] = differences
 		pageArgs["latest_stats"] = stats
 		pageArgs["latest_source"] = update
@@ -238,7 +263,14 @@ func (s *Service) publish(
 		title = published
 	}
 
-	bannerImage, pageBannerURL := s.layerBanner(update, fullScheme, stats, title, isPatch)
+	bannerName := fmt.Sprintf("layer-%d", fullScheme.Layer)
+	switch {
+	case stableRelease:
+		bannerName += "-stable"
+	case isPatch:
+		bannerName += "-patch"
+	}
+	bannerImage, pageBannerURL := s.layerBanner(update, fullScheme, stats, title, bannerName)
 	pageArgs["banner_url"] = pageBannerURL
 
 	pageTitle := fmt.Sprintf("Layer %d", fullScheme.Layer)
@@ -259,6 +291,7 @@ func (s *Service) publish(
 	richArgs := map[string]any{
 		"update": update, "layer": fullScheme.Layer, "stats": stats,
 		"is_stable": fullScheme.IsSync, "is_patch": isPatch,
+		"is_stable_release": stableRelease, "previous_layer": previousLayer,
 	}
 	richArgs["title"] = title
 	richArgs["lead"] = lead
@@ -283,7 +316,7 @@ func (s *Service) layerBanner(
 	fullScheme *schemeTypes.TLFullScheme,
 	stats schemeTypes.DifferenceStats,
 	title string,
-	isPatch bool,
+	name string,
 ) ([]byte, string) {
 	if title == "" {
 		title = update.Display()
@@ -299,10 +332,6 @@ func (s *Service) layerBanner(
 			" added · %d changed · %d removed", totals.TotalChanges, totals.TotalDeletions,
 		),
 		IsStable: fullScheme.IsSync,
-	}
-	name := fmt.Sprintf("layer-%d", fullScheme.Layer)
-	if isPatch {
-		name = fmt.Sprintf("layer-%d-patch", fullScheme.Layer)
 	}
 	pageURL := s.cfg.BannerURL
 	if compact, err := banner.RenderCompact(input); err != nil {
@@ -389,6 +418,15 @@ func (s *Service) publishPage(layer int, title, html string) (string, error) {
 }
 
 func (s *Service) stableBaseline(preview *schemeTypes.TLFullScheme, layer int) (*schemeTypes.TLFullScheme, error) {
+	for _, role := range []models.SchemeRoleEnum{models.SchemeRoleEnumSynced, models.SchemeRoleEnumSyncedPrevious} {
+		synced, err := s.db.LoadScheme(role)
+		if err != nil {
+			return nil, err
+		}
+		if synced != nil && synced.Layer < layer {
+			return synced, nil
+		}
+	}
 	recent, err := s.db.RecentStore.ListRecentLayers()
 	if err != nil {
 		return nil, err
@@ -406,7 +444,48 @@ func (s *Service) stableBaseline(preview *schemeTypes.TLFullScheme, layer int) (
 	return stable, nil
 }
 
+func (s *Service) syncedScheme(preview *schemeTypes.TLFullScheme) (*schemeTypes.TLFullScheme, error) {
+	synced, err := s.db.LoadScheme(models.SchemeRoleEnumSynced)
+	if err != nil || synced != nil || preview == nil || !preview.IsSync {
+		return synced, err
+	}
+	if err = s.db.SaveScheme(preview, models.SchemeRoleEnumSynced); err != nil {
+		return nil, err
+	}
+	return preview, nil
+}
+
+func (s *Service) becameStable(fullScheme, preview *schemeTypes.TLFullScheme) (bool, error) {
+	if !fullScheme.IsSync {
+		return false, nil
+	}
+	synced, err := s.syncedScheme(preview)
+	if err != nil {
+		return false, err
+	}
+	return synced == nil || synced.Layer < fullScheme.Layer, nil
+}
+
+func (s *Service) promoteSynced(fullScheme, preview *schemeTypes.TLFullScheme) error {
+	if !fullScheme.IsSync {
+		return nil
+	}
+	synced, err := s.syncedScheme(preview)
+	if err != nil {
+		return err
+	}
+	if synced != nil && synced.Layer < fullScheme.Layer {
+		if err = s.db.SaveScheme(synced, models.SchemeRoleEnumSyncedPrevious); err != nil {
+			return err
+		}
+	}
+	return s.db.SaveScheme(fullScheme, models.SchemeRoleEnumSynced)
+}
+
 func (s *Service) promote(fullScheme, preview *schemeTypes.TLFullScheme) error {
+	if err := s.promoteSynced(fullScheme, preview); err != nil {
+		return err
+	}
 	if err := db.IgnoreNoRows(s.db.RecentStore.AddRecentLayer(int64(fullScheme.Layer))); err != nil {
 		return err
 	}
