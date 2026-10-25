@@ -21,6 +21,12 @@ func (s *Service) updateStatus(update UpdateInfo, isPatch bool, stage int, progr
 	s.bot.UpdateRichStatus(assets.Render("status_message", statusArgs(update, isPatch, stage, progress)))
 }
 
+func (s *Service) updateGeminiStatus(update UpdateInfo, isPatch bool) {
+	args := statusArgs(update, isPatch, stagePublishing, 100)
+	args["gemini_busy"] = true
+	s.bot.UpdateRichStatus(assets.Render("status_message", args))
+}
+
 func initialStage(source string) int {
 	if source == "android" {
 		return stageDownloading

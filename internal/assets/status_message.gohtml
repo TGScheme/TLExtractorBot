@@ -20,4 +20,7 @@ import "os_utils"
 {{ step(stage, 2, "Extracting the schema") }}
 {{ step(stage, 3, "Publishing the changelog") }}
 </ul>
+{%- if gemini_busy %}
+<blockquote>⚠️ Gemini is busy right now, so the changelog is taking longer than usual</blockquote>
+{%- endif %}
 <footer>This message will be replaced by the changelog.</footer>

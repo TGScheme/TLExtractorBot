@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"time"
 
 	tgTypes "github.com/GoBotApiOfficial/gobotapi/types"
 	"github.com/Laky-64/gologging"
@@ -19,7 +20,11 @@ import (
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
 )
 
-const maxReportedProblems = 10
+const (
+	maxReportedProblems    = 10
+	changelogRetryDelay    = time.Minute
+	changelogMaxRetryDelay = 10 * time.Minute
+)
 
 func (s *Service) extract(update UpdateInfo) error {
 	isPatch := s.patch.Load()
@@ -226,7 +231,7 @@ func (s *Service) publish(
 	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
 		pub.previousLayer = stableScheme.Layer
 	}
-	changelog, err := s.gemini.GenerateChangelog(gemini.ChangelogRequest{
+	changelog := s.generateChangelog(update, isPatch, gemini.ChangelogRequest{
 		Layer:       fullScheme.Layer,
 		Source:      update.Source,
 		VersionName: update.VersionName,
@@ -235,9 +240,7 @@ func (s *Service) publish(
 		Scheme:      fullScheme,
 		Differences: stableDiffs,
 	})
-	if err != nil {
-		gologging.Error("gemini: unable to generate the changelog:", err)
-	} else if changelog != nil {
+	if changelog != nil {
 		pub.changelog = changelog
 		pub.aiModel = s.gemini.Model()
 		pub.title = changelog.Title
@@ -275,6 +278,20 @@ func (s *Service) publish(
 		return err
 	}
 	return s.promote(fullScheme, preview)
+}
+
+func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, req gemini.ChangelogRequest) *gemini.Changelog {
+	delay := changelogRetryDelay
+	for attempt := 1; ; attempt++ {
+		changelog, err := s.gemini.GenerateChangelog(req)
+		if err == nil {
+			return changelog
+		}
+		gologging.Warn(fmt.Sprintf("gemini: attempt %d failed, retrying in %s: %v", attempt, delay, err))
+		s.updateGeminiStatus(update, isPatch)
+		time.Sleep(delay)
+		delay = min(delay*2, changelogMaxRetryDelay)
+	}
 }
 
 func (s *Service) layerBanner(
