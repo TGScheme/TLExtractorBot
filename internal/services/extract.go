@@ -22,6 +22,7 @@ import (
 
 const (
 	maxReportedProblems    = 10
+	changelogSlowAfter     = time.Minute
 	changelogRetryDelay    = time.Minute
 	changelogMaxRetryDelay = 10 * time.Minute
 )
@@ -281,6 +282,10 @@ func (s *Service) publish(
 }
 
 func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, req gemini.ChangelogRequest) *gemini.Changelog {
+	slow := time.AfterFunc(changelogSlowAfter, func() {
+		s.updateGeminiStatus(update, isPatch)
+	})
+	defer slow.Stop()
 	delay := changelogRetryDelay
 	for attempt := 1; ; attempt++ {
 		changelog, err := s.gemini.GenerateChangelog(req)
