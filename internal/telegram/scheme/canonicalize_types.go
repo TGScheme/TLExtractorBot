@@ -99,6 +99,8 @@ func canonicalizeType(t string, idx, predIdx map[string]string) string {
 	if tlPrimitives[t] {
 		return prefix + open + t + closing
 	}
+	bare := strings.HasPrefix(t, "%")
+	t = strings.TrimPrefix(t, "%")
 	leaf := t
 	if _, after, found := strings.CutLast(leaf, "."); found {
 		leaf = after
@@ -112,8 +114,12 @@ func canonicalizeType(t string, idx, predIdx map[string]string) string {
 	}
 
 	dot := strings.LastIndex(t, ".")
-	if l := t[dot+1:]; l != "" && l[0] >= 'a' && l[0] <= 'z' {
-		t = t[:dot+1] + strings.ToUpper(l[0:1]) + l[1:]
+	if l := t[dot+1:]; l != "" {
+		if bare {
+			t = t[:dot+1] + strings.ToLower(l[0:1]) + l[1:]
+		} else if l[0] >= 'a' && l[0] <= 'z' {
+			t = t[:dot+1] + strings.ToUpper(l[0:1]) + l[1:]
+		}
 	}
 	return prefix + open + t + closing
 }

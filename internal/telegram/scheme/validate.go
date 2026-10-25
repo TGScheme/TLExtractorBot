@@ -208,16 +208,18 @@ func parseTLLine(line string) (tlObject, string) {
 func checkObjects(objects []tlObject) []Problem {
 	var problems []Problem
 	defined := map[string]bool{}
+	bare := map[string]bool{}
 	for _, object := range objects {
 		if object.isMethod {
 			continue
 		}
+		bare[object.name] = true
 		for _, atom := range typeAtoms(object.result) {
 			defined[atom] = true
 		}
 	}
 	for _, object := range objects {
-		problems = append(problems, object.checkParams(defined)...)
+		problems = append(problems, object.checkParams(defined, bare)...)
 		for _, atom := range typeAtoms(object.result) {
 			if !isKnownType(atom, defined, object.generics) {
 				problems = append(problems, object.problem(false, fmt.Sprintf("unknown result type %q", atom)))
@@ -268,7 +270,7 @@ func inferIDFromText(representation string) uint32 {
 	return crc32.ChecksumIEEE([]byte(tlOptionalTrue.ReplaceAllString(representation, "")))
 }
 
-func (object tlObject) checkParams(defined map[string]bool) []Problem {
+func (object tlObject) checkParams(defined, bare map[string]bool) []Problem {
 	var problems []Problem
 	flagFields := map[string]bool{}
 	reported := map[string]bool{}
@@ -298,7 +300,7 @@ func (object tlObject) checkParams(defined map[string]bool) []Problem {
 			paramType = flag[3]
 		}
 		for _, atom := range typeAtoms(paramType) {
-			if !isKnownType(atom, defined, object.generics) {
+			if !isKnownType(atom, defined, object.generics) && !bare[atom] {
 				problems = append(problems, object.problem(false, fmt.Sprintf(
 					"parameter %q has the unknown type %q", param.Name, atom,
 				)))

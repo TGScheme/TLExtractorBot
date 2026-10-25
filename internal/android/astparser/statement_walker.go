@@ -32,6 +32,8 @@ type walker struct {
 	writeSideBools []pendingBool
 
 	nullGuards map[string]pendingBool
+
+	localObjects map[string]bool
 }
 
 type pendingBool struct {
@@ -53,6 +55,7 @@ func newWalker(astClass *javaTypes.AstClass, src []byte) *walker {
 		locals:        make(map[string]int),
 		flagInsertIdx: make(map[string]int),
 		nullGuards:    make(map[string]pendingBool),
+		localObjects:  make(map[string]bool),
 	}
 }
 
@@ -256,6 +259,10 @@ func (w *walker) handleLocalVar(stmt *sitter.Node) {
 		}
 	}
 
+	if val.Kind() == "object_creation_expression" {
+		w.localObjects[name] = true
+	}
+
 	if val.Kind() == "binary_expression" {
 		if ff, bit, ok := parseMaskNotZero(val, w.src); ok {
 			w.flags.mapBool(name, w.maskFlagField(ff), bit)
@@ -389,7 +396,9 @@ func (w *walker) handleExpression(stmt *sitter.Node, loopNesting int, fs flagSta
 		w.ensureFlagField(flagField)
 		w.emit(info.Field, flagPrefix(flagField, info.Bit, info.Prim))
 	default:
-
+		if w.tryBareReadParams(stmt, fs) {
+			return
+		}
 		if !w.tryFlagAssignFromAlias(stmt) {
 			if !w.tryBoolFromMaskLocal(stmt) {
 				if !w.tryHasFlagAssign(stmt, fs) {
@@ -741,6 +750,27 @@ func (w *walker) tryHasFlagTernary(stmt *sitter.Node) bool {
 	return true
 }
 
+func (w *walker) tryBareReadParams(stmt *sitter.Node, fs flagState) bool {
+	call := stmt.Child(0)
+	if call == nil || call.Kind() != "method_invocation" || streamMethodName(call, w.src) != "readParams" {
+		return false
+	}
+	field := w.fieldFromThisChain(call.Child(0))
+	if field == "" {
+		return false
+	}
+	base, ok := fieldType(w.astClass, field)
+	if !ok || base == "" {
+		return false
+	}
+	namespace, leaf := "", base
+	if index := strings.LastIndex(base, "."); index >= 0 {
+		namespace, leaf = base[:index+1], base[index+1:]
+	}
+	w.emit(field, w.typed(field, "%"+namespace+strings.ToLower(leaf[:1])+leaf[1:], fs))
+	return true
+}
+
 func (w *walker) tryHoistedFieldAssign(stmt *sitter.Node, fs flagState) bool {
 	assign := stmt.Child(0)
 	if assign == nil || assign.Kind() != "assignment_expression" {
@@ -752,6 +782,10 @@ func (w *walker) tryHoistedFieldAssign(stmt *sitter.Node, fs flagState) bool {
 		return false
 	}
 	field := fieldNameFromLHS(lhs, w.src)
+	if field != "" && w.localObjects[textOf(rhs, w.src)] {
+		w.localField[textOf(rhs, w.src)] = field
+		return true
+	}
 	if field == "" || !w.localValue[textOf(rhs, w.src)] {
 		return false
 	}

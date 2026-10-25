@@ -265,7 +265,16 @@ func qualifyParams(params []types.Parameter, namespace string, known map[string]
 
 func qualifyType(paramType, namespace string, known map[string]bool) string {
 	return mapInnerType(paramType, func(inner string) string {
-		if !strings.Contains(inner, ".") && known[namespace+"."+inner] {
+		if inner == "" || strings.Contains(inner, ".") {
+			return inner
+		}
+		if known[namespace+"."+inner] {
+			return namespace + "." + inner
+		}
+		if stripped, ok := stripNamespacePrefix(inner, namespace); ok && known[namespace+"."+stripped] {
+			return namespace + "." + stripped
+		}
+		if bare := strings.ToUpper(inner[:1]) + inner[1:]; bare != inner && known[namespace+"."+bare] {
 			return namespace + "." + inner
 		}
 		return inner
