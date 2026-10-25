@@ -13,7 +13,7 @@ const (
 
 func statusArgs(update UpdateInfo, isPatch bool, stage int, progress int64) map[string]any {
 	return map[string]any{
-		"update": update, "is_patch": isPatch, "stage": stage, "progress": progress,
+		"update": update, "is_patch": isPatch && stage == stagePublishing, "stage": stage, "progress": progress,
 	}
 }
 
