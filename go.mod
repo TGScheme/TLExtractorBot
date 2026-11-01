@@ -3,7 +3,7 @@ module github.com/TGScheme/TLExtractorBot
 go 1.27.1
 
 require (
-	github.com/GoBotApiOfficial/gobotapi v1.10.14
+	github.com/GoBotApiOfficial/gobotapi v1.11.0
 	github.com/Laky-64/gologging v1.1.0
 	github.com/Laky-64/http v1.0.8
 	github.com/anaskhan96/soup v1.2.5
