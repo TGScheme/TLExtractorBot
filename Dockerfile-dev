@@ -1,13 +1,15 @@
-FROM golang:1.26-alpine
+FROM golang:1.27-alpine
+ARG JADX_VERSION=1.5.6
 RUN apk add --no-cache git gcc musl-dev openjdk21-jdk postgresql-client curl unzip \
  && go install github.com/air-verse/air@latest \
  && go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest \
- && curl -sSL -o /tmp/jadx.zip https://github.com/skylot/jadx/releases/download/v1.5.0/jadx-1.5.0.zip \
+ && curl -sSL -o /tmp/jadx.zip https://github.com/skylot/jadx/releases/download/v${JADX_VERSION}/jadx-${JADX_VERSION}.zip \
  && mkdir -p /opt/jadx \
  && unzip -q /tmp/jadx.zip -d /opt/jadx \
+ && mv /opt/jadx/lib/jadx-${JADX_VERSION}-all.jar /opt/jadx/lib/jadx-all.jar \
  && rm /tmp/jadx.zip
 COPY internal/java/jadx/TLExtract.java /tmp/TLExtract.java
-RUN javac --release 21 -nowarn -cp /opt/jadx/lib/jadx-1.5.0-all.jar -d /tmp/classes /tmp/TLExtract.java \
+RUN javac --release 21 -nowarn -cp /opt/jadx/lib/jadx-all.jar -d /tmp/classes /tmp/TLExtract.java \
  && jar cf /opt/jadx/lib/tlextract.jar -C /tmp/classes .
 WORKDIR /app
 CMD ["sh", "-c", "go get ./cmd/sqlgen ./cmd/bot && air"]
