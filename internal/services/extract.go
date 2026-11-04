@@ -292,10 +292,16 @@ func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, req gemini.
 		if err == nil {
 			return changelog
 		}
-		gologging.Warn(fmt.Sprintf("gemini: attempt %d failed, retrying in %s: %v", attempt, delay, err))
+		wait := delay
+		var quotaErr *gemini.QuotaError
+		if errors.As(err, &quotaErr) {
+			wait = max(time.Until(quotaErr.RetryAt), changelogRetryDelay)
+		} else {
+			delay = min(delay*2, changelogMaxRetryDelay)
+		}
+		gologging.Warn(fmt.Sprintf("gemini: attempt %d failed, retrying in %s: %v", attempt, wait.Round(time.Second), err))
 		s.updateGeminiStatus(update, isPatch)
-		time.Sleep(delay)
-		delay = min(delay*2, changelogMaxRetryDelay)
+		time.Sleep(wait)
 	}
 }
 
