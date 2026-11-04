@@ -44,39 +44,44 @@ func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
 	}
 
 	started := time.Now()
-	resp, err := ctx.apiClient.Models.GenerateContent(
-		ctx.ctx,
-		ctx.model,
-		[]*genai.Content{{
-			Role: genai.RoleUser,
-			Parts: []*genai.Part{{
-				Text: assets.Render("llm_changelog", map[string]any{
-					"layer":        req.Layer,
-					"source":       req.Source,
-					"version_name": req.VersionName,
-					"build_number": req.BuildNumber,
-					"is_patch":     req.IsPatch,
-					"added":        added,
-					"changed":      changed,
-					"removed":      removed,
-					"context":      buildContext(req.Scheme, req.Differences),
-				}),
-			}},
-		}},
-		&genai.GenerateContentConfig{
-			Temperature:      new(float32(0.35)),
-			TopP:             new(float32(0.95)),
-			MaxOutputTokens:  65536,
-			ResponseMIMEType: "application/json",
-			ResponseSchema:   changelogSchema,
-			SystemInstruction: &genai.Content{
+	var resp *genai.GenerateContentResponse
+	err := ctx.withKeys(func(apiClient *genai.Client) error {
+		var err error
+		resp, err = apiClient.Models.GenerateContent(
+			ctx.ctx,
+			ctx.model,
+			[]*genai.Content{{
 				Role: genai.RoleUser,
 				Parts: []*genai.Part{{
-					Text: assets.Templates["llm_changelog_prompt"],
+					Text: assets.Render("llm_changelog", map[string]any{
+						"layer":        req.Layer,
+						"source":       req.Source,
+						"version_name": req.VersionName,
+						"build_number": req.BuildNumber,
+						"is_patch":     req.IsPatch,
+						"added":        added,
+						"changed":      changed,
+						"removed":      removed,
+						"context":      buildContext(req.Scheme, req.Differences),
+					}),
 				}},
+			}},
+			&genai.GenerateContentConfig{
+				Temperature:      new(float32(0.35)),
+				TopP:             new(float32(0.95)),
+				MaxOutputTokens:  65536,
+				ResponseMIMEType: "application/json",
+				ResponseSchema:   changelogSchema,
+				SystemInstruction: &genai.Content{
+					Role: genai.RoleUser,
+					Parts: []*genai.Part{{
+						Text: assets.Templates["llm_changelog_prompt"],
+					}},
+				},
 			},
-		},
-	)
+		)
+		return err
+	})
 	if err != nil {
 		return nil, err
 	}
