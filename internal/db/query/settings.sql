@@ -5,7 +5,8 @@ SELECT last_version_code,
        last_corefork_layer,
        status_message_id,
        tdesktop_branch,
-       llm_model
+       llm_model,
+       openai_model
 FROM settings
 WHERE id = TRUE;
 
@@ -29,3 +30,6 @@ UPDATE settings SET tdesktop_branch = @tdesktop_branch, updated_at = NOW() WHERE
 
 -- name: SetLLMModel :exec
 UPDATE settings SET llm_model = @llm_model, updated_at = NOW() WHERE id = TRUE;
+
+-- name: SetOpenAIModel :exec
+UPDATE settings SET openai_model = @openai_model, updated_at = NOW() WHERE id = TRUE;

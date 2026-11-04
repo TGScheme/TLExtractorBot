@@ -1,7 +1,8 @@
-package gemini
+package llm
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"slices"
@@ -12,12 +13,14 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
-	"google.golang.org/genai"
 )
 
 const (
 	maxContextPerType = 4
 	maxContextLines   = 400
+	maxSections       = 6
+	maxParagraphs     = 3
+	maxHighlights     = 6
 )
 
 var (
@@ -30,10 +33,6 @@ var (
 )
 
 func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
-	if ctx.model == "" {
-		gologging.Warn("gemini: no model set, skipping changelog (pick one with /model)")
-		return nil, nil
-	}
 	if req.Differences == nil {
 		return nil, nil
 	}
@@ -44,58 +43,42 @@ func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
 	}
 
 	started := time.Now()
-	var resp *genai.GenerateContentResponse
-	err := ctx.withKeys(func(apiClient *genai.Client) error {
+	request := generation{
+		system: assets.Templates["llm_changelog_prompt"],
+		prompt: assets.Render("llm_changelog", map[string]any{
+			"layer":        req.Layer,
+			"source":       req.Source,
+			"version_name": req.VersionName,
+			"build_number": req.BuildNumber,
+			"is_patch":     req.IsPatch,
+			"added":        added,
+			"changed":      changed,
+			"removed":      removed,
+			"context":      buildContext(req.Scheme, req.Differences),
+		}),
+	}
+	var text string
+	model, err := ctx.withKeys(func(k key, model string) error {
+		request.model = model
+		var used usage
 		var err error
-		resp, err = apiClient.Models.GenerateContent(
-			ctx.ctx,
-			ctx.model,
-			[]*genai.Content{{
-				Role: genai.RoleUser,
-				Parts: []*genai.Part{{
-					Text: assets.Render("llm_changelog", map[string]any{
-						"layer":        req.Layer,
-						"source":       req.Source,
-						"version_name": req.VersionName,
-						"build_number": req.BuildNumber,
-						"is_patch":     req.IsPatch,
-						"added":        added,
-						"changed":      changed,
-						"removed":      removed,
-						"context":      buildContext(req.Scheme, req.Differences),
-					}),
-				}},
-			}},
-			&genai.GenerateContentConfig{
-				Temperature:      new(float32(0.35)),
-				TopP:             new(float32(0.95)),
-				MaxOutputTokens:  65536,
-				ResponseMIMEType: "application/json",
-				ResponseSchema:   changelogSchema,
-				SystemInstruction: &genai.Content{
-					Role: genai.RoleUser,
-					Parts: []*genai.Part{{
-						Text: assets.Templates["llm_changelog_prompt"],
-					}},
-				},
-			},
-		)
+		text, used, err = k.provider.generate(ctx.ctx, request)
+		if err == nil {
+			gologging.Info(fmt.Sprintf(
+				"llm: generated the changelog with %s in %s (%d prompt, %d thinking, %d output tokens)",
+				model, time.Since(started).Round(time.Millisecond), used.prompt, used.thinking, used.output,
+			))
+		}
 		return err
 	})
+	if errors.Is(err, errNoModel) {
+		gologging.Warn("llm: no model selected, skipping the changelog (pick one with /model)")
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	if usage := resp.UsageMetadata; usage != nil {
-		gologging.Info(fmt.Sprintf(
-			"gemini: generated the changelog with %s in %s (%d prompt, %d thinking, %d output tokens)",
-			ctx.model, time.Since(started).Round(time.Millisecond),
-			usage.PromptTokenCount, usage.ThoughtsTokenCount, usage.CandidatesTokenCount,
-		))
-	}
-	if len(resp.Candidates) == 0 {
-		return nil, fmt.Errorf("no candidates")
-	}
-	raw := strings.TrimSpace(resp.Text())
+	raw := strings.TrimSpace(text)
 	if raw == "" {
 		return nil, fmt.Errorf("empty response")
 	}
@@ -105,6 +88,7 @@ func (ctx *Client) GenerateChangelog(req ChangelogRequest) (*Changelog, error) {
 		return nil, fmt.Errorf("invalid json response: %w", err)
 	}
 	normalize(&changelog, len(added))
+	changelog.Model = model
 	return &changelog, nil
 }
 
@@ -114,14 +98,14 @@ func normalize(changelog *Changelog, expectedItems int) {
 	var sections []ChangelogSection
 	for _, section := range changelog.Sections {
 		section.Title = sanitize(section.Title)
-		section.Paragraphs = sanitizeAll(section.Paragraphs)
-		section.Highlights = sanitizeAll(section.Highlights)
+		section.Paragraphs = limit(sanitizeAll(section.Paragraphs), maxParagraphs)
+		section.Highlights = limit(sanitizeAll(section.Highlights), maxHighlights)
 		if section.Title == "" || len(section.Paragraphs)+len(section.Highlights) == 0 {
 			continue
 		}
 		sections = append(sections, section)
 	}
-	changelog.Sections = sections
+	changelog.Sections = limit(sections, maxSections)
 
 	changelog.Descriptions = make(map[string]string)
 	for _, item := range changelog.Items {
@@ -139,7 +123,7 @@ func normalize(changelog *Changelog, expectedItems int) {
 	}
 	if len(changelog.Descriptions) != expectedItems {
 		gologging.Warn(fmt.Sprintf(
-			"gemini: got %d descriptions for %d new objects",
+			"llm: got %d descriptions for %d new objects",
 			len(changelog.Descriptions), expectedItems,
 		))
 	}
@@ -259,61 +243,9 @@ func baseType(fieldType string) string {
 	return strings.TrimLeft(fieldType, "%!")
 }
 
-var changelogSchema = &genai.Schema{
-	Type: genai.TypeObject,
-	Properties: map[string]*genai.Schema{
-		"title": {
-			Type:        genai.TypeString,
-			Description: "Title of the article, naming the biggest changes.",
-		},
-		"lead": {
-			Type:        genai.TypeString,
-			Description: "Opening paragraph of the article, one or two sentences.",
-		},
-		"sections": {
-			Type:     genai.TypeArray,
-			MaxItems: new(int64(6)),
-			Items: &genai.Schema{
-				Type: genai.TypeObject,
-				Properties: map[string]*genai.Schema{
-					"title": {
-						Type:        genai.TypeString,
-						Description: "Short feature-style heading, no API names.",
-					},
-					"paragraphs": {
-						Type:     genai.TypeArray,
-						MaxItems: new(int64(3)),
-						Items:    &genai.Schema{Type: genai.TypeString},
-					},
-					"highlights": {
-						Type:     genai.TypeArray,
-						MaxItems: new(int64(6)),
-						Items:    &genai.Schema{Type: genai.TypeString},
-					},
-				},
-				Required:         []string{"title", "paragraphs"},
-				PropertyOrdering: []string{"title", "paragraphs", "highlights"},
-			},
-		},
-		"items": {
-			Type: genai.TypeArray,
-			Items: &genai.Schema{
-				Type: genai.TypeObject,
-				Properties: map[string]*genai.Schema{
-					"name": {
-						Type:        genai.TypeString,
-						Description: "Name of the new object, without the constructor id.",
-					},
-					"description": {
-						Type:        genai.TypeString,
-						Description: "One sentence, Telegram API documentation style.",
-					},
-				},
-				Required:         []string{"name", "description"},
-				PropertyOrdering: []string{"name", "description"},
-			},
-		},
-	},
-	Required:         []string{"title", "lead", "sections", "items"},
-	PropertyOrdering: []string{"title", "lead", "sections", "items"},
+func limit[T any](values []T, size int) []T {
+	if len(values) > size {
+		return values[:size]
+	}
+	return values
 }

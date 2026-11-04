@@ -13,9 +13,9 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/banner"
 	"github.com/TGScheme/TLExtractorBot/internal/db"
 	"github.com/TGScheme/TLExtractorBot/internal/db/models"
-	"github.com/TGScheme/TLExtractorBot/internal/gemini"
 	githubTypes "github.com/TGScheme/TLExtractorBot/internal/github/types"
 	"github.com/TGScheme/TLExtractorBot/internal/java/jadx"
+	"github.com/TGScheme/TLExtractorBot/internal/llm"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
 )
@@ -232,7 +232,7 @@ func (s *Service) publish(
 	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
 		pub.previousLayer = stableScheme.Layer
 	}
-	changelog := s.generateChangelog(update, isPatch, gemini.ChangelogRequest{
+	changelog := s.generateChangelog(update, isPatch, llm.ChangelogRequest{
 		Layer:       fullScheme.Layer,
 		Source:      update.Source,
 		VersionName: update.VersionName,
@@ -243,7 +243,7 @@ func (s *Service) publish(
 	})
 	if changelog != nil {
 		pub.changelog = changelog
-		pub.aiModel = s.gemini.Model()
+		pub.aiModel = changelog.Model
 		pub.title = changelog.Title
 	}
 	if published := s.publishedTitle(fullScheme.Layer); published != "" {
@@ -281,26 +281,26 @@ func (s *Service) publish(
 	return s.promote(fullScheme, preview)
 }
 
-func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, req gemini.ChangelogRequest) *gemini.Changelog {
+func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, req llm.ChangelogRequest) *llm.Changelog {
 	slow := time.AfterFunc(changelogSlowAfter, func() {
-		s.updateGeminiStatus(update, isPatch)
+		s.updateAIStatus(update, isPatch)
 	})
 	defer slow.Stop()
 	delay := changelogRetryDelay
 	for attempt := 1; ; attempt++ {
-		changelog, err := s.gemini.GenerateChangelog(req)
+		changelog, err := s.llm.GenerateChangelog(req)
 		if err == nil {
 			return changelog
 		}
 		wait := delay
-		var quotaErr *gemini.QuotaError
+		var quotaErr *llm.QuotaError
 		if errors.As(err, &quotaErr) {
 			wait = max(time.Until(quotaErr.RetryAt), changelogRetryDelay)
 		} else {
 			delay = min(delay*2, changelogMaxRetryDelay)
 		}
-		gologging.Warn(fmt.Sprintf("gemini: attempt %d failed, retrying in %s: %v", attempt, wait.Round(time.Second), err))
-		s.updateGeminiStatus(update, isPatch)
+		gologging.Warn(fmt.Sprintf("llm: attempt %d failed, retrying in %s: %v", attempt, wait.Round(time.Second), err))
+		s.updateAIStatus(update, isPatch)
 		time.Sleep(wait)
 	}
 }

@@ -1,4 +1,4 @@
-package gemini
+package llm
 
 import (
 	"regexp"

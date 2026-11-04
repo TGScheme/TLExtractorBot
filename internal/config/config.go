@@ -20,7 +20,9 @@ func Load() (*Config, error) {
 		GitHubInstallationID: getEnvInt64("GITHUB_INSTALLATION_ID", 0),
 		GitHubPrivateKeyPath: getEnvString("GITHUB_PRIVATE_KEY_PATH", "/run/secrets/github.pem"),
 
-		GeminiToken: os.Getenv("GEMINI_TOKEN"),
+		GeminiToken:           os.Getenv("GEMINI_TOKEN"),
+		OpenAIToken:           os.Getenv("OPENAI_TOKEN"),
+		OpenAIReasoningEffort: getEnvString("OPENAI_REASONING_EFFORT", "medium"),
 
 		SchemeRepoOwner: getEnvString("SCHEME_REPO_OWNER", "TGScheme"),
 		SchemeRepoName:  getEnvString("SCHEME_REPO_NAME", "Schema"),
@@ -55,7 +57,7 @@ func Load() (*Config, error) {
 		{"API_ID", cfg.APIID == 0},
 		{"API_HASH", cfg.APIHash == ""},
 		{"TELEGRAPH_TOKEN", cfg.TelegraphToken == ""},
-		{"GEMINI_TOKEN", cfg.GeminiToken == ""},
+		{"GEMINI_TOKEN or OPENAI_TOKEN", cfg.GeminiToken == "" && cfg.OpenAIToken == ""},
 		{"CHANNEL_ID", cfg.ChannelID == 0},
 		{"LOG_CHAT_ID", cfg.LogChatID == 0},
 		{"BACKUP_CHAT_ID", cfg.BackupChatID == 0},

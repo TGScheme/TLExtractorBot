@@ -21,9 +21,9 @@ func (s *Service) updateStatus(update UpdateInfo, isPatch bool, stage int, progr
 	s.bot.UpdateRichStatus(assets.Render("status_message", statusArgs(update, isPatch, stage, progress)))
 }
 
-func (s *Service) updateGeminiStatus(update UpdateInfo, isPatch bool) {
+func (s *Service) updateAIStatus(update UpdateInfo, isPatch bool) {
 	args := statusArgs(update, isPatch, stagePublishing, 100)
-	args["gemini_busy"] = true
+	args["ai_busy"] = true
 	s.bot.UpdateRichStatus(assets.Render("status_message", args))
 }
 

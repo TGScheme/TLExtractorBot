@@ -13,7 +13,9 @@ type Config struct {
 	GitHubInstallationID int64
 	GitHubPrivateKeyPath string
 
-	GeminiToken string
+	GeminiToken           string
+	OpenAIToken           string
+	OpenAIReasoningEffort string
 
 	SchemeRepoOwner string
 	SchemeRepoName  string

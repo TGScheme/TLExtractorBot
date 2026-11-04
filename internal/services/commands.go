@@ -11,7 +11,7 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
 	"github.com/TGScheme/TLExtractorBot/internal/config"
 	"github.com/TGScheme/TLExtractorBot/internal/db"
-	"github.com/TGScheme/TLExtractorBot/internal/gemini"
+	"github.com/TGScheme/TLExtractorBot/internal/llm"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 )
 
@@ -19,7 +19,7 @@ func RegisterCommands(
 	cfg *config.Config,
 	database *db.DB,
 	botClient *bot.Client,
-	geminiClient *gemini.Client,
+	llmClient *llm.Client,
 	service *Service,
 ) {
 	botClient.OnMessage(filters.Filter(func(client *gobotapi.Client, update tgTypes.Message) {
@@ -33,34 +33,45 @@ func RegisterCommands(
 	}, filters.And(filters.Command("patch", supportedAliases...), filters.ChatID(cfg.LogChatID))))
 
 	botClient.OnMessage(filters.Filter(func(client *gobotapi.Client, update tgTypes.Message) {
-		models, err := geminiClient.Models()
+		models, err := llmClient.Models()
 		if err != nil {
 			reply(client, update, fmt.Sprintf("Cannot list models: %v", err))
 			return
 		}
 		requested := commandArgument(update.Text)
 		if requested == "" {
-			var lines []string
-			for _, model := range models {
-				marker := ""
-				if model.ID == geminiClient.Model() {
-					marker = " ✅"
+			var sections []string
+			for _, kind := range llmClient.Kinds() {
+				lines := []string{fmt.Sprintf("<b>%s models</b>", kind)}
+				for _, model := range models {
+					if model.Kind != kind {
+						continue
+					}
+					marker := ""
+					if model.ID == llmClient.Model(kind) {
+						marker = " ✅"
+					}
+					lines = append(lines, fmt.Sprintf("<code>%s</code>%s", model.ID, marker))
 				}
-				lines = append(lines, fmt.Sprintf("<code>%s</code>%s", model.ID, marker))
+				sections = append(sections, strings.Join(lines, "\n"))
 			}
-			reply(client, update, "Available models:\n"+strings.Join(lines, "\n"))
+			reply(client, update, strings.Join(sections, "\n\n"))
 			return
 		}
 		for _, model := range models {
 			if model.ID != requested {
 				continue
 			}
-			if err = database.SettingsStore.SetLLMModel(model.ID); err != nil {
+			save := database.SettingsStore.SetLLMModel
+			if model.Kind == llm.KindOpenAI {
+				save = database.SettingsStore.SetOpenAIModel
+			}
+			if err = save(model.ID); err != nil {
 				reply(client, update, fmt.Sprintf("Cannot save model: %v", err))
 				return
 			}
-			geminiClient.SetModel(model.ID)
-			reply(client, update, fmt.Sprintf("Model set to <code>%s</code>", model.ID))
+			llmClient.SetModel(model.Kind, model.ID)
+			reply(client, update, fmt.Sprintf("%s model set to <code>%s</code>", model.Kind, model.ID))
 			return
 		}
 		reply(client, update, fmt.Sprintf("Unknown model <code>%s</code>", requested))

@@ -5,8 +5,8 @@ import (
 
 	"github.com/TGScheme/TLExtractorBot/internal/config"
 	"github.com/TGScheme/TLExtractorBot/internal/db"
-	"github.com/TGScheme/TLExtractorBot/internal/gemini"
 	"github.com/TGScheme/TLExtractorBot/internal/github"
+	"github.com/TGScheme/TLExtractorBot/internal/llm"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/telegraph"
@@ -18,7 +18,7 @@ type Service struct {
 	db        *db.DB
 	bot       *bot.Client
 	github    *github.Client
-	gemini    *gemini.Client
+	llm       *llm.Client
 	telegraph *telegraph.Client
 	scheme    *scheme.Client
 
@@ -32,7 +32,7 @@ func New(
 	database *db.DB,
 	botClient *bot.Client,
 	githubClient *github.Client,
-	geminiClient *gemini.Client,
+	llmClient *llm.Client,
 	telegraphClient *telegraph.Client,
 	schemeClient *scheme.Client,
 ) *Service {
@@ -41,7 +41,7 @@ func New(
 		db:        database,
 		bot:       botClient,
 		github:    githubClient,
-		gemini:    geminiClient,
+		llm:       llmClient,
 		telegraph: telegraphClient,
 		scheme:    schemeClient,
 	}

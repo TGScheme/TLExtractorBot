@@ -8,8 +8,8 @@ import (
 	"github.com/Laky-64/gologging"
 	"github.com/TGScheme/TLExtractorBot/internal/config"
 	"github.com/TGScheme/TLExtractorBot/internal/db"
-	"github.com/TGScheme/TLExtractorBot/internal/gemini"
 	"github.com/TGScheme/TLExtractorBot/internal/github"
+	"github.com/TGScheme/TLExtractorBot/internal/llm"
 	"github.com/TGScheme/TLExtractorBot/internal/services"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
@@ -42,7 +42,7 @@ func main() {
 	if err != nil {
 		gologging.Fatal(err)
 	}
-	geminiClient, err := gemini.New(cfg, settings.LlmModel)
+	llmClient, err := llm.New(cfg, settings.LlmModel, settings.OpenaiModel)
 	if err != nil {
 		gologging.Fatal(err)
 	}
@@ -53,7 +53,7 @@ func main() {
 
 	service := services.New(
 		cfg, database, botClient, githubClient,
-		geminiClient, telegraphClient, scheme.New(database),
+		llmClient, telegraphClient, scheme.New(database),
 	)
 
 	c := cron.New()
@@ -63,7 +63,7 @@ func main() {
 	c.Start()
 	defer c.Stop()
 
-	services.RegisterCommands(cfg, database, botClient, geminiClient, service)
+	services.RegisterCommands(cfg, database, botClient, llmClient, service)
 	botClient.UpdateUptime(true, "")
 
 	sig := make(chan os.Signal, 1)

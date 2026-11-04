@@ -2,8 +2,8 @@ package services
 
 import (
 	"github.com/TGScheme/TLExtractorBot/internal/assets"
-	"github.com/TGScheme/TLExtractorBot/internal/gemini"
 	githubTypes "github.com/TGScheme/TLExtractorBot/internal/github/types"
+	"github.com/TGScheme/TLExtractorBot/internal/llm"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/bot"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
@@ -20,7 +20,7 @@ type publication struct {
 	stableRelease bool
 	firstStable   bool
 	commit        *githubTypes.CommitInfo
-	changelog     *gemini.Changelog
+	changelog     *llm.Changelog
 	aiModel       string
 	title         string
 	pageBanner    string

@@ -1,4 +1,4 @@
-package gemini
+package llm
 
 import (
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
@@ -21,6 +21,7 @@ type Changelog struct {
 	Items    []ChangelogItem    `json:"items"`
 
 	Descriptions map[string]string `json:"-"`
+	Model        string            `json:"-"`
 }
 
 type ChangelogSection struct {
