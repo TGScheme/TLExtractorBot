@@ -27,7 +27,8 @@ func Load() (*Config, error) {
 		SchemeRepoOwner: getEnvString("SCHEME_REPO_OWNER", "TGScheme"),
 		SchemeRepoName:  getEnvString("SCHEME_REPO_NAME", "Schema"),
 
-		BannerURL: getEnvString("BANNER_URL", "https://telegra.ph/file/5d6793d8428d3ce93fd95.png"),
+		BannerURL:  getEnvString("BANNER_URL", "https://telegra.ph/file/5d6793d8428d3ce93fd95.png"),
+		SupportURL: os.Getenv("SUPPORT_URL"),
 
 		BannersRepoOwner: getEnvString("BANNERS_REPO_OWNER", "TGScheme"),
 		BannersRepoName:  getEnvString("BANNERS_REPO_NAME", "Banners"),

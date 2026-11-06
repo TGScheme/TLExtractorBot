@@ -228,6 +228,7 @@ func (s *Service) publish(
 		firstStable:   firstStable,
 		commit:        commitInfo,
 		pageBanner:    s.cfg.BannerURL,
+		supportURL:    s.cfg.SupportURL,
 	}
 	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
 		pub.previousLayer = stableScheme.Layer
@@ -274,6 +275,11 @@ func (s *Service) publish(
 			{Text: "Full Changelog", URL: url},
 			{Text: "GitHub", URL: commitInfo.SourceURL},
 		}},
+	}
+	if s.cfg.SupportURL != "" {
+		keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, []tgTypes.InlineKeyboardButton{
+			{Text: "☕ Support the Channel", URL: s.cfg.SupportURL},
+		})
 	}
 	if err = s.bot.PublishRich(pub.post(), true, keyboard, bannerImage); err != nil {
 		return err

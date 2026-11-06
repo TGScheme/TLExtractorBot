@@ -20,7 +20,8 @@ type Config struct {
 	SchemeRepoOwner string
 	SchemeRepoName  string
 
-	BannerURL string
+	BannerURL  string
+	SupportURL string
 
 	BannersRepoOwner string
 	BannersRepoName  string

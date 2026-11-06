@@ -24,6 +24,7 @@ type publication struct {
 	aiModel       string
 	title         string
 	pageBanner    string
+	supportURL    string
 	hasBanner     bool
 }
 
@@ -55,6 +56,7 @@ func (p publication) page() string {
 		"gemini_descriptions": map[string]string{},
 		"update":              p.update,
 		"is_stable":           p.fullScheme.IsSync,
+		"support_url":         p.supportURL,
 	}
 	if p.incremental && !p.stableRelease {
 		args["latest"] = p.differences
