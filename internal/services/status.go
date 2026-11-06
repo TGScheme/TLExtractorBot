@@ -24,6 +24,7 @@ func (s *Service) updateStatus(update UpdateInfo, isPatch bool, stage int, progr
 func (s *Service) updateAIStatus(update UpdateInfo, isPatch bool) {
 	args := statusArgs(update, isPatch, stagePublishing, 100)
 	args["ai_busy"] = true
+	args["ai_provider"] = s.llm.ActiveKind()
 	s.bot.UpdateRichStatus(assets.Render("status_message", args))
 }
 

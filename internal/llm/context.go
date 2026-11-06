@@ -51,6 +51,7 @@ type Client struct {
 	mutex   sync.Mutex
 	blocked []time.Time
 	models  map[string]string
+	active  string
 }
 
 type Model struct {
@@ -117,6 +118,20 @@ func (ctx *Client) Kinds() []string {
 	return kinds
 }
 
+func (ctx *Client) ActiveKind() string {
+	ctx.mutex.Lock()
+	defer ctx.mutex.Unlock()
+	if ctx.active != "" {
+		return ctx.active
+	}
+	for _, k := range ctx.keys {
+		if ctx.models[k.kind] != "" {
+			return k.kind
+		}
+	}
+	return ""
+}
+
 func (ctx *Client) Model(kind string) string {
 	ctx.mutex.Lock()
 	defer ctx.mutex.Unlock()
@@ -158,6 +173,9 @@ func (ctx *Client) withKeys(call func(k key, model string) error) (string, error
 			continue
 		}
 		tried = true
+		ctx.mutex.Lock()
+		ctx.active = k.kind
+		ctx.mutex.Unlock()
 		err := call(k, model)
 		if err == nil {
 			return model, nil

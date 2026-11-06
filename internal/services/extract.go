@@ -244,7 +244,7 @@ func (s *Service) publish(
 	})
 	if changelog != nil {
 		pub.changelog = changelog
-		pub.aiModel = changelog.Model
+		pub.aiModel = llm.DisplayName(changelog.Model)
 		pub.title = changelog.Title
 	}
 	if published := s.publishedTitle(fullScheme.Layer); published != "" {
