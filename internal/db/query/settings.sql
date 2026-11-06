@@ -6,7 +6,9 @@ SELECT last_version_code,
        status_message_id,
        tdesktop_branch,
        llm_model,
-       openai_model
+       openai_model,
+       draft_page_key,
+       draft_page_path
 FROM settings
 WHERE id = TRUE;
 
@@ -33,3 +35,6 @@ UPDATE settings SET llm_model = @llm_model, updated_at = NOW() WHERE id = TRUE;
 
 -- name: SetOpenAIModel :exec
 UPDATE settings SET openai_model = @openai_model, updated_at = NOW() WHERE id = TRUE;
+
+-- name: SetDraftPage :exec
+UPDATE settings SET draft_page_key = @draft_page_key, draft_page_path = @draft_page_path, updated_at = NOW() WHERE id = TRUE;

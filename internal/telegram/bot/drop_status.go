@@ -21,7 +21,7 @@ func (ctx *Client) dropStatus() error {
 	}); err != nil {
 		return err
 	}
-	ctx.statusMessageID = 0
+	ctx.setStatusMessageID(0)
 	ctx.statusText = ""
 	return nil
 }

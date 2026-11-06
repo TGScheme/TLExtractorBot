@@ -38,6 +38,7 @@ func main() {
 		gologging.Fatal(err)
 	}
 	defer botClient.Close()
+	botClient.RestoreStatus(settings.StatusMessageID, database.SettingsStore.SetStatusMessageID)
 	githubClient, err := github.New(cfg)
 	if err != nil {
 		gologging.Fatal(err)

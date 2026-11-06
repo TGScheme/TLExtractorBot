@@ -22,6 +22,7 @@ type Client struct {
 	statusMutex     sync.Mutex
 	statusMessageID int64
 	statusText      string
+	statusPersist   func(int64) error
 
 	statusQueue         sync.Mutex
 	statusPending       string

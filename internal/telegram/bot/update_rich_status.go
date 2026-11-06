@@ -83,7 +83,7 @@ func (ctx *Client) applyStatus(html string, button *StatusButton) error {
 	if err != nil {
 		return err
 	}
-	ctx.statusMessageID = res.Result.(types.Message).MessageID
+	ctx.setStatusMessageID(res.Result.(types.Message).MessageID)
 	ctx.statusText = state
 	return nil
 }

@@ -234,8 +234,8 @@ func (s *Service) publish(
 	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
 		pub.previousLayer = stableScheme.Layer
 	}
-	draft := &draftPage{}
 	draftPub := pub
+	draft := s.restoreDraft(draftPub)
 	openDraft := func() (string, bool) { return s.openDraft(draft, draftPub) }
 	changelog := s.generateChangelog(update, isPatch, openDraft, llm.ChangelogRequest{
 		Layer:       fullScheme.Layer,
@@ -274,6 +274,9 @@ func (s *Service) publish(
 	url, err := s.publishPage(fullScheme.Layer, pageTitle, pub.page(), draftPath)
 	if err != nil {
 		return err
+	}
+	if draftPath != "" {
+		s.forgetDraft()
 	}
 	keyboard := &tgTypes.InlineKeyboardMarkup{
 		InlineKeyboard: [][]tgTypes.InlineKeyboardButton{{
