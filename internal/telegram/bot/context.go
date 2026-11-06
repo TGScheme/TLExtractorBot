@@ -23,11 +23,12 @@ type Client struct {
 	statusMessageID int64
 	statusText      string
 
-	statusQueue      sync.Mutex
-	statusPending    string
-	statusQueued     bool
-	statusGeneration uint64
-	statusWake       chan struct{}
+	statusQueue         sync.Mutex
+	statusPending       string
+	statusPendingButton *StatusButton
+	statusQueued        bool
+	statusGeneration    uint64
+	statusWake          chan struct{}
 
 	mtProtoMutex  sync.RWMutex
 	mtProtoCtx    context.Context

@@ -18,6 +18,7 @@ import (
 	"github.com/TGScheme/TLExtractorBot/internal/llm"
 	"github.com/TGScheme/TLExtractorBot/internal/telegram/scheme"
 	schemeTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/scheme/types"
+	telegraphTypes "github.com/TGScheme/TLExtractorBot/internal/telegram/telegraph/types"
 )
 
 const (
@@ -233,7 +234,10 @@ func (s *Service) publish(
 	if stableScheme != nil && stableScheme.Layer != fullScheme.Layer {
 		pub.previousLayer = stableScheme.Layer
 	}
-	changelog := s.generateChangelog(update, isPatch, llm.ChangelogRequest{
+	draft := &draftPage{}
+	draftPub := pub
+	openDraft := func() (string, bool) { return s.openDraft(draft, draftPub) }
+	changelog := s.generateChangelog(update, isPatch, openDraft, llm.ChangelogRequest{
 		Layer:       fullScheme.Layer,
 		Source:      update.Source,
 		VersionName: update.VersionName,
@@ -242,6 +246,7 @@ func (s *Service) publish(
 		Scheme:      fullScheme,
 		Differences: stableDiffs,
 	})
+	draftPath := draft.close()
 	if changelog != nil {
 		pub.changelog = changelog
 		pub.aiModel = llm.DisplayName(changelog.Model)
@@ -266,7 +271,7 @@ func (s *Service) publish(
 	if pub.title != "" {
 		pageTitle = pub.title
 	}
-	url, err := s.publishPage(fullScheme.Layer, pageTitle, pub.page())
+	url, err := s.publishPage(fullScheme.Layer, pageTitle, pub.page(), draftPath)
 	if err != nil {
 		return err
 	}
@@ -287,11 +292,14 @@ func (s *Service) publish(
 	return s.promote(fullScheme, preview)
 }
 
-func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, req llm.ChangelogRequest) *llm.Changelog {
+func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, openDraft func() (string, bool), req llm.ChangelogRequest) *llm.Changelog {
 	slow := time.AfterFunc(changelogSlowAfter, func() {
-		s.updateAIStatus(update, isPatch)
+		if url, open := openDraft(); open {
+			s.updateAIStatus(update, isPatch, url)
+		}
 	})
 	defer slow.Stop()
+	started := time.Now()
 	delay := changelogRetryDelay
 	for attempt := 1; ; attempt++ {
 		changelog, err := s.llm.GenerateChangelog(req)
@@ -306,7 +314,11 @@ func (s *Service) generateChangelog(update UpdateInfo, isPatch bool, req llm.Cha
 			delay = min(delay*2, changelogMaxRetryDelay)
 		}
 		gologging.Warn(fmt.Sprintf("llm: attempt %d failed, retrying in %s: %v", attempt, wait.Round(time.Second), err))
-		s.updateAIStatus(update, isPatch)
+		url := ""
+		if time.Since(started) >= changelogSlowAfter {
+			url, _ = openDraft()
+		}
+		s.updateAIStatus(update, isPatch, url)
 		time.Sleep(wait)
 	}
 }
@@ -389,8 +401,18 @@ func (s *Service) publishedTitle(layer int) string {
 	return title
 }
 
-func (s *Service) publishPage(layer int, title, html string) (string, error) {
-	page, err := s.telegraph.CreatePage(title, html)
+func (s *Service) publishPage(layer int, title, html, draftPath string) (string, error) {
+	var page telegraphTypes.PageInfo
+	var err error
+	if draftPath != "" {
+		page, err = s.telegraph.EditPage(draftPath, title, html)
+	}
+	if draftPath == "" || err != nil {
+		if err != nil {
+			gologging.Error("telegraph: unable to replace the draft page:", err)
+		}
+		page, err = s.telegraph.CreatePage(title, html)
+	}
 	if err != nil {
 		return "", err
 	}

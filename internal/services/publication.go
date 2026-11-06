@@ -25,6 +25,7 @@ type publication struct {
 	title         string
 	pageBanner    string
 	supportURL    string
+	draft         bool
 	hasBanner     bool
 }
 
@@ -57,6 +58,7 @@ func (p publication) page() string {
 		"update":              p.update,
 		"is_stable":           p.fullScheme.IsSync,
 		"support_url":         p.supportURL,
+		"is_draft":            p.draft,
 	}
 	if p.incremental && !p.stableRelease {
 		args["latest"] = p.differences
