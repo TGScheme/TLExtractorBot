@@ -237,7 +237,8 @@ func (s *Service) publish(
 	draftPub := pub
 	draft := s.restoreDraft(draftPub)
 	openDraft := func() (string, bool) { return s.openDraft(draft, draftPub) }
-	changelog := s.generateChangelog(update, isPatch, openDraft, llm.ChangelogRequest{
+	story := s.loadStory(fullScheme.Layer)
+	request := llm.ChangelogRequest{
 		Layer:       fullScheme.Layer,
 		Source:      update.Source,
 		VersionName: update.VersionName,
@@ -245,14 +246,26 @@ func (s *Service) publish(
 		IsPatch:     isPatch,
 		Scheme:      fullScheme,
 		Differences: stableDiffs,
-	})
-	draftPath := draft.close()
-	if changelog != nil {
-		pub.changelog = changelog
-		pub.aiModel = llm.DisplayName(changelog.Model)
-		pub.title = changelog.Title
 	}
-	if published := s.publishedTitle(fullScheme.Layer); published != "" {
+	if story != nil {
+		request.Differences = nil
+		if !stableRelease {
+			request.Differences = differences
+		}
+	}
+	changelog := s.generateChangelog(update, isPatch, openDraft, request)
+	draftPath := draft.close()
+	switch {
+	case story != nil:
+		story.addDescriptions(changelog)
+	case changelog != nil:
+		story = newStory(changelog)
+	}
+	if story != nil {
+		pub.changelog = story.changelog()
+		pub.aiModel = llm.DisplayName(story.Model)
+		pub.title = story.Title
+	} else if published := s.publishedTitle(fullScheme.Layer); published != "" {
 		pub.title = published
 	}
 
@@ -277,6 +290,9 @@ func (s *Service) publish(
 	}
 	if draftPath != "" {
 		s.forgetDraft()
+	}
+	if story != nil {
+		s.saveStory(fullScheme.Layer, story)
 	}
 	keyboard := &tgTypes.InlineKeyboardMarkup{
 		InlineKeyboard: [][]tgTypes.InlineKeyboardButton{{
