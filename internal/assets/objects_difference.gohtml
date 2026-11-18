@@ -4,7 +4,7 @@
 <ul>
 {% for obj in objsDiff -%}
 {%- if obj.IsNew %}
-    <li>Added {{ objectLinked(obj) }}{% if gemini_descriptions[obj.Object.Package] %} — {{ gemini_descriptions[obj.Object.Package] | safe }}{% endif %}</li>
+    <li>{{ objectLinked(obj) }}{% if gemini_descriptions[obj.Object.Package] %} — {{ gemini_descriptions[obj.Object.Package] | safe }}{% endif %}</li>
 {% endif -%}
 {%- endfor %}
 </ul>
@@ -15,21 +15,21 @@
 {% for obj in objsDiff -%}
 {%- if !obj.IsNew && !obj.IsDeleted %}
     {%- if obj.NewFields | length > 0 || obj.RemovedFields | length > 0 || obj.ChangedFields | length > 0 %}
-    <li>{{getFieldsDifference(obj) | capfirst | safe}} in {{ objectLinked(obj) }}</li>
+    <li>{{ objectLinked(obj) }}: {{ getFieldsDifference(obj) | safe }}</li>
     {%- endif %}
     {%- if obj.ChangedResult %}
-    <li>Changed type of {{ objectLinked(obj) }} from <b>{{ obj.ChangedResult.OldType }}</b> to <b>{{ obj.ChangedResult.NewType }}</b></li>
+    <li>{{ objectLinked(obj) }}: type changed from <b>{{ obj.ChangedResult.OldType }}</b> to <b>{{ obj.ChangedResult.NewType }}</b></li>
     {%- endif %}
 {% endif -%}
 {%- endfor %}
 </ul>
 {%- endif -%}
 {% if schemeStats.Deletions > 0 -%}
-<h4>Deleted {{ name }}</h4>
+<h4>Removed {{ name }}</h4>
 <ul>
 {% for obj in objsDiff -%}
 {%- if obj.IsDeleted %}
-    <li>Removed {{ objectLinked(obj) }}</li>
+    <li>{{ objectLinked(obj) }}</li>
 {% endif -%}
 {%- endfor %}
 </ul>
